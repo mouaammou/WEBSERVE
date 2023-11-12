@@ -1,20 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/05 16:13:55 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/11/12 23:08:14 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/11/12 22:45:10 by samjaabo          #+#    #+#             */
+/*   Updated: 2023/11/12 23:06:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "HttpServer.hpp"
+#include "HttpRequest.hpp"
 
-int main()
+HttpRequest::HttpRequest( void )
 {
-	HttpServer	server;
-	server.pollEventLoop();
-	return (0);
+}
+
+HttpRequest::HttpRequest( HttpRequest const &other )
+{
+	(void)other;
+}
+
+HttpRequest& HttpRequest::operator=( HttpRequest const &other )
+{
+	(void)other;
+	return *this;
+}
+
+HttpRequest::~HttpRequest( void )
+{
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ATcpServer.hpp                                     :+:      :+:    :+:   */
+/*   HttpServer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:18:20 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/11/11 16:29:55 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/11/12 23:07:26 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@
 # include <sys/socket.h>
 # include <poll.h>
 
-class ATcpServer
+class HttpServer
 {
 	public:
-		ATcpServer( void );
-		ATcpServer( ATcpServer const &other );
-		ATcpServer& operator=( ATcpServer const &other );
-		~ATcpServer( void );
+		HttpServer( void );
+		HttpServer( HttpServer const &other );
+		HttpServer& operator=( HttpServer const &other );
+		~HttpServer( void );
 
 		virtual bool	onPollIn(int fd);
 		virtual bool	onPollOut(int fd);

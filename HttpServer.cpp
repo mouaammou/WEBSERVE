@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ATcpServer.cpp                                     :+:      :+:    :+:   */
+/*   HttpServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:52:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/11/12 14:13:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/11/12 23:07:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ATcpServer.hpp"
+#include "HttpServer.hpp"
 
-uint32_t ATcpServer::buffsize = 1024;
+uint32_t HttpServer::buffsize = 1024;
 
-ATcpServer::ATcpServer( void )
+HttpServer::HttpServer( void )
 {
 	establishServerSocket(80);
 	printServerAddress(pollfds.begin()->fd);
 }
 
-ATcpServer::ATcpServer( ATcpServer const &other )
+HttpServer::HttpServer( HttpServer const &other )
 {
 	(void)other;
 	establishServerSocket(80);
 }
 
-ATcpServer& ATcpServer::operator=( ATcpServer const &other )
+HttpServer& HttpServer::operator=( HttpServer const &other )
 {
 	(void)other;
 	return *this;
 }
 
-ATcpServer::~ATcpServer( void )
+HttpServer::~HttpServer( void )
 {
 	for (size_t i=0; i<pollfds.size(); ++i)
 	{
@@ -43,7 +43,7 @@ ATcpServer::~ATcpServer( void )
 
 /*-------------implementation----------------*/
 
-void ATcpServer::establishServerSocket(uint16_t port)
+void HttpServer::establishServerSocket(uint16_t port)
 {
 	struct sockaddr_in	data;
 	std::memset(&data, 0, sizeof(data));
@@ -61,7 +61,7 @@ void ATcpServer::establishServerSocket(uint16_t port)
 }
 
 
-void ATcpServer::pollEventLoop( void )
+void HttpServer::pollEventLoop( void )
 {
 	int	num;
 	for (;;)
@@ -97,7 +97,7 @@ void ATcpServer::pollEventLoop( void )
 	}
 }
 
-bool ATcpServer::onPollIn( int fd )
+bool HttpServer::onPollIn( int fd )
 {
 	char buff[buffsize];
 
@@ -110,7 +110,7 @@ bool ATcpServer::onPollIn( int fd )
 	return false;
 }
 
-bool ATcpServer::onPollOut( int fd )
+bool HttpServer::onPollOut( int fd )
 {
 	// std::cout << "Test POLLOUT" << fd << std::endl;
 	char hi[] = "HTTP/1.1 200 OK\nConnection:keep-alive\nContent-Type: text/html\nContent-Length: 23\n\n<h1>Hello World!</h1>\r\n";
@@ -121,7 +121,7 @@ bool ATcpServer::onPollOut( int fd )
 	return true;
 }
 
-void ATcpServer::onPollAccept( int fd )
+void HttpServer::onPollAccept( int fd )
 {
 	int cfd = accept(fd, NULL, NULL);
 	if (cfd != -1)
@@ -129,7 +129,7 @@ void ATcpServer::onPollAccept( int fd )
 	// std::cout << "-----------accept----->"<<cfd<<"-------" << std::endl;
 }
 
-void ATcpServer::addNewFd( int fd )
+void HttpServer::addNewFd( int fd )
 {
 	struct pollfd tmp;
 
@@ -141,7 +141,7 @@ void ATcpServer::addNewFd( int fd )
 	buffers[fd] = "";
 }
 
-void ATcpServer::removeFd( int fd )
+void HttpServer::removeFd( int fd )
 {
 	std::cout << "-----------remove----->" << fd << "-------" << std::endl;
 	for (size_t i=0; i<pollfds.size(); ++i)
@@ -157,7 +157,7 @@ void ATcpServer::removeFd( int fd )
 	buffers.erase(fd);
 }
 
-void ATcpServer::printServerAddress( int fd )
+void HttpServer::printServerAddress( int fd )
 {
 	struct sockaddr localAddress;
 	socklen_t addressLength = sizeof(localAddress);
