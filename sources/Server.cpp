@@ -6,13 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/18 18:05:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/18 18:16:41 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-Server::Server(std::string &port)//
+Server::Server(std::string port)//
 {
     this->severPort = port;
     this->serverSocket = -1;
@@ -111,10 +111,9 @@ void   Server::acceptConnections()
     socklen_t clientAddrLen = sizeof(clientAddr);
     if (this->serverStatus > 0)
     {
-        if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) != -1)
+        if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) == -1)
         {
-            perror("accept");
-            exit (EXIT_FAILURE);
+            return;
         }
         else
         {

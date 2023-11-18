@@ -1,51 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/18 18:09:00 by mouaammo         ###   ########.fr       */
+/*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
+/*   Updated: 2023/11/18 18:17:56 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "includes/Server.hpp"
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <poll.h>
-#include <sys/fcntl.h>
-
-#include <iostream>
-#include <vector>
-#include <string>
-
-#define MAX_CLIENTS 10
-
-class Server
+int main(int ac, char **av)
 {
-    private:
-        int serverSocket;
-        std::string severPort;
-        std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
-        int serverStatus;//return value of poll() function
+    if (ac != 2)
+    {
+        std::cout << "Usage: ./webserv [port]" << std::endl;
+        return (1);
+    }
 
-    public:
-        Server(std::string port);
-        ~Server();
-
-        void    startServer();//set server socket: create socket, set socket options
+    /*
         void    fillPollFds();//fill pollfd structure for server socket: pollfd structure for server socket
         void    pollEvents();//wait for events: poll() function
         void    acceptConnections();//check for events on server socket: accept() function
         void    receiveRequests();//receive requests from clients: recv() function
         void    sendResponses();//send responses to clients: send() function
         void    closefds();//close client sockets: close() function
-};
+    */
+    Server myserver(av[1]);
+    myserver.startServer();
+    myserver.fillPollFds();
+    myserver.pollEvents();
+    myserver.acceptConnections();
+    myserver.receiveRequests();
+    myserver.sendResponses();
+    myserver.closefds();
+    return (0);
+}
