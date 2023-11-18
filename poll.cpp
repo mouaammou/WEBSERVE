@@ -80,7 +80,7 @@ int main() {
             if (fds[i].fd != -1 && (fds[i].revents & POLLIN)) {
                 // Handle data from the client
                 // ...
-
+                
                 // For simplicity, this example closes the client socket after handling data
                 close(fds[i].fd);
                 fds[i].fd = -1;  // Mark the slot as available

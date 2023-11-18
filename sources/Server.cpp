@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/18 17:04:42 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/18 18:05:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ Server::Server(std::string &port)//
 {
     this->severPort = port;
     this->serverSocket = -1;
+    this->serverStatus = -1;
     this->pollFds.resize(MAX_CLIENTS + 1);//+1 for server socket
 }
 
@@ -46,7 +47,7 @@ void    Server::startServer()
         perror("socket");
         exit (EXIT_FAILURE);
     }
-    
+    fcntl(this->serverSocket, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
     int reuse = 1;
     if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(int)) == -1)
     {
@@ -79,5 +80,86 @@ void  Server::fillPollFds()
     {
         this->pollFds[i].fd = -1;
         this->pollFds[i].events = POLL_IN;
+    }
+}
+
+void   Server::pollEvents()
+{
+    int timeout = 50000;//50 seconds
+    while (true)
+    {
+        int serverStatus = poll(this->pollFds.data(), MAX_CLIENTS + 1, timeout);//+1 for server socket
+        if (serverStatus == -1)
+        {
+            perror("poll");
+            exit (EXIT_FAILURE);
+        }
+        else if (serverStatus == 0)//timeout
+            std::cout << "No events for 50 seconds" << std::endl;
+        else
+        {
+            this->serverStatus = serverStatus;
+            break;
+        }
+    }
+}
+
+void   Server::acceptConnections()
+{
+    struct sockaddr clientAddr;
+    int clientSocket;
+    socklen_t clientAddrLen = sizeof(clientAddr);
+    if (this->serverStatus > 0)
+    {
+        if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) != -1)
+        {
+            perror("accept");
+            exit (EXIT_FAILURE);
+        }
+        else
+        {
+            //add the new client socket to the pollfd array
+            for (int i = 1; i < MAX_CLIENTS + 1; i++)
+            {
+                if (this->pollFds[i].fd == -1)
+                {
+                    this->pollFds[i].fd = clientSocket;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void    Server::receiveRequests()
+{
+    char buffer[1024];
+    for (int i = 1; i < MAX_CLIENTS; i++)
+    {
+        if (this->pollFds[i].fd != 1 && (this->pollFds[i].revents & POLL_IN))
+        {
+            //receive requests from clients
+            int bytes = recv(this->pollFds[i].fd, buffer, sizeof (buffer), 0);
+            buffer[bytes] = '\0';
+            std::cout << "Received: from client {"<< i << "}: " << buffer << std::endl;
+        }
+    }
+}
+
+void    Server::sendResponses()
+{
+    if (this->serverStatus > 0)
+    {
+        //send responses to clients
+        send(this->pollFds[1].fd, "Hello from server, welcome to you HOME\n", 40, 0);
+    }
+}
+
+void    Server::closefds()
+{
+    //close all the client sockets and the server socket
+    for (int i = 0; i < MAX_CLIENTS + 1; i++)
+    {
+        close(this->pollFds[i].fd);
     }
 }
