@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 11:09:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 11:11:00 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,20 +101,11 @@ void   Server::pollEvents()
             std::cout << "No events for 5 seconds" << std::endl;
         else
         {
-            std::signal(SIGINT, signalHandler);
             this->serverStatus = serverStatus;
             this->acceptConnections();
             this->receiveRequests();
             this->sendResponses();
         }
-    }
-}
-
-void   Server::signalHandler(int signal)
-{
-    if (signal == SIGINT)
-    {
-        std::cout << "SIGINT signal received" << std::endl;
     }
 }
 

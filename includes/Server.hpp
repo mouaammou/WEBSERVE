@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 10:53:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 11:10:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ class Server
         void    startServer();//set server socket: create socket, set socket options
         void    fillPollFds();//fill pollfd structure for server socket: pollfd structure for server socket
         void    pollEvents();//wait for events: poll() function
-        static void    signalHandler(int signal);//handle SIGINT signal
         void    acceptConnections();//check for events on server socket: accept() function
         void    receiveRequests();//receive requests from clients: recv() function
         void    sendResponses();//send responses to clients: send() function
