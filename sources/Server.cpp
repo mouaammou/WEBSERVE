@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 09:52:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 11:09:30 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void  Server::fillPollFds()
     this->pollFds[0].events = POLL_IN;
     
     std::cout << "Server is listening on port " << this->severPort << std::endl;
+    this->keepRunning = true;
     //INITIALIZE POLLFDS
     for (int i = 1; i < MAX_CLIENTS + 1; i++)
     {
@@ -88,7 +89,7 @@ void  Server::fillPollFds()
 void   Server::pollEvents()
 {
     int timeout = 5000;//5 seconds
-    while (true)
+    while (this->keepRunning)
     {
         int serverStatus = poll(this->pollFds.data(), MAX_CLIENTS + 1, timeout);//+1 for server socket
         if (serverStatus == -1)
@@ -100,11 +101,20 @@ void   Server::pollEvents()
             std::cout << "No events for 5 seconds" << std::endl;
         else
         {
+            std::signal(SIGINT, signalHandler);
             this->serverStatus = serverStatus;
             this->acceptConnections();
             this->receiveRequests();
             this->sendResponses();
         }
+    }
+}
+
+void   Server::signalHandler(int signal)
+{
+    if (signal == SIGINT)
+    {
+        std::cout << "SIGINT signal received" << std::endl;
     }
 }
 
@@ -144,7 +154,13 @@ void    Server::receiveRequests()
             //receive requests from clients
             int bytes = recv(this->pollFds[i].fd, buffer, sizeof (buffer), 0);
             buffer[bytes] = '\0';
-            std::cout << "Received: from client {"<< i << "}: " << buffer << std::endl;
+            if (bytes > 0)
+                std::cout << "Received: from client {"<< i << "}: " << buffer << std::endl;
+            else
+            {
+                std::cout << "maybe some singal" << std::endl;
+                exit (EXIT_FAILURE);
+            }
         }
     }
 }

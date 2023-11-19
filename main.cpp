@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 09:54:51 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 10:53:19 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ int main(int ac, char **av)
         std::cout << "Usage: ./webserv [port]" << std::endl;
         return (1);
     }
-
     /*
         void    fillPollFds();//fill pollfd structure for server socket: pollfd structure for server socket
         void    pollEvents();//wait for events: poll() function
