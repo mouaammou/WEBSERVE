@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 11:11:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 18:34:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <iostream>
 
 Server::Server(std::string port)//
 {
@@ -147,10 +146,9 @@ void    Server::receiveRequests()
             buffer[bytes] = '\0';
             if (bytes > 0)
                 std::cout << "Received: from client {"<< i << "}: " << buffer << std::endl;
-            else
+            else if (bytes == -1)
             {
-                std::cout << "maybe some singal" << std::endl;
-                exit (EXIT_FAILURE);
+                perror("recv");
             }
         }
     }
@@ -161,7 +159,14 @@ void    Server::sendResponses()
     if (this->serverStatus > 0)
     {
         //send responses to clients
-        send(this->pollFds[1].fd, "Hello from server, welcome to you HOME\n", 40, 0);
+       std::string response = "HTTP/1.1 200 OK\r\n"
+                              "Content-Type: text/html\r\n"
+                              "\r\n"
+                              "<html><body><h1>Hello, World!</h1></body></html>"
+                              "<p>This is a big response with multiple lines.</p>"
+                              "<p>It can contain any HTML content you want.</p>"
+                              "<p>Feel free to add more lines to customize it.</p>";
+        send(this->pollFds[1].fd, response.c_str(), response.length(), 0);
     }
 }
 

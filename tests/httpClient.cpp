@@ -1,45 +1,112 @@
-// Client side C/C++ program to demonstrate Socket
-// programming
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
+#include <iostream>
+#include <string>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
-#define PORT 8080
 
-int main(int argc, char const *argv[]) {
-  int status, valread, client_fd;
-  struct sockaddr_in serv_addr;
-  char *hello = "Hello from client";
-  char buffer[1024] = {0};
-  if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    printf("\n Socket creation error \n");
-    return -1;
-  }
+class Server {
+private:
+    int serverSocket;
+    int clientSocket;
+    struct sockaddr_in serverAddress;
+    struct sockaddr_in clientAddress;
+    char buffer[1024];
 
+public:
+    Server(int port) {
+        // Create a socket
+        serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (serverSocket == -1) {
+            std::cerr << "Failed to create socket" << std::endl;
+            return;
+        }
 
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(PORT);
+        // Set up server address
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_addr.s_addr = INADDR_ANY;
+        serverAddress.sin_port = htons(port);
 
-  // Convert IPv4 and IPv6 addresses from text to binary
-  // form
-  if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
-    printf("\nInvalid address/ Address not supported \n");
-    return -1;
-  }
+        // Bind the socket to the server address
+        if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
+            std::cerr << "Failed to bind socket" << std::endl;
+            return;
+        }
 
-  if ((status = connect(client_fd, (struct sockaddr *)&serv_addr,
-                        sizeof(serv_addr))) < 0) {
-    printf("\nConnection Failed \n");
-    return -1;
-  }
-  send(client_fd, hello, strlen(hello), 0);
-  printf("Hello message sent\n");
-  valread = read(client_fd, buffer,
-                 1024 - 1); // subtract 1 for the null terminator at the end
-  printf("%s\n", buffer);
+        // Listen for incoming connections
+        if (listen(serverSocket, 5) == -1) {
+            std::cerr << "Failed to listen for connections" << std::endl;
+            return;
+        }
 
-  // closing the connected socket
-  close(client_fd);
-  return 0;
+        std::cout << "Server listening on port " << port << std::endl;
+    }
+
+    void acceptConnections() {
+        socklen_t clientAddressLength = sizeof(clientAddress);
+
+        // Accept incoming connections
+        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+        if (clientSocket == -1) {
+            std::cerr << "Failed to accept connection" << std::endl;
+            return;
+        }
+
+        std::cout << "Accepted connection from " << inet_ntoa(clientAddress.sin_addr) << std::endl;
+
+        // Receive and handle requests
+        while (true) {
+            memset(buffer, 0, sizeof(buffer));
+            int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+            if (bytesRead == -1) {
+                std::cerr << "Failed to receive data" << std::endl;
+                break;
+            } else if (bytesRead == 0) {
+                std::cout << "Connection closed by client" << std::endl;
+                break;
+            }
+
+            std::string request(buffer);
+            std::cout << "Received request: " << request << std::endl;
+
+            // Process the request and generate a response
+            std::string response = generateResponse(request);
+
+            // Send the response back to the client
+            if (send(clientSocket, response.c_str(), response.length(), 0) == -1) {
+                std::cerr << "Failed to send response" << std::endl;
+                break;
+            }
+        }
+
+        // Close the client socket
+        close(clientSocket);
+    }
+
+    std::string generateResponse(const std::string& request) {
+        // TODO: Implement your logic to generate the response based on the request
+        // For example, you can parse the request to extract the requested resource and return a corresponding response
+
+        std::string response = "HTTP/1.1 200 OK\r\n"
+                               "Content-Type: text/html\r\n"
+                               "\r\n"
+                               "<html><body><h1>Hello, World!</h1></body></html>";
+        
+    
+    std::string bigResponse = "HTTP/1.1 200 OK\r\n"
+                              "Content-Type: text/html\r\n"
+                              "\r\n"
+                              "<html><body><h1>Hello, World!</h1></body></html>"
+                              "<p>This is a big response with multiple lines.</p>"
+                              "<p>It can contain any HTML content you want.</p>"
+                              "<p>Feel free to add more lines to customize it.</p>";
+
+};
+
+int main() {
+    int port = 8080;
+    Server server(port);
+    server.acceptConnections();
+
+    return 0;
 }

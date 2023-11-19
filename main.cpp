@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 10:53:19 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 15:03:12 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int main(int ac, char **av)
         void    sendResponses();//send responses to clients: send() function
         void    closefds();//close client sockets: close() function
     */
+    signal(SIGPIPE, SIG_IGN);
     Server myserver(av[1]);
     myserver.startServer();
     myserver.fillPollFds();
