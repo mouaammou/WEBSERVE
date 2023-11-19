@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/18 18:16:41 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 09:52:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <iostream>
 
 Server::Server(std::string port)//
 {
@@ -75,6 +76,7 @@ void  Server::fillPollFds()
     this->pollFds[0].fd = this->serverSocket;
     this->pollFds[0].events = POLL_IN;
     
+    std::cout << "Server is listening on port " << this->severPort << std::endl;
     //INITIALIZE POLLFDS
     for (int i = 1; i < MAX_CLIENTS + 1; i++)
     {
@@ -85,7 +87,7 @@ void  Server::fillPollFds()
 
 void   Server::pollEvents()
 {
-    int timeout = 50000;//50 seconds
+    int timeout = 5000;//5 seconds
     while (true)
     {
         int serverStatus = poll(this->pollFds.data(), MAX_CLIENTS + 1, timeout);//+1 for server socket
@@ -95,11 +97,13 @@ void   Server::pollEvents()
             exit (EXIT_FAILURE);
         }
         else if (serverStatus == 0)//timeout
-            std::cout << "No events for 50 seconds" << std::endl;
+            std::cout << "No events for 5 seconds" << std::endl;
         else
         {
             this->serverStatus = serverStatus;
-            break;
+            this->acceptConnections();
+            this->receiveRequests();
+            this->sendResponses();
         }
     }
 }

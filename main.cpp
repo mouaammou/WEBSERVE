@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/18 18:17:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/19 09:54:51 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ int main(int ac, char **av)
     Server myserver(av[1]);
     myserver.startServer();
     myserver.fillPollFds();
-    myserver.pollEvents();
-    myserver.acceptConnections();
-    myserver.receiveRequests();
-    myserver.sendResponses();
+    myserver.pollEvents();// here where the magic happens, the server will wait for events, and when it receives one, it will call the appropriate function
     myserver.closefds();
     return (0);
 }
