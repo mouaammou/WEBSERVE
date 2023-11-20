@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 11:10:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/20 13:17:30 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,11 @@
 #include <vector>
 #include <string>
 
-#define MAX_CLIENTS 10
-
 class Server
 {
     private:
-        int serverSocket;
-        std::string severPort;
+        int serverSocket;//server socket: socket() function
+        std::string severPort;//server port
         std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
         int serverStatus;//return value of poll() function
         bool keepRunning;//flag to keep server running

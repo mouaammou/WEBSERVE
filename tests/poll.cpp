@@ -40,18 +40,18 @@ int main() {
     }
 
     // Set up an array of pollfd structures for the server socket and connected clients
-    struct pollfd fds[MAX_CLIENTS + 1];  // Plus one for the server socket
+    struct pollfd fds[this->pollFds.size()];  // Plus one for the server socket
     fds[0].fd = serverSocket;
     fds[0].events = POLLIN;
 
-    for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+    for (int i = 1; i < this->pollFds.size(); ++i) {
         fds[i].fd = -1;  // Initialize to an invalid file descriptor
         fds[i].events = POLLIN;
     }
 
     while (1) {
         // Call poll to wait for events
-        int result = poll(fds, MAX_CLIENTS + 1, -1);  // Block indefinitely
+        int result = poll(fds, this->pollFds.size(), -1);  // Block indefinitely
 
         if (result == -1) {
             perror("poll");
@@ -66,7 +66,7 @@ int main() {
                 perror("accept");
             } else {
                 // Add the new client socket to the pollfd array
-                for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+                for (int i = 1; i < this->pollFds.size(); ++i) {
                     if (fds[i].fd == -1) {
                         fds[i].fd = clientSocket;
                         break;
@@ -76,7 +76,7 @@ int main() {
         }
 
         // Check for events on connected client sockets
-        for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+        for (int i = 1; i < this->pollFds.size(); ++i) {
             if (fds[i].fd != -1 && (fds[i].revents & POLLIN)) {
                 // Handle data from the client
                 // ...
@@ -89,7 +89,7 @@ int main() {
     }
 
     // Close all client sockets
-    for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+    for (int i = 1; i < this->pollFds.size(); ++i) {
         if (fds[i].fd != -1) {
             close(fds[i].fd);
         }

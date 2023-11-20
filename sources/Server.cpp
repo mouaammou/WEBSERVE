@@ -6,18 +6,18 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/19 18:34:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/20 14:00:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <cstdio>
 
 Server::Server(std::string port)//
 {
     this->severPort = port;
     this->serverSocket = -1;
     this->serverStatus = -1;
-    this->pollFds.resize(MAX_CLIENTS + 1);//+1 for server socket
 }
 
 Server::~Server()//close server socket
@@ -47,6 +47,7 @@ void    Server::startServer()
         perror("socket");
         exit (EXIT_FAILURE);
     }
+    // this->pollFds.push_back((struct pollfd){this->serverSocket, POLLIN, 0});//add server socket to pollfd array
     fcntl(this->serverSocket, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
     int reuse = 1;
     if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(int)) == -1)
@@ -66,31 +67,27 @@ void    Server::startServer()
 void  Server::fillPollFds()
 {
     //LISTEN
-    if (listen(this->serverSocket, MAX_CLIENTS + 1) == -1)//+1 for server socket
+    if (listen(this->serverSocket, 5) == -1)//+1 for server socket
     {
         perror("listen");
         exit (EXIT_FAILURE);
     }
     //ADD SERVER SOCKET TO POLLFDS
-    this->pollFds[0].fd = this->serverSocket;
-    this->pollFds[0].events = POLL_IN;
-    
+    struct pollfd server;
+    server.fd = this->serverSocket;
+    server.events = POLL_IN;//for reading
+    this->pollFds.push_back(server);
     std::cout << "Server is listening on port " << this->severPort << std::endl;
     this->keepRunning = true;
     //INITIALIZE POLLFDS
-    for (int i = 1; i < MAX_CLIENTS + 1; i++)
-    {
-        this->pollFds[i].fd = -1;
-        this->pollFds[i].events = POLL_IN;
-    }
 }
 
 void   Server::pollEvents()
 {
-    int timeout = 5000;//5 seconds
+    int timeout = 10000;//10 seconds
     while (this->keepRunning)
     {
-        int serverStatus = poll(this->pollFds.data(), MAX_CLIENTS + 1, timeout);//+1 for server socket
+        int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
         if (serverStatus == -1)
         {
             perror("poll");
@@ -101,7 +98,13 @@ void   Server::pollEvents()
         else
         {
             this->serverStatus = serverStatus;
-            this->acceptConnections();
+            if (this->pollFds[0].revents & POLL_IN)//check for events on server socket
+            {
+                this->acceptConnections();
+            }
+            else {
+                std::cout << "No events on server socket" << std::endl;
+            }
             this->receiveRequests();
             this->sendResponses();
         }
@@ -113,33 +116,26 @@ void   Server::acceptConnections()
     struct sockaddr clientAddr;
     int clientSocket;
     socklen_t clientAddrLen = sizeof(clientAddr);
-    if (this->serverStatus > 0)
+
+    if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) == -1)
     {
-        if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) == -1)
-        {
-            return;
-        }
-        else
-        {
-            //add the new client socket to the pollfd array
-            for (int i = 1; i < MAX_CLIENTS + 1; i++)
-            {
-                if (this->pollFds[i].fd == -1)
-                {
-                    this->pollFds[i].fd = clientSocket;
-                    break;
-                }
-            }
-        }
+        perror("accept");
+        return;
     }
+    //add the new client socket to the pollfd array
+    struct pollfd newClient;
+    newClient.fd = clientSocket;
+    newClient.events = POLL_IN;
+    fcntl(clientSocket, F_SETFL, O_NONBLOCK);
+    this->pollFds.push_back(newClient);
 }
 
 void    Server::receiveRequests()
 {
     char buffer[1024];
-    for (int i = 1; i < MAX_CLIENTS; i++)
+    for (size_t i = 1; i < this->pollFds.size(); i++)
     {
-        if (this->pollFds[i].fd != 1 && (this->pollFds[i].revents & POLL_IN))
+        if (this->pollFds[i].revents & POLL_IN)
         {
             //receive requests from clients
             int bytes = recv(this->pollFds[i].fd, buffer, sizeof (buffer), 0);
@@ -149,31 +145,40 @@ void    Server::receiveRequests()
             else if (bytes == -1)
             {
                 perror("recv");
+                exit(1);
             }
+            this->pollFds[i].events = POLLOUT;
         }
     }
+    
 }
 
 void    Server::sendResponses()
 {
-    if (this->serverStatus > 0)
+    for (size_t i = 1; i < this->pollFds.size(); i++)
     {
-        //send responses to clients
-       std::string response = "HTTP/1.1 200 OK\r\n"
-                              "Content-Type: text/html\r\n"
-                              "\r\n"
-                              "<html><body><h1>Hello, World!</h1></body></html>"
-                              "<p>This is a big response with multiple lines.</p>"
-                              "<p>It can contain any HTML content you want.</p>"
-                              "<p>Feel free to add more lines to customize it.</p>";
-        send(this->pollFds[1].fd, response.c_str(), response.length(), 0);
+        if ((this->pollFds[i].revents & POLLOUT))
+        {
+            //send responses to clients
+            std::string response = "HTTP/1.1 200 OK\r\n"
+                                "Content-Type: text/html\r\n"
+                                "Content-Length: 100\r\n"
+                                "\r\n"
+                                "<html><body><h1>Hello, World!</h1></body></html>"
+                                "<p>This is a big response with multiple lines.</p>"
+                                "<p>It can contain any HTML content you want.</p>"
+                                "<p>Feel free to add more lines to customize it.</p>";
+            send(this->pollFds[i].fd, response.c_str(), response.length(), 0);
+            this->pollFds[i].events = POLL_IN;
+            break;
+        }
     }
 }
 
 void    Server::closefds()
 {
     //close all the client sockets and the server socket
-    for (int i = 0; i < MAX_CLIENTS + 1; i++)
+    for (size_t i = 0; i < this->pollFds.size(); i++)
     {
         close(this->pollFds[i].fd);
     }
