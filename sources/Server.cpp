@@ -6,11 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/21 20:47:45 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/21 23:47:05 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <cstdio>
+#include <sys/_types/_size_t.h>
 #include <sys/poll.h>
 #include <unistd.h>
 
@@ -18,7 +20,6 @@ Server::Server(std::string port)//
 {
     this->severPort = port;
     this->serverSocket = -1;
-    this->serverStatus = -1;
 	this->result = NULL;
 	this->keepRunning = false;
 }
@@ -38,7 +39,7 @@ void	Server::addFileDescriptor(int fd)
 	fcntl(fd, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
 }
 
-void	Server::getServerSocket()
+void	Server::setServerSocket()
 {
 	//GETADDRINFO
     struct addrinfo *result, hints;
@@ -65,7 +66,8 @@ void	Server::getServerSocket()
 
 void    Server::bindServerSocket()
 {
-	this->getServerSocket();
+	//set server socket
+	this->setServerSocket();
     int reuse = 1;
     if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(int)) == -1)
     {
@@ -83,6 +85,8 @@ void    Server::bindServerSocket()
 
 void  Server::listenForConnections()
 {
+	//BIND
+	this->bindServerSocket();
     //LISTEN
     if (listen(this->serverSocket, 1024) == -1)
     {
@@ -97,6 +101,8 @@ void  Server::listenForConnections()
 
 void   Server::pollEvents()//rename this function: 
 {
+	//LISTEN
+	this->listenForConnections();
     int timeout = 10000;//10 seconds
     while (this->keepRunning)
     {
@@ -110,8 +116,7 @@ void   Server::pollEvents()//rename this function:
             std::cout << "No events for yet, Im waiting ..." << std::endl;
         else
         {
-            this->serverStatus = serverStatus;
-			for (int i = 0; i < serverStatus; i++)
+			for (size_t i = 0; i < this->pollFds.size(); i++)
 			{
 				if (this->pollFds[i].revents & POLL_IN)
 				{
@@ -120,8 +125,8 @@ void   Server::pollEvents()//rename this function:
 					else
 						this->receiveRequests(this->pollFds[i]);
 				}
-				else if (this->pollFds[i].revents & POLLOUT)
-					this->sendResponses();
+				else if (this->pollFds[i].revents & POLLOUT)//ready for writing
+					this->sendResponse(this->pollFds[i]);
 			}
         }
     }
@@ -142,48 +147,58 @@ void   Server::acceptConnections()
 	addFileDescriptor(clientSocket);
 }
 
-void    Server::receiveRequests(struct pollfd &pollFd)
+void	Server::removeFileDescriptor(int &fd)
 {
-	char buffer[1024];
-	if (pollFd.revents & POLL_IN)
+	for (size_t i = 0; i < this->pollFds.size(); i++)
 	{
-		//receive requests from clients
-		int bytes = recv(pollFd.fd, buffer, sizeof (buffer), 0);
-		buffer[bytes] = '\0';
-		if (bytes > 0)
-			std::cout << "Received: from client: " << buffer << std::endl;
-		else if (bytes == -1)
+		if (this->pollFds[i].fd == fd)
 		{
-			perror("recv");
-			exit(1);
+			this->pollFds.erase(this->pollFds.begin() + i);
+			this->pollFds[i].events = POLLOUT;//change the event to POLLOUT: send responses to clients:: send() function
+			close(fd);
+			break;
 		}
-		pollFd.events = POLLOUT;
-		pollFd.fd = -1;
-		close(pollFd.fd);
 	}
-    
 }
 
-void    Server::sendResponses()
+void    Server::receiveRequests(struct pollfd &clientFd)
 {
-    for (size_t i = 1; i < this->pollFds.size(); i++)
-    {
-        if ((this->pollFds[i].revents & POLLOUT))
-        {
-            //send responses to clients
-            std::string response = "HTTP/1.1 200 OK\r\n"
-                                "Content-Type: text/html\r\n"
-                                "Content-Length: 100\r\n"
-                                "\r\n"
-                                "<html><body><h1>Hello, World!</h1></body></html>"
-                                "<p>This is a big response with multiple lines.</p>"
-                                "<p>It can contain any HTML content you want.</p>"
-                                "<p>Feel free to add more lines to customize it.</p>";
-            send(this->pollFds[i].fd, response.c_str(), response.length(), 0);
-            this->pollFds[i].events = POLL_IN;
-            break;
-        }
-    }
+	char buffer[1024];
+	for (size_t i = 0 ; i < this->pollFds.size(); i++)
+	{
+		if ((pollFds[i].fd == clientFd.fd) && (clientFd.revents & POLL_IN))//explain: why we need to check if the fd is the same
+		{
+			//receive requests from clients
+			int bytes = recv(clientFd.fd, buffer, sizeof (buffer), 0);
+			buffer[bytes] = '\0';
+			if (bytes > 0)
+				std::cout << "Received: from client: "<< i << " " << buffer << std::endl;
+			else if (bytes == -1)
+			{
+				perror("recv");
+				exit(1);
+			}
+			else if (bytes == 0)
+				std::cout << "Client disconnected or hangout" << std::endl;
+			this->removeFileDescriptor(clientFd.fd);
+		}
+	}
+}
+
+void    Server::sendResponse(struct pollfd &clientFd)
+{
+	//send responses to clients
+	std::string response = "HTTP/1.1 200 OK\r\n"
+						"Content-Type: text/html\r\n"
+						"Content-Length: 100\r\n"
+						"\r\n"
+						"<html><body><h1>Hello, World!</h1></body></html>"
+						"<p>This is a big response with multiple lines.</p>"
+						"<p>It can contain any HTML content you want.</p>"
+						"<p>Feel free to add more lines to customize it.</p>";
+	send(clientFd.fd, response.c_str(), response.length(), 0);
+	clientFd.events = POLL_IN;
+	close(clientFd.fd);
 }
 
 void    Server::closefds()
