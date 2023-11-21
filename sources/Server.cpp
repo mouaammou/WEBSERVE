@@ -6,18 +6,21 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/20 14:00:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/21 20:47:45 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cstdio>
+#include <sys/poll.h>
+#include <unistd.h>
 
 Server::Server(std::string port)//
 {
     this->severPort = port;
     this->serverSocket = -1;
     this->serverStatus = -1;
+	this->result = NULL;
+	this->keepRunning = false;
 }
 
 Server::~Server()//close server socket
@@ -25,9 +28,19 @@ Server::~Server()//close server socket
     close(this->serverSocket);
 }
 
-void    Server::startServer()
+void	Server::addFileDescriptor(int fd)
 {
-    //GETADDRINFO
+	struct pollfd newFd;
+
+	newFd.fd = fd;
+	newFd.events = POLL_IN;
+	this->pollFds.push_back(newFd);
+	fcntl(fd, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
+}
+
+void	Server::getServerSocket()
+{
+	//GETADDRINFO
     struct addrinfo *result, hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
@@ -47,8 +60,12 @@ void    Server::startServer()
         perror("socket");
         exit (EXIT_FAILURE);
     }
-    // this->pollFds.push_back((struct pollfd){this->serverSocket, POLLIN, 0});//add server socket to pollfd array
-    fcntl(this->serverSocket, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
+	this->result = result;
+}
+
+void    Server::bindServerSocket()
+{
+	this->getServerSocket();
     int reuse = 1;
     if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(int)) == -1)
     {
@@ -56,33 +73,29 @@ void    Server::startServer()
         exit (EXIT_FAILURE);
     }
     //BIND
-    if (bind(this->serverSocket, result->ai_addr, result->ai_addrlen) == -1)
+    if (bind(this->serverSocket, this->result->ai_addr, this->result->ai_addrlen) == -1)
     {
         perror("bind");
         exit (EXIT_FAILURE);
     }
-    freeaddrinfo(result);//free the linked list
+    freeaddrinfo(this->result);//free the linked list
 }
 
-void  Server::fillPollFds()
+void  Server::listenForConnections()
 {
     //LISTEN
-    if (listen(this->serverSocket, 5) == -1)//+1 for server socket
+    if (listen(this->serverSocket, 1024) == -1)
     {
         perror("listen");
         exit (EXIT_FAILURE);
     }
     //ADD SERVER SOCKET TO POLLFDS
-    struct pollfd server;
-    server.fd = this->serverSocket;
-    server.events = POLL_IN;//for reading
-    this->pollFds.push_back(server);
+	addFileDescriptor(this->serverSocket);
     std::cout << "Server is listening on port " << this->severPort << std::endl;
     this->keepRunning = true;
-    //INITIALIZE POLLFDS
 }
 
-void   Server::pollEvents()
+void   Server::pollEvents()//rename this function: 
 {
     int timeout = 10000;//10 seconds
     while (this->keepRunning)
@@ -94,19 +107,22 @@ void   Server::pollEvents()
             exit (EXIT_FAILURE);
         }
         else if (serverStatus == 0)//timeout
-            std::cout << "No events for 5 seconds" << std::endl;
+            std::cout << "No events for yet, Im waiting ..." << std::endl;
         else
         {
             this->serverStatus = serverStatus;
-            if (this->pollFds[0].revents & POLL_IN)//check for events on server socket
-            {
-                this->acceptConnections();
-            }
-            else {
-                std::cout << "No events on server socket" << std::endl;
-            }
-            this->receiveRequests();
-            this->sendResponses();
+			for (int i = 0; i < serverStatus; i++)
+			{
+				if (this->pollFds[i].revents & POLL_IN)
+				{
+					if (this->pollFds[i].fd == this->serverSocket)
+						this->acceptConnections();
+					else
+						this->receiveRequests(this->pollFds[i]);
+				}
+				else if (this->pollFds[i].revents & POLLOUT)
+					this->sendResponses();
+			}
         }
     }
 }
@@ -123,33 +139,28 @@ void   Server::acceptConnections()
         return;
     }
     //add the new client socket to the pollfd array
-    struct pollfd newClient;
-    newClient.fd = clientSocket;
-    newClient.events = POLL_IN;
-    fcntl(clientSocket, F_SETFL, O_NONBLOCK);
-    this->pollFds.push_back(newClient);
+	addFileDescriptor(clientSocket);
 }
 
-void    Server::receiveRequests()
+void    Server::receiveRequests(struct pollfd &pollFd)
 {
-    char buffer[1024];
-    for (size_t i = 1; i < this->pollFds.size(); i++)
-    {
-        if (this->pollFds[i].revents & POLL_IN)
-        {
-            //receive requests from clients
-            int bytes = recv(this->pollFds[i].fd, buffer, sizeof (buffer), 0);
-            buffer[bytes] = '\0';
-            if (bytes > 0)
-                std::cout << "Received: from client {"<< i << "}: " << buffer << std::endl;
-            else if (bytes == -1)
-            {
-                perror("recv");
-                exit(1);
-            }
-            this->pollFds[i].events = POLLOUT;
-        }
-    }
+	char buffer[1024];
+	if (pollFd.revents & POLL_IN)
+	{
+		//receive requests from clients
+		int bytes = recv(pollFd.fd, buffer, sizeof (buffer), 0);
+		buffer[bytes] = '\0';
+		if (bytes > 0)
+			std::cout << "Received: from client: " << buffer << std::endl;
+		else if (bytes == -1)
+		{
+			perror("recv");
+			exit(1);
+		}
+		pollFd.events = POLLOUT;
+		pollFd.fd = -1;
+		close(pollFd.fd);
+	}
     
 }
 

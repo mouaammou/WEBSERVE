@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/20 13:17:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/21 20:46:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 class Server
 {
     private:
+		struct addrinfo *result;//getaddrinfo() function
+
         int serverSocket;//server socket: socket() function
         std::string severPort;//server port
         std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
@@ -42,11 +44,14 @@ class Server
         Server(std::string port);
         ~Server();
 
-        void    startServer();//set server socket: create socket, set socket options
-        void    fillPollFds();//fill pollfd structure for server socket: pollfd structure for server socket
+        void    bindServerSocket();//set server socket: create socket, set socket options
+		void	getServerSocket();//get server socket: getaddrinfo() function
+		void    addFileDescriptor(int fd);//add file descriptor to the pollfd array
+		
+        void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
         void    pollEvents();//wait for events: poll() function
         void    acceptConnections();//check for events on server socket: accept() function
-        void    receiveRequests();//receive requests from clients: recv() function
+        void    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
         void    sendResponses();//send responses to clients: send() function
         void    closefds();//close client sockets: close() function
 };
