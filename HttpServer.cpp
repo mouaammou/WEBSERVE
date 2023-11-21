@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:52:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/11/12 23:07:38 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/11/21 18:51:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,15 @@
 
 uint32_t HttpServer::buffsize = 1024;
 
-HttpServer::HttpServer( void )
+HttpServer::HttpServer()
 {
 	establishServerSocket(80);
 	printServerAddress(pollfds.begin()->fd);
 }
 
-HttpServer::HttpServer( HttpServer const &other )
+HttpServer::~HttpServer()
 {
-	(void)other;
-	establishServerSocket(80);
-}
-
-HttpServer& HttpServer::operator=( HttpServer const &other )
-{
-	(void)other;
-	return *this;
-}
-
-HttpServer::~HttpServer( void )
-{
-	for (size_t i=0; i<pollfds.size(); ++i)
+	for (size_t i = 0; i < pollfds.size(); ++i)
 	{
 		close(pollfds[i].fd);
 	}
@@ -54,41 +42,40 @@ void HttpServer::establishServerSocket(uint16_t port)
 	addNewFd(fd);
 	int reuseport = 0x1;
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuseport, sizeof(int));
-	bind(fd, (sockaddr*)&data, sizeof(data));
+	if (bind(fd, (sockaddr*)&data, sizeof(data)) == -1){
+        perror("bind");
+    }
 	listen(fd, 1024);
-	// std::cout<< "Server is listening on: 0.0.0.0:"
-	// << ntohs(data.sin_port) << std::endl;
 }
 
 
 void HttpServer::pollEventLoop( void )
 {
 	int	num;
-	for (;;)
+	while (true)
 	{
-		// std::cout<< "enterpoll" << std::endl;
 		num = poll(pollfds.data(), pollfds.size(), -1);
-		// std::cout<< "poll" << std::endl;
-		if (pollfds.begin()->revents & POLLIN) // main socket fd
+		if (pollfds.begin()->revents & POLLIN)//if the first fd is ready to read
 		{
-			onPollAccept(pollfds.begin()->fd);
+			//the first fd is the server fd
+			onPollAccept(pollfds.begin()->fd);//only accept connection from the first fd
 			--num;
 		}
-		for (size_t i=1; i<pollfds.size() && num>0; ++i)
+		for (size_t i=1; i<pollfds.size() && num>0; i++)
 		{
-			if (pollfds[i].revents & POLLHUP)
+			if (pollfds[i].revents & POLLHUP)//if the client close the connection
 			{
 				removeFd(pollfds[i].fd);
 			}
-			else if (pollfds[i].revents & POLLIN)
+			else if (pollfds[i].revents & POLLIN)//if the client is ready to read
 			{
-				if (onPollIn(pollfds[i].fd))
-					pollfds[i].events = POLLOUT;
+				if (onPollIn(pollfds[i].fd))//read the data
+					pollfds[i].events = POLLOUT;//if the data is read, the client is ready to write
 			}
-			else if (pollfds[i].revents & POLLOUT)
+			else if (pollfds[i].revents & POLLOUT)//if the client is ready to write
 			{
-				if (onPollOut(pollfds[i].fd))
-					pollfds[i].events = POLLIN;
+				if (onPollOut(pollfds[i].fd))//write the data
+					pollfds[i].events = POLLIN;//if the data is written, the client is ready to read
 			}
 			else
 				continue ;
@@ -99,25 +86,20 @@ void HttpServer::pollEventLoop( void )
 
 bool HttpServer::onPollIn( int fd )
 {
-	char buff[buffsize];
+    char buff[buffsize];
 
 	int n = read(fd, buff, buffsize - 1);
 	if (n == -1)
 		return false;
 	buff[n] = 0;
 	std::cout << buff << "---->"<<fd <<std::endl;
-	buffers[fd] += buff;
-	return false;
+    return true;
 }
 
 bool HttpServer::onPollOut( int fd )
 {
-	// std::cout << "Test POLLOUT" << fd << std::endl;
-	char hi[] = "HTTP/1.1 200 OK\nConnection:keep-alive\nContent-Type: text/html\nContent-Length: 23\n\n<h1>Hello World!</h1>\r\n";
-				// "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n"
-	// send(fd, hi, 76, 0);
-	write(fd, hi, strlen(hi));
-	// std::cout << hi << "-->" << fd << "n="<<n<<std::endl;
+	std::string generateResponse = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 23\n\n<h1>Hello World!</h1>\r\n";
+	write(fd, generateResponse.c_str(), strlen(generateResponse.c_str()));
 	return true;
 }
 
@@ -126,7 +108,6 @@ void HttpServer::onPollAccept( int fd )
 	int cfd = accept(fd, NULL, NULL);
 	if (cfd != -1)
 		addNewFd(cfd);
-	// std::cout << "-----------accept----->"<<cfd<<"-------" << std::endl;
 }
 
 void HttpServer::addNewFd( int fd )
@@ -138,23 +119,20 @@ void HttpServer::addNewFd( int fd )
 	tmp.revents = 0;
 	pollfds.push_back(tmp);
 	fcntl(fd, F_SETFL, O_NONBLOCK);
-	buffers[fd] = "";
 }
 
 void HttpServer::removeFd( int fd )
 {
-	std::cout << "-----------remove----->" << fd << "-------" << std::endl;
 	for (size_t i=0; i<pollfds.size(); ++i)
 	{
 		if (pollfds[i].fd == fd)
 		{
 			close(fd);
 			pollfds.erase(pollfds.begin() + i);
-			pollfds.shrink_to_fit();
 			break ;
 		}
 	}
-	buffers.erase(fd);
+	std::cout << "-----------remove----->" << fd << "-------" << std::endl;
 }
 
 void HttpServer::printServerAddress( int fd )
