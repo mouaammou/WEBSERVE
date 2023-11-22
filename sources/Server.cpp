@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/22 17:55:07 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/22 21:00:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <unistd.h>
 
 Server::Server(std::string port)//
 {
@@ -143,6 +142,7 @@ void   Server::acceptConnections()
         return;
     }
     //add the new client socket to the pollfd array
+	std::cout << "New client connected\n";
 	addFileDescriptor(clientSocket);
 }
 
@@ -170,7 +170,7 @@ void    Server::receiveRequests(struct pollfd &clientFd)
 	else if (bytes == -1)
 	{
 		perror("recv");
-		exit(1);
+		removeFileDescriptor(clientFd.fd);
 	}
 	else if (bytes == 0)
 	{
@@ -191,7 +191,7 @@ void    Server::sendResponse(struct pollfd &clientFd)
 							"<html><body><h1>Hello, World!</h1></body></html>"
 							"<p>This is a big response with multiple lines.</p>"
 							"<p>It can contain any HTML content you want.</p>"
-							"<p>Feel free to add more lines to customize it.</p>";
+							"<p>Feel free to add more lines to customize it.</p>\r\n";
 		send(clientFd.fd, response.c_str(), response.length(), 0);
 	}
 }
