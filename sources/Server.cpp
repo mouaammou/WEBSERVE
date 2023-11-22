@@ -6,14 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/21 23:47:05 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/22 17:55:07 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cstdio>
-#include <sys/_types/_size_t.h>
-#include <sys/poll.h>
 #include <unistd.h>
 
 Server::Server(std::string port)//
@@ -102,8 +99,8 @@ void  Server::listenForConnections()
 void   Server::pollEvents()//rename this function: 
 {
 	//LISTEN
-	this->listenForConnections();
-    int timeout = 10000;//10 seconds
+	this->listenForConnections();//socket(), bind(), listen()
+    int timeout = 5000;//5 seconds
     while (this->keepRunning)
     {
         int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
@@ -123,10 +120,12 @@ void   Server::pollEvents()//rename this function:
 					if (this->pollFds[i].fd == this->serverSocket)
 						this->acceptConnections();
 					else
+					{
 						this->receiveRequests(this->pollFds[i]);
+						this->sendResponse(this->pollFds[i]);
+					}
+						
 				}
-				else if (this->pollFds[i].revents & POLLOUT)//ready for writing
-					this->sendResponse(this->pollFds[i]);
 			}
         }
     }
@@ -153,9 +152,8 @@ void	Server::removeFileDescriptor(int &fd)
 	{
 		if (this->pollFds[i].fd == fd)
 		{
-			this->pollFds.erase(this->pollFds.begin() + i);
-			this->pollFds[i].events = POLLOUT;//change the event to POLLOUT: send responses to clients:: send() function
 			close(fd);
+			this->pollFds.erase(this->pollFds.begin() + i);
 			break;
 		}
 	}
@@ -164,41 +162,38 @@ void	Server::removeFileDescriptor(int &fd)
 void    Server::receiveRequests(struct pollfd &clientFd)
 {
 	char buffer[1024];
-	for (size_t i = 0 ; i < this->pollFds.size(); i++)
+	//receive requests from clients
+	int bytes = recv(clientFd.fd, buffer, sizeof (buffer), 0);
+	buffer[bytes] = '\0';
+	if (bytes > 0)
+		std::cout << "Received: from client: "<< clientFd.fd - 4 << " " << buffer << std::endl;
+	else if (bytes == -1)
 	{
-		if ((pollFds[i].fd == clientFd.fd) && (clientFd.revents & POLL_IN))//explain: why we need to check if the fd is the same
-		{
-			//receive requests from clients
-			int bytes = recv(clientFd.fd, buffer, sizeof (buffer), 0);
-			buffer[bytes] = '\0';
-			if (bytes > 0)
-				std::cout << "Received: from client: "<< i << " " << buffer << std::endl;
-			else if (bytes == -1)
-			{
-				perror("recv");
-				exit(1);
-			}
-			else if (bytes == 0)
-				std::cout << "Client disconnected or hangout" << std::endl;
-			this->removeFileDescriptor(clientFd.fd);
-		}
+		perror("recv");
+		exit(1);
+	}
+	else if (bytes == 0)
+	{
+		std::cout << "Client disconnected or hangout" << std::endl;
+		removeFileDescriptor(clientFd.fd);
 	}
 }
 
 void    Server::sendResponse(struct pollfd &clientFd)
 {
 	//send responses to clients
-	std::string response = "HTTP/1.1 200 OK\r\n"
-						"Content-Type: text/html\r\n"
-						"Content-Length: 100\r\n"
-						"\r\n"
-						"<html><body><h1>Hello, World!</h1></body></html>"
-						"<p>This is a big response with multiple lines.</p>"
-						"<p>It can contain any HTML content you want.</p>"
-						"<p>Feel free to add more lines to customize it.</p>";
-	send(clientFd.fd, response.c_str(), response.length(), 0);
-	clientFd.events = POLL_IN;
-	close(clientFd.fd);
+	if ((clientFd.fd != -1))
+	{
+		std::string response = "HTTP/1.1 200 OK\r\n"
+							"Content-Type: text/html\r\n"
+							"Content-Length: 100\r\n"
+							"\r\n"
+							"<html><body><h1>Hello, World!</h1></body></html>"
+							"<p>This is a big response with multiple lines.</p>"
+							"<p>It can contain any HTML content you want.</p>"
+							"<p>Feel free to add more lines to customize it.</p>";
+		send(clientFd.fd, response.c_str(), response.length(), 0);
+	}
 }
 
 void    Server::closefds()
