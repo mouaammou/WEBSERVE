@@ -6,18 +6,20 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/22 21:00:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/25 19:35:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <climits>
+#include <cstdio>
+#include <cstring>
 
-Server::Server(std::string port)//
+Server::Server(std::string port):ClientRequest("")//constructor
 {
     this->severPort = port;
     this->serverSocket = -1;
 	this->result = NULL;
-	this->keepRunning = false;
 }
 
 Server::~Server()//close server socket
@@ -91,16 +93,15 @@ void  Server::listenForConnections()
     }
     //ADD SERVER SOCKET TO POLLFDS
 	addFileDescriptor(this->serverSocket);
-    std::cout << "Server is listening on port " << this->severPort << std::endl;
-    this->keepRunning = true;
+    std::cout << COLOR_BLUE << " Server is listening on port " << COLOR_RESET<< this->severPort << std::endl;
 }
 
 void   Server::pollEvents()//rename this function: 
 {
 	//LISTEN
 	this->listenForConnections();//socket(), bind(), listen()
-    int timeout = 5000;//5 seconds
-    while (this->keepRunning)
+    int timeout = 100000;//10 seconds
+    while (true)
     {
         int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
         if (serverStatus == -1)
@@ -109,7 +110,7 @@ void   Server::pollEvents()//rename this function:
             exit (EXIT_FAILURE);
         }
         else if (serverStatus == 0)//timeout
-            std::cout << "No events for yet, Im waiting ..." << std::endl;
+            std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET << std::endl;
         else
         {
 			for (size_t i = 0; i < this->pollFds.size(); i++)
@@ -123,7 +124,6 @@ void   Server::pollEvents()//rename this function:
 						this->receiveRequests(this->pollFds[i]);
 						this->sendResponse(this->pollFds[i]);
 					}
-						
 				}
 			}
         }
@@ -143,6 +143,7 @@ void   Server::acceptConnections()
     }
     //add the new client socket to the pollfd array
 	std::cout << "New client connected\n";
+	std::cout << COLOR_BLUE"pllfd size: " COLOR_RESET << this->pollFds.size() << std::endl;
 	addFileDescriptor(clientSocket);
 }
 
@@ -153,6 +154,7 @@ void	Server::removeFileDescriptor(int &fd)
 		if (this->pollFds[i].fd == fd)
 		{
 			close(fd);
+			fd = -1;
 			this->pollFds.erase(this->pollFds.begin() + i);
 			break;
 		}
@@ -161,12 +163,18 @@ void	Server::removeFileDescriptor(int &fd)
 
 void    Server::receiveRequests(struct pollfd &clientFd)
 {
-	char buffer[1024];
+	char buffer[10000];
 	//receive requests from clients
-	int bytes = recv(clientFd.fd, buffer, sizeof (buffer), 0);
-	buffer[bytes] = '\0';
+	memset(buffer, 0, sizeof (buffer));//clear the buffer
+	int bytes = recv(clientFd.fd, buffer, 10000, 0);
 	if (bytes > 0)
-		std::cout << "Received: from client: "<< clientFd.fd - 4 << " " << buffer << std::endl;
+	{
+		puts(("new data commig from client " + std::to_string(clientFd.fd)).c_str());
+		this->ClientRequest = Request(buffer);
+		this->ClientRequest.displayRequestHeaders();
+		std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
+		//iterate over the request headers
+	}
 	else if (bytes == -1)
 	{
 		perror("recv");
@@ -174,7 +182,7 @@ void    Server::receiveRequests(struct pollfd &clientFd)
 	}
 	else if (bytes == 0)
 	{
-		std::cout << "Client disconnected or hangout" << std::endl;
+		std::cout << COLOR_MAGENTA "RECV: Zero Bytes" COLOR_RESET << std::endl;
 		removeFileDescriptor(clientFd.fd);
 	}
 }

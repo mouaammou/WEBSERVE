@@ -47,7 +47,7 @@ int get_listener_socket(void)
     
     for(p = ai; p != NULL; p = p->ai_next) {
         listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if (listener < 0) { 
+        if (listener < 0) {
             continue;
         }
         

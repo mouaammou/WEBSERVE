@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/22 21:01:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/25 13:38:29 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,24 @@
 #include <poll.h>
 #include <sys/fcntl.h>
 #include <sys/signal.h>
-#include <csignal>
 
+#include <csignal>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <string>
+#include "../includes/Request.hpp"
 
 class Server
 {
     private:
 		struct addrinfo *result;//getaddrinfo() function
-
         int serverSocket;//server socket: socket() function
         std::string severPort;//server port
         std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
-        bool keepRunning;//flag to keep server running
 
     public:
+		Request ClientRequest;//request object
         Server(std::string port);
         ~Server();
 
