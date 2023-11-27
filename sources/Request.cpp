@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/25 22:36:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/27 10:40:51 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ std::map<std::string, std::string> Request::getRequestHeaders() const
 {
 	return (this->RequestHeaders);
 }
+
 std::string Request::getRequestBody() const
 {
 	return (this->RequestBody);
@@ -65,7 +66,12 @@ void Request::parseRequestFirstLine(const std::string& line)
 
 	lineStream >> this->Method >> this->Path >> this->Version;
 	if (this->Method.empty() || this->Path.empty() || this->Version.empty())
+	{
 		throw std::runtime_error("Invalid request line");
+	}
+	this->checkMethod();
+	this->checkPath();
+	this->checkVersion();
 }
 
 void	Request::parseRequestHeaders(const std::string& line)
@@ -79,13 +85,57 @@ void	Request::parseRequestHeaders(const std::string& line)
 	}
 }
 
+void	Request::checkMethod()
+{
+	if (this->Method.compare("GET") != 0 && this->Method.compare("POST") != 0 && this->Method.compare("DELETE") != 0)
+		throw std::runtime_error("Invalid request method");
+}
+
+void Request::checkPath()
+{
+    struct stat info;
+	//replace / with ./ to access the current directory
+
+	if (this->Path[0] == '/')
+		this->Path = "." + this->Path;
+	// std::cout << COLOR_RED "Path: " COLOR_RESET << this->Path << std::endl;
+    // Check existence
+    if (stat(this->Path.c_str(), &info) != 0)
+	{
+        // throw std::runtime_error("Error accessing the path");
+		std::cout << COLOR_RED "Error accessing the path" COLOR_RESET << std::endl;
+	}
+
+    // Check if it's a directory
+    if (S_ISDIR(info.st_mode)) {
+        std::cout << COLOR_YELLOW "The path is a directory." COLOR_RESET << std::endl;
+    } else if (S_ISREG(info.st_mode)) {
+        std::cout << COLOR_YELLOW "The path is a regular file." COLOR_RESET << std::endl;
+    } else {
+		std::cout << COLOR_RED "The path is neither a directory nor a regular file." COLOR_RESET << std::endl;
+        // throw std::runtime_error("The path is neither a directory nor a regular file.");
+    }
+	
+    if ((info.st_mode & PERMISSION_CHECK) != 0) {
+        std::cout << "The program has the necessary permissions." << std::endl;
+    } else {
+        throw std::runtime_error("Insufficient permissions to access the path.");
+    }
+}
+
+void	Request::checkVersion()
+{
+	if (this->Version.compare("HTTP/1.1") != 0)
+		throw std::runtime_error("Invalid request version");
+}
+
 void Request::parseRequest()
 {
 	std::stringstream requestStream(this->RequestString);
 
 	// Parse the request line
 	std::string line;
-	if (std::getline(requestStream, line) && !line.empty())
+	if (std::getline(requestStream, line))
 	{
 		parseRequestFirstLine(line);
 	}

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/25 19:35:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/25 22:47:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,12 +166,12 @@ void    Server::receiveRequests(struct pollfd &clientFd)
 	char buffer[10000];
 	//receive requests from clients
 	memset(buffer, 0, sizeof (buffer));//clear the buffer
-	int bytes = recv(clientFd.fd, buffer, 10000, 0);
+	int bytes = recv(clientFd.fd, buffer, sizeof(buffer), 0);
+	this->ClientRequest = Request(buffer);
+	this->ClientRequest.displayRequestHeaders();
 	if (bytes > 0)
 	{
 		puts(("new data commig from client " + std::to_string(clientFd.fd)).c_str());
-		this->ClientRequest = Request(buffer);
-		this->ClientRequest.displayRequestHeaders();
 		std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
 		//iterate over the request headers
 	}

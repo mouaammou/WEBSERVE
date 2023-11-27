@@ -126,3 +126,53 @@ int main() {
 
     return 0;
 }
+
+
+#include <iostream>
+#include <sys/stat.h>
+#include <cstring>
+
+#define YOUR_PERMISSION_CHECK 0644 
+
+bool isPathValid(const std::string& path) {
+    struct stat info;
+
+    // Check existence
+    if (stat(path.c_str(), &info) != 0) {
+        std::cerr << "Error accessing the path: " << strerror(errno) << std::endl;
+        return false;
+    }
+
+    // Check if it's a directory
+    if (S_ISDIR(info.st_mode)) {
+        std::cout << "The path is a directory." << std::endl;
+    } else if (S_ISREG(info.st_mode)) {
+        std::cout << "The path is a regular file." << std::endl;
+    } else {
+        std::cout << "The path is neither a directory nor a regular file." << std::endl;
+    }
+
+    // Check permissions (replace 'YOUR_PERMISSION_CHECK' with the desired permission check)
+    if ((info.st_mode & YOUR_PERMISSION_CHECK) != 0) {
+        std::cout << "The program has the necessary permissions." << std::endl;
+    } else {
+        std::cout << "Insufficient permissions to access the path." << std::endl;
+        return false;
+    }
+
+    // Additional checks based on your requirements
+
+    return true;
+}
+
+int main() {
+    std::string pathToCheck = "/your/path/to/check";
+
+    if (isPathValid(pathToCheck)) {
+        std::cout << "Path is valid." << std::endl;
+    } else {
+        std::cout << "Path is not valid." << std::endl;
+    }
+
+    return 0;
+}
