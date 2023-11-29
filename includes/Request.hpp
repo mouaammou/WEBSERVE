@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/26 22:12:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/28 21:39:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@
 #define COLOR_MAGENTA "\033[0;35m"
 #define COLOR_RESET   "\033[0m"
 #define COLOR_CYAN    "\033[0;36m"
-#define PERMISSION_CHECK 0644 
-
+#define PERMISSION_CHECK 0644
 
 class Request
 {
@@ -52,15 +51,16 @@ class Request
 
 
 		//display request headers
-		void displayRequestHeaders() const;
+		void	displayRequestHeaders() const;
 		// Function to parse the raw HTTP request
-		void parseRequest();
-		void parseRequestFirstLine(const std::string& line);
-		void parseRequestHeaders(const std::string& line);
-		void parseRequestBody(const std::string& line);
-
+		void	parseRequest();
+		void	parseRequestFirstLine(const std::string& line);
+		void	parseRequestHeaders(const std::string& line);
+		void	parseRequestBody(const std::string& line);
+		
 		void	checkMethod();
 		void	checkPath();
 		void	checkVersion();
 		void	checkRequestHeaders();
+		void	parseURIencoded();
 };

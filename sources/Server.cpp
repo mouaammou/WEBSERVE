@@ -6,14 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/25 22:47:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:28:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <climits>
-#include <cstdio>
-#include <cstring>
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
