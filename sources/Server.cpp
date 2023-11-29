@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/29 15:28:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/29 19:48:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <fstream>
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
@@ -189,15 +190,37 @@ void    Server::sendResponse(struct pollfd &clientFd)
 	//send responses to clients
 	if ((clientFd.fd != -1))
 	{
-		std::string response = "HTTP/1.1 200 OK\r\n"
-							"Content-Type: text/html\r\n"
-							"Content-Length: 100\r\n"
-							"\r\n"
-							"<html><body><h1>Hello, World!</h1></body></html>"
-							"<p>This is a big response with multiple lines.</p>"
-							"<p>It can contain any HTML content you want.</p>"
-							"<p>Feel free to add more lines to customize it.</p>\r\n";
-		send(clientFd.fd, response.c_str(), response.length(), 0);
+		std::ifstream videoFile("/goinfre/mouaammo/vedio.mp4", std::ios::binary);
+		if (!videoFile.is_open())
+		{
+			std::cerr << "Error opening video file\n";
+			return;
+		}
+		//this two line for the content length
+		std::streampos fileSize = videoFile.tellg();
+		videoFile.seekg(0, std::ios::beg);
+
+		std::ostringstream response;
+		response << "HTTP/1.1 200 OK\r\n";
+		response << "Content-Type: video/mp4\r\n";
+		response << "Content-Length: " << fileSize << "\r\n";
+		response << "\r\n";
+
+		// Send HTTP headers to the client
+		std::string responseStr = response.str();
+		send(clientFd.fd, responseStr.c_str(), responseStr.size(), 0);
+
+		// Send video data to the client
+		char buffer[1024];
+		while (!videoFile.eof())
+		{
+			videoFile.read(buffer, sizeof(buffer));
+			if (videoFile.gcount() > 0)
+				send(clientFd.fd, buffer, videoFile.gcount(), 0);
+			else
+				break;
+		}
+		videoFile.close();
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/28 21:39:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/29 19:27:26 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ class Request
 		std::string Method;
 		std::string Path;
 		std::string Version;
-		std::map<std::string, std::string> RequestHeaders;
 		std::string RequestBody;
-		
+		std::map<std::string, std::string> RequestHeaders;
+
 	public:
 		// Constructor to initialize the object with the raw HTTP request
 		Request(std::string requestString);
@@ -46,8 +46,8 @@ class Request
 		std::string getMethod() const;
 		std::string getPath() const;
 		std::string getVersion() const;
-		std::map<std::string, std::string> getRequestHeaders() const;
 		std::string getRequestBody() const;
+		std::map<std::string, std::string> getRequestHeaders() const;
 
 
 		//display request headers
