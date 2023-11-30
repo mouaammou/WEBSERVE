@@ -6,13 +6,16 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/30 16:37:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/30 21:01:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 #include <cstdio>
 #include <fstream>
+#include <sys/poll.h>
+#include <sys/signal.h>
+#include <unistd.h>
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
@@ -97,9 +100,9 @@ void  Server::listenForConnections()
 
 void   Server::pollEvents()//rename this function: 
 {
-	//LISTEN
+	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
-    int timeout = 10000;//10 seconds
+    int timeout = -1;//10 seconds
     while (true)
     {
         int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
@@ -112,22 +115,31 @@ void   Server::pollEvents()//rename this function:
             std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET << std::endl;
         else
         {
+			if (this->pollFds[0].revents & POLL_IN)
+			{
+				this->acceptConnections();
+			}
 			for (size_t i = 0; i < this->pollFds.size(); i++)
 			{
-				if (this->pollFds[i].revents & POLL_IN)
+				if (this->pollFds[i].revents & POLL_IN && this->pollFds[i].fd != this->serverSocket)
 				{
-					if (this->pollFds[i].fd == this->serverSocket)
-						this->acceptConnections();
-					else
-					{
-						std::cout << COLOR_BLUE " recieve request from client :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
-						this->receiveRequests(this->pollFds[i]);  
-						this->sendResponse(this->pollFds[i]);
-					}
+					std::cout << COLOR_BLUE " recieve request from client :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
+					this->receiveRequests(this->pollFds[i]); 
+					// this->pollFds[i].events = POLL_OUT;
+					// this->sendResponse(this->pollFds[i]);
+					removeFileDescriptor(this->pollFds[i].fd);
+
 				}
+				// else if (this->pollFds[i].revents & POLL_OUT)
+				// {
+				// 	std::cout << COLOR_GREEN " send response to client :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
+				// 	this->sendResponse(this->pollFds[i]);
+				// 	this->pollFds[i].events = POLL_IN;
+				// }
+				if (this->pollFds[i].revents & POLLHUP)//client closed connection
+					removeFileDescriptor(this->pollFds[i].fd);
 			}
         }
-		std::cout << COLOR_RED "No events"<< COLOR_RESET << std::endl;
     }
 }
 
@@ -143,7 +155,7 @@ void   Server::acceptConnections()
         return;
     }
     //add the new client socket to the pollfd array
-	std::cout << "New client connected :=> " << clientSocket << std::endl;
+	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 	addFileDescriptor(clientSocket);
 }
 
@@ -171,18 +183,18 @@ void    Server::receiveRequests(struct pollfd &clientFd)
 	// this->ClientRequest.displayRequestHeaders();
 	if (bytes > 0)
 	{
-		// std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
+		std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
 	}
-	else if (bytes == -1)
-	{
-		perror("recv -1 ");
-		removeFileDescriptor(clientFd.fd);
-	}
-	else if (bytes == 0)
-	{
-		perror("recv 0 ");
-		removeFileDescriptor(clientFd.fd);
-	}
+	// else if (bytes == -1)
+	// {
+	// 	perror("recv -1 ");
+	// 	removeFileDescriptor(clientFd.fd);
+	// }
+	// else if (bytes == 0)
+	// {
+	// 	perror("recv 0 ");
+		// removeFileDescriptor(clientFd.fd);
+	// }
 }
 
 void    Server::sendResponse(struct pollfd &clientFd)
@@ -201,6 +213,27 @@ void    Server::sendResponse(struct pollfd &clientFd)
 		//send response header
 		send(clientFd.fd, response.c_str(), response.length(), 0);
 		std::cout << COLOR_GREEN << "Response sent to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
+
+		// /**
+		// 	send video file to check if the muliplexing works good
+		// */
+		// std::string video = "HTTP/1.1 200 OK\r\n";
+		// video += "Content-Type: video/mp4\r\n";
+		// video += "\r\n";
+		// std::ifstream file("/goinfre/mouaammo/video.mp4", std::ios::binary | std::ios::ate);
+		// if (!file.is_open())
+		// {
+		// 	std::cout << "Error opening file" << std::endl;
+		// 	return;
+		// }
+		// unsigned int filesize = file.tellg();
+		// video += "Content-Length: "+ std::to_string(filesize) + "\r\n";
+		// char *buffer = new char[filesize];
+		// file.read(buffer, filesize);
+		// send(clientFd.fd, buffer, filesize, 0);
+		// while (!file.eof())
+		// {
+		// }
 	}
 }
 

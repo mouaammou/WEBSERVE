@@ -14,7 +14,7 @@
 #include <netdb.h>
 #include <poll.h>
 
-#define PORT "8080"   // Port we're listening on
+#define PORT "5555"   // Port we're listening on
 
 // Get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)

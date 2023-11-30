@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/11/29 19:35:40 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/11/30 17:58:29 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,8 @@ OBJECT_FILES = $(FILES:.cpp=.o)
 
 all: $(NAME)
 
-# run:
-# ./$(NAME) $(PORT)
+run:
+	./$(NAME) $(PORT)
 $(NAME): $(OBJECT_FILES)
 	$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
 
