@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/29 19:48:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/30 16:37:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <cstdio>
 #include <fstream>
 
 Server::Server(std::string port):ClientRequest("")//constructor
@@ -98,7 +99,7 @@ void   Server::pollEvents()//rename this function:
 {
 	//LISTEN
 	this->listenForConnections();//socket(), bind(), listen()
-    int timeout = 100000;//10 seconds
+    int timeout = 10000;//10 seconds
     while (true)
     {
         int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
@@ -119,12 +120,14 @@ void   Server::pollEvents()//rename this function:
 						this->acceptConnections();
 					else
 					{
-						this->receiveRequests(this->pollFds[i]);
+						std::cout << COLOR_BLUE " recieve request from client :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
+						this->receiveRequests(this->pollFds[i]);  
 						this->sendResponse(this->pollFds[i]);
 					}
 				}
 			}
         }
+		std::cout << COLOR_RED "No events"<< COLOR_RESET << std::endl;
     }
 }
 
@@ -140,8 +143,7 @@ void   Server::acceptConnections()
         return;
     }
     //add the new client socket to the pollfd array
-	std::cout << "New client connected\n";
-	std::cout << COLOR_BLUE"pllfd size: " COLOR_RESET << this->pollFds.size() << std::endl;
+	std::cout << "New client connected :=> " << clientSocket << std::endl;
 	addFileDescriptor(clientSocket);
 }
 
@@ -162,25 +164,23 @@ void	Server::removeFileDescriptor(int &fd)
 void    Server::receiveRequests(struct pollfd &clientFd)
 {
 	char buffer[10000];
-	//receive requests from clients
+
 	memset(buffer, 0, sizeof (buffer));//clear the buffer
 	int bytes = recv(clientFd.fd, buffer, sizeof(buffer), 0);
-	this->ClientRequest = Request(buffer);
-	this->ClientRequest.displayRequestHeaders();
+	// this->ClientRequest = Request(buffer);
+	// this->ClientRequest.displayRequestHeaders();
 	if (bytes > 0)
 	{
-		puts(("new data commig from client " + std::to_string(clientFd.fd)).c_str());
-		std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
-		//iterate over the request headers
+		// std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
 	}
 	else if (bytes == -1)
 	{
-		perror("recv");
+		perror("recv -1 ");
 		removeFileDescriptor(clientFd.fd);
 	}
 	else if (bytes == 0)
 	{
-		std::cout << COLOR_MAGENTA "RECV: Zero Bytes" COLOR_RESET << std::endl;
+		perror("recv 0 ");
 		removeFileDescriptor(clientFd.fd);
 	}
 }
@@ -190,45 +190,25 @@ void    Server::sendResponse(struct pollfd &clientFd)
 	//send responses to clients
 	if ((clientFd.fd != -1))
 	{
-		std::ifstream videoFile("/goinfre/mouaammo/vedio.mp4", std::ios::binary);
-		if (!videoFile.is_open())
-		{
-			std::cerr << "Error opening video file\n";
-			return;
-		}
-		//this two line for the content length
-		std::streampos fileSize = videoFile.tellg();
-		videoFile.seekg(0, std::ios::beg);
-
-		std::ostringstream response;
-		response << "HTTP/1.1 200 OK\r\n";
-		response << "Content-Type: video/mp4\r\n";
-		response << "Content-Length: " << fileSize << "\r\n";
-		response << "\r\n";
-
-		// Send HTTP headers to the client
-		std::string responseStr = response.str();
-		send(clientFd.fd, responseStr.c_str(), responseStr.size(), 0);
-
-		// Send video data to the client
-		char buffer[1024];
-		while (!videoFile.eof())
-		{
-			videoFile.read(buffer, sizeof(buffer));
-			if (videoFile.gcount() > 0)
-				send(clientFd.fd, buffer, videoFile.gcount(), 0);
-			else
-				break;
-		}
-		videoFile.close();
+		//generate response header
+		std::string response = "HTTP/1.1 200 OK\r\n";
+		//send Content-Type 
+		response += "Content-Type: text/html\r\n";
+		response += "Content-Length: 20\r\n";
+		response += "\r\n";
+		//send html file
+		response += "<h1>hello world</h1>";
+		//send response header
+		send(clientFd.fd, response.c_str(), response.length(), 0);
+		std::cout << COLOR_GREEN << "Response sent to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
 	}
 }
 
 void    Server::closefds()
 {
-    //close all the client sockets and the server socket
-    for (size_t i = 0; i < this->pollFds.size(); i++)
-    {
-        close(this->pollFds[i].fd);
-    }
+//close all the client sockets and the server socket
+	for (size_t i = 0; i < this->pollFds.size(); i++)
+	{
+		close(this->pollFds[i].fd);
+	}
 }

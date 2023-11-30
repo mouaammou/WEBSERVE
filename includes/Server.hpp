@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/25 13:38:29 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/11/30 14:50:00 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,16 @@ class Server
     public:
 		Request ClientRequest;//request object
         Server(std::string port);
-        ~Server();
+		~Server();
 
-        void    bindServerSocket();//set server socket: create socket, set socket options
+		void    bindServerSocket();//set server socket: create socket, set socket options
 		void	setServerSocket();//get server socket: getaddrinfo() function
 		void    addFileDescriptor(int fd);//add file descriptor to the pollfd array
 		void	removeFileDescriptor(int &fd);//remove file descriptor from the pollfd array
-        void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
-        void    pollEvents();//wait for events: poll() function
-        void    acceptConnections();//check for events on server socket: accept() function
-        void    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
-        void    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
-        void    closefds();//close client sockets: close() function
+		void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
+		void    pollEvents();//wait for events: poll() function
+		void    acceptConnections();//check for events on server socket: accept() function
+		void    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
+		void    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
+		void    closefds();//close client sockets: close() function
 };
