@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/01 16:55:23 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/01 17:35:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ void	Server::addFileDescriptor(int fd)
 
 	newFd.fd = fd;
 	newFd.events = POLL_IN;
+	newFd.revents = 0;
 	this->pollFds.push_back(newFd);
-	fcntl(fd, F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
+	fcntl(newFd.fd , F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
 }
 
 void	Server::setServerSocket()
@@ -103,48 +104,48 @@ void   Server::pollEvents()//rename this function:
 	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
     int timeout = 50000;//50 seconds
+	int pollStatus;
     while (true)
     {
-        int serverStatus = poll(this->pollFds.data(), this->pollFds.size(), timeout);//+1 for server socket
-        if (serverStatus == -1)
-        {
-            perror("poll");
-            exit (EXIT_FAILURE);
-        }
-        else if (serverStatus == 0)//timeout
-            std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET << std::endl;
-        else
-        {
-			if (this->pollFds.begin()->revents & POLL_IN)
+		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
+		if (pollStatus == -1)
+		{
+			perror("poll");
+			return;
+		}
+		else if (pollStatus == 0)
+		{
+			std::cout << COLOR_RED "poll timeout" COLOR_RESET << std::endl;
+			continue ;
+		}
+		for (size_t i=0; i<pollFds.size() && pollStatus>0; i++)
+		{
+			if (pollFds.begin()->revents & POLLIN)//if the first fd is ready to read
 			{
-				this->acceptConnections();
+				//the first fd is the server fd
+				acceptConnections();//only accept connection from the first fd
+				--pollStatus;
+				continue;
 			}
-			else {
-				for (size_t i = 1; i < this->pollFds.size(); i++)
-				{
-					if (this->pollFds[i].revents & POLL_IN)
-					{
-						if (this->receiveRequests(this->pollFds[i]))
-						{
-							this->pollFds[i].events = POLL_OUT;
-						}
-						this->sendResponse(this->pollFds[i]);
-					}
-					// else if (this->pollFds[i].revents & POLLOUT)
-					// {
-					// 	std::cout << COLOR_GREEN " send response to client :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
-					// 	this->sendResponse(this->pollFds[i]);
-					// 	this->pollFds[i].events = POLL_IN;
-					// }
-					else if (this->pollFds[i].revents & POLLHUP)//client closed connection
-					{
-						std::cout << COLOR_RED "Client closed connection :=> " COLOR_RESET<< this->pollFds[i].fd << std::endl;
-						removeFileDescriptor(this->pollFds[i].fd);
-					}
-				}
+			if (pollFds[i].revents & POLLIN)//if the client is ready to read
+			{
+				if (receiveRequests(this->pollFds[i]))//read the data
+					pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
 			}
-        }
-    }
+			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
+			{
+				sendResponse(this->pollFds[i]);//write the data
+				pollFds[i].events = POLLIN;//if the data is written, the client is ready to read
+			}
+			if (pollFds[i].revents & POLLHUP)//if the client close the connection
+			{
+				removeFileDescriptor(pollFds[i].fd);
+			}
+			else
+				continue ;
+			--pollStatus;
+		}
+	}
 }
 
 void   Server::acceptConnections()
@@ -175,6 +176,7 @@ void	Server::removeFileDescriptor(int &fd)
 			break;
 		}
 	}
+	std::cout << COLOR_RED "Client disconnected :=> " COLOR_RESET<< fd << std::endl;
 }
 
 bool    Server::receiveRequests(struct pollfd &clientFd)
