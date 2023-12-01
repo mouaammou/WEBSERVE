@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/30 14:50:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/01 16:32:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class Server
 		void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
 		void    pollEvents();//wait for events: poll() function
 		void    acceptConnections();//check for events on server socket: accept() function
-		void    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
+		bool    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
 		void    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
 		void    closefds();//close client sockets: close() function
 };
