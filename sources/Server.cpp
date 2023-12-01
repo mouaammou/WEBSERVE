@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/01 17:35:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/01 18:03:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,16 +115,15 @@ void   Server::pollEvents()//rename this function:
 		}
 		else if (pollStatus == 0)
 		{
-			std::cout << COLOR_RED "poll timeout" COLOR_RESET << std::endl;
+			std::cout << COLOR_RED "waiting for connections ... " COLOR_RESET << std::endl;
 			continue ;
 		}
-		for (size_t i=0; i<pollFds.size() && pollStatus>0; i++)
+		for (size_t i=0; i<pollFds.size(); i++)
 		{
-			if (pollFds.begin()->revents & POLLIN)//if the first fd is ready to read
+			if ((pollFds[i].fd == this->serverSocket) && (pollFds[i].revents & POLLIN))//if the first fd is ready to read
 			{
 				//the first fd is the server fd
 				acceptConnections();//only accept connection from the first fd
-				--pollStatus;
 				continue;
 			}
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
@@ -141,9 +140,6 @@ void   Server::pollEvents()//rename this function:
 			{
 				removeFileDescriptor(pollFds[i].fd);
 			}
-			else
-				continue ;
-			--pollStatus;
 		}
 	}
 }
@@ -170,13 +166,13 @@ void	Server::removeFileDescriptor(int &fd)
 	{
 		if (this->pollFds[i].fd == fd)
 		{
+			std::cout << COLOR_RED "Client disconnected :=> " COLOR_RESET<< fd << std::endl;
 			close(fd);
 			fd = -1;
 			this->pollFds.erase(this->pollFds.begin() + i);
 			break;
 		}
 	}
-	std::cout << COLOR_RED "Client disconnected :=> " COLOR_RESET<< fd << std::endl;
 }
 
 bool    Server::receiveRequests(struct pollfd &clientFd)
@@ -185,11 +181,8 @@ bool    Server::receiveRequests(struct pollfd &clientFd)
 
 	memset(buffer, 0, 1024);//clear the buffer
 	int bytes = recv(clientFd.fd, buffer, 1024, 0);
-	if (bytes == -1)
-	{
-		perror("recv");
+	if (bytes <= 0)
 		return (false);
-	}
 	std::cout << COLOR_BLUE " recieve request from client :=> " COLOR_RESET<< clientFd.fd << std::endl;
 	std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
 	return (true);
