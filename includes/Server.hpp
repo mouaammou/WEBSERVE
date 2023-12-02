@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/01 16:32:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/01 23:36:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ class Server
         int serverSocket;//server socket: socket() function
         std::string severPort;//server port
         std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
+		int videoFd;//video file descriptor
+		int videoSize;//video file size
+		std::string responseVideo;//response video
 
     public:
 		Request ClientRequest;//request object
