@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/03 21:58:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/03 23:48:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Server
 		int videoSize;//video file size
 		bool flagSend;
 		int sendBytes;
+		// int recvBytes;
 		std::string responseHeader;//response header
 		
     public:

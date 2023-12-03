@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/03 22:13:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 00:13:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,9 +141,7 @@ void   Server::pollEvents()//rename this function:
 			continue ;
 		}
 		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
-		{
 			acceptConnections();//only accept connection from the first fd
-		}
 		for (size_t i = 1; i < pollFds.size(); i++)
 		{
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
@@ -155,12 +153,19 @@ void   Server::pollEvents()//rename this function:
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
 				if (sendResponse(this->pollFds[i]))//write the data
+				{
+					lseek(this->videoFd, 0, SEEK_SET);
+					this->sendBytes = 0;
+					this->flagSend = false;
 					removeFileDescriptor(this->pollFds[i].fd);
+				}
 				// pollFds[i].events = POLLIN;//if the data is written, the client is ready to read
 			}
 			if (pollFds[i].revents & POLLHUP || pollFds[i].revents & POLLERR)//if the client close the connection
 			{
 				lseek(this->videoFd, 0, SEEK_SET);
+				this->sendBytes = 0;
+				this->flagSend = false;
 				removeFileDescriptor(pollFds[i].fd);
 				break;
 			}
@@ -187,19 +192,19 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			return false;
 		}
 	// 	//send video file
-		char *buffer = new char[100000];
-		memset(buffer, 0, 100000);//clear the buffer
+		char *buffer = new char[500000];
+		memset(buffer, 0, 500000);//clear the buffer
 
 		if (this->sendBytes < this->videoSize)
 		{
 			lseek(this->videoFd, this->sendBytes, SEEK_SET);
-			int readStatus = read(this->videoFd, buffer, 100000);
+			int readStatus = read(this->videoFd, buffer, 500000);
 			if (readStatus < 0)
 			{
 				perror("read");
 				return false;
 			}
-			int value_of_send = send(clientFd.fd, buffer, 100000, 0);
+			int value_of_send = send(clientFd.fd, buffer, 500000, 0);
 			if (value_of_send == 0)
 				return false;
 			if (value_of_send < 0)
