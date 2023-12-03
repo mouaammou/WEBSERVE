@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   oneServer.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/03 21:58:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/02 11:18:53 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,32 +31,27 @@
 #include <string>
 #include "../includes/Request.hpp"
 
-class Server
+class oneServer
 {
     private:
 		struct addrinfo *result;//getaddrinfo() function
         int serverSocket;//server socket: socket() function
         std::string severPort;//server port
-        std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
+        std::vector<int> pollFds;//pollfd structure for server socket and connected clients
 		int videoFd;//video file descriptor
 		int videoSize;//video file size
-		bool flagSend;
-		int sendBytes;
-		std::string responseHeader;//response header
-		
+		std::string responseVideo;//response video
+		int bytesSent;//bytes sent
+
     public:
 		Request ClientRequest;//request object
-        Server(std::string port);
-		~Server();
+        oneServer(std::string port);
+		~oneServer();
 
 		void    bindServerSocket();//set server socket: create socket, set socket options
 		void	setServerSocket();//get server socket: getaddrinfo() function
-		void    addFileDescriptor(int fd);//add file descriptor to the pollfd array
-		void	removeFileDescriptor(int &fd);//remove file descriptor from the pollfd array
 		void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
 		void    pollEvents();//wait for events: poll() function
-		void    acceptConnections();//check for events on server socket: accept() function
-		bool    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
-		bool    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
-		void    closefds();//close client sockets: close() function
+		bool    receiveRequests(int &fd);//receive requests from clients: recv() function
+		bool    sendResponse(int fd);//send responses to clients: send() function
 };

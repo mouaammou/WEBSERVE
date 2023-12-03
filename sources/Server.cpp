@@ -6,19 +6,14 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/02 01:44:45 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/03 22:13:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <__errc>
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <sys/fcntl.h>
+#include <string>
 #include <sys/poll.h>
-#include <sys/signal.h>
 #include <unistd.h>
 
 Server::Server(std::string port):ClientRequest("")//constructor
@@ -26,6 +21,7 @@ Server::Server(std::string port):ClientRequest("")//constructor
     this->severPort = port;
     this->serverSocket = -1;
 	this->result = NULL;
+	this->sendBytes = 0;
 }
 
 Server::~Server()//close server socket
@@ -114,20 +110,23 @@ void   Server::pollEvents()//rename this function:
 {
 	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
-	this->videoFd = open("/goinfre/mouaammo/vvvv.mp4", O_RDWR);
+	this->videoFd = open("/goinfre/mouaammo/111.mp4", O_RDWR);
 	if (this->videoFd == -1)
 	{
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
 	this->videoSize = get_file_size(this->videoFd);
-
-	this->responseVideo = "HTTP/1.1 200 OK\r\n";
-	this->responseVideo += "Content-Type: video/mp4\r\n";
-	this->responseVideo += "Content-Length: " + std::to_string(videoSize) + "\r\n";
-	this->responseVideo += "\r\n";
-    int timeout = 50000;//50 seconds
+	
+	responseHeader = "HTTP/1.1 200 OK\r\n";
+	responseHeader += "Content-Type: video/mp4\r\n";
+	responseHeader += "Content-Length: " + std::to_string(this->videoSize) + "\r\n";
+	responseHeader += "\r\n";
+	
+    int timeout = 5000;//50 seconds
 	int pollStatus;
+	this->flagSend = false;
+	this->sendBytes = 0;
     while (true)
     {
 		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
@@ -141,78 +140,88 @@ void   Server::pollEvents()//rename this function:
 			std::cout << COLOR_RED "waiting for connections ... " COLOR_RESET << std::endl;
 			continue ;
 		}
-		for (size_t i=0; i < pollFds.size(); i++)
+		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
 		{
-			if ((pollFds[i].fd == this->serverSocket) && (pollFds[i].revents & POLLIN))//if the first fd is ready to read
-			{
-				//the first fd is the server fd
-				acceptConnections();//only accept connection from the first fd
-				continue;
-			}
+			acceptConnections();//only accept connection from the first fd
+		}
+		for (size_t i = 1; i < pollFds.size(); i++)
+		{
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
 			{
-				if (receiveRequests(this->pollFds[i]))//read the data
-					pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
+				receiveRequests(this->pollFds[i]);
+				pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
+				break;
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
-				sendResponse(this->pollFds[i]);//write the data
+				if (sendResponse(this->pollFds[i]))//write the data
+					removeFileDescriptor(this->pollFds[i].fd);
 				// pollFds[i].events = POLLIN;//if the data is written, the client is ready to read
 			}
-			if (pollFds[i].revents & POLLHUP)//if the client close the connection
+			if (pollFds[i].revents & POLLHUP || pollFds[i].revents & POLLERR)//if the client close the connection
+			{
+				lseek(this->videoFd, 0, SEEK_SET);
 				removeFileDescriptor(pollFds[i].fd);
+				break;
+			}
 		}
 	}
 }
 
 
-void    Server::sendResponse(struct pollfd &clientFd)
+bool    Server::sendResponse(struct pollfd &clientFd)
 {
-	static int result = 0;
 	//send responses to clients
+	// send(clientFd.fd, this->responseVideo.c_str(), this->responseVideo.length(), 0);
 	if ((clientFd.fd != -1))
 	{
-		int sendStatus;
-		if (result == 0)
+		if (!flagSend)
 		{
-			sendStatus = send(clientFd.fd, this->responseVideo.c_str(), this->responseVideo.length(), 0);	
+			int sendStatus = send(clientFd.fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);	
 			if (sendStatus < 0)
 			{
 				perror("send");
-				return;
+				return false;
 			}
+			this->flagSend = true;
+			return false;
 		}
-		//send video file
+	// 	//send video file
 		char *buffer = new char[100000];
 		memset(buffer, 0, 100000);//clear the buffer
-		int readStatus;
-		if (result < this->videoSize)
+
+		if (this->sendBytes < this->videoSize)
 		{
-			readStatus = read(this->videoFd, buffer, 100000);
-			sendStatus = send(clientFd.fd, buffer, 100000, 0);
-			if (sendStatus <= 0)
+			lseek(this->videoFd, this->sendBytes, SEEK_SET);
+			int readStatus = read(this->videoFd, buffer, 100000);
+			if (readStatus < 0)
+			{
+				perror("read");
+				return false;
+			}
+			int value_of_send = send(clientFd.fd, buffer, 100000, 0);
+			if (value_of_send == 0)
+				return false;
+			if (value_of_send < 0)
 			{
 				perror("send");
-				return ;
+				return false;
 			}
-			result += sendStatus;
-		}
-		if (result >= this->videoSize)
-		{
+			std::cout << COLOR_GREEN << "SEND -->: " << this->sendBytes << " - READ: " << readStatus << COLOR_RESET << std::endl;
+			this->sendBytes += value_of_send;
+		} else {
 			clientFd.events = POLLIN;
-			std::cout << COLOR_GREEN << "Video sent to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
+			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
+			lseek(this->videoFd, 0, SEEK_SET);
+			this->sendBytes = 0;
+			this->flagSend = false;
+			delete [] buffer;
+			return (true);
 			// removeFileDescriptor(clientFd.fd);
-			// exit (100);
-			// close(this->videoFd);
 		}
-		else
-		{
-			clientFd.events = POLLOUT;
-			std::cout << COLOR_GREEN << "Video still sending ... :=> " << clientFd.fd << COLOR_RESET << std::endl;
-		}
-		// close(this->videoFd);
-		// removeFileDescriptor(clientFd.fd);
+		delete [] buffer;
 	}
+	return (false);
 }
 
 void   Server::acceptConnections()
