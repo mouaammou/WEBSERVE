@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 00:13:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 03:48:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	Server::addFileDescriptor(int fd)
 
 	newFd.fd = fd;
 	newFd.events = POLL_IN;
-	newFd.revents = 0;
 	this->pollFds.push_back(newFd);
 	fcntl(newFd.fd , F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
 }
@@ -98,7 +97,7 @@ void  Server::listenForConnections()
     std::cout << COLOR_BLUE << " Server is listening on port " << COLOR_RESET<< this->severPort << std::endl;
 }
 
-int get_file_size(int fd) {
+int Server::get_file_size(int fd) {
     int file_size;
     int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
     file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
@@ -116,7 +115,7 @@ void   Server::pollEvents()//rename this function:
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
-	this->videoSize = get_file_size(this->videoFd);
+	this->videoSize = this->get_file_size(this->videoFd);
 	
 	responseHeader = "HTTP/1.1 200 OK\r\n";
 	responseHeader += "Content-Type: video/mp4\r\n";
@@ -137,8 +136,7 @@ void   Server::pollEvents()//rename this function:
 		}
 		else if (pollStatus == 0)
 		{
-			std::cout << COLOR_RED "waiting for connections ... " COLOR_RESET << std::endl;
-			continue ;
+			std::cout << COLOR_YELLOW "waiting for connections ... " COLOR_RESET << std::endl;
 		}
 		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
 			acceptConnections();//only accept connection from the first fd
@@ -148,7 +146,7 @@ void   Server::pollEvents()//rename this function:
 			{
 				receiveRequests(this->pollFds[i]);
 				pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
-				break;
+				i++;
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
@@ -158,10 +156,11 @@ void   Server::pollEvents()//rename this function:
 					this->sendBytes = 0;
 					this->flagSend = false;
 					removeFileDescriptor(this->pollFds[i].fd);
+					break;
 				}
-				// pollFds[i].events = POLLIN;//if the data is written, the client is ready to read
+				i++;
 			}
-			if (pollFds[i].revents & POLLHUP || pollFds[i].revents & POLLERR)//if the client close the connection
+			else if (pollFds[i].revents & POLLHUP || pollFds[i].revents & POLLERR)//if the client close the connection
 			{
 				lseek(this->videoFd, 0, SEEK_SET);
 				this->sendBytes = 0;
@@ -176,8 +175,6 @@ void   Server::pollEvents()//rename this function:
 
 bool    Server::sendResponse(struct pollfd &clientFd)
 {
-	//send responses to clients
-	// send(clientFd.fd, this->responseVideo.c_str(), this->responseVideo.length(), 0);
 	if ((clientFd.fd != -1))
 	{
 		if (!flagSend)
@@ -191,40 +188,50 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			this->flagSend = true;
 			return false;
 		}
-	// 	//send video file
 		char *buffer = new char[500000];
-		memset(buffer, 0, 500000);//clear the buffer
+		memset(buffer, 0, 500000 + 1);//clear the buffer
 
 		if (this->sendBytes < this->videoSize)
 		{
 			lseek(this->videoFd, this->sendBytes, SEEK_SET);
 			int readStatus = read(this->videoFd, buffer, 500000);
+			if (readStatus == 0)
+			{
+				clientFd.events = POLLIN;
+				lseek(this->videoFd, 0, SEEK_SET);
+				this->sendBytes = 0;
+				this->flagSend = false;
+				return (false);
+			}
 			if (readStatus < 0)
 			{
 				perror("read");
 				return false;
 			}
 			int value_of_send = send(clientFd.fd, buffer, 500000, 0);
+			delete [] buffer;
 			if (value_of_send == 0)
+			{
+				clientFd.events = POLLIN;
+				lseek(this->videoFd, 0, SEEK_SET);
+				this->sendBytes = 0;
+				this->flagSend = false;
 				return false;
+			}
 			if (value_of_send < 0)
 			{
 				perror("send");
 				return false;
 			}
-			std::cout << COLOR_GREEN << "SEND -->: " << this->sendBytes << " - READ: " << readStatus << COLOR_RESET << std::endl;
+			std::cout << COLOR_GREEN << "SEND -->: " << this->sendBytes << "to client:: " << clientFd.fd << COLOR_RESET << std::endl;
 			this->sendBytes += value_of_send;
 		} else {
-			clientFd.events = POLLIN;
 			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
 			lseek(this->videoFd, 0, SEEK_SET);
 			this->sendBytes = 0;
 			this->flagSend = false;
-			delete [] buffer;
 			return (true);
-			// removeFileDescriptor(clientFd.fd);
 		}
-		delete [] buffer;
 	}
 	return (false);
 }

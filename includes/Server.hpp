@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/03 23:48:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 00:37:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,6 @@ class Server
 		bool    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
 		bool    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
 		void    closefds();//close client sockets: close() function
+
+		int		get_file_size(int fd);
 };
