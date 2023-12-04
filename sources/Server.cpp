@@ -6,15 +6,17 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 03:48:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 04:51:21 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cstdio>
-#include <string>
-#include <sys/poll.h>
-#include <unistd.h>
+
+#ifdef __linux__
+#include <sys/sendfile.h>
+#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+#include <sys/socket.h>
+#endif
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
@@ -97,7 +99,8 @@ void  Server::listenForConnections()
     std::cout << COLOR_BLUE << " Server is listening on port " << COLOR_RESET<< this->severPort << std::endl;
 }
 
-int Server::get_file_size(int fd) {
+int Server::get_file_size(int fd)
+{
     int file_size;
     int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
     file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
@@ -152,19 +155,15 @@ void   Server::pollEvents()//rename this function:
 			{
 				if (sendResponse(this->pollFds[i]))//write the data
 				{
-					lseek(this->videoFd, 0, SEEK_SET);
-					this->sendBytes = 0;
-					this->flagSend = false;
+					resetVideoState();
 					removeFileDescriptor(this->pollFds[i].fd);
 					break;
 				}
 				i++;
 			}
-			else if (pollFds[i].revents & POLLHUP || pollFds[i].revents & POLLERR)//if the client close the connection
+			else if (pollFds[i].revents & (POLLHUP | POLLERR))//if the client close the connection
 			{
-				lseek(this->videoFd, 0, SEEK_SET);
-				this->sendBytes = 0;
-				this->flagSend = false;
+				resetVideoState();
 				removeFileDescriptor(pollFds[i].fd);
 				break;
 			}
@@ -172,6 +171,13 @@ void   Server::pollEvents()//rename this function:
 	}
 }
 
+void	Server::resetVideoState()
+{
+	lseek(this->videoFd, 0, SEEK_SET);
+	this->sendBytes = 0;
+	this->flagSend = false;
+	std::cout << COLOR_CYAN "Video state reseted" COLOR_RESET << std::endl;
+}
 
 bool    Server::sendResponse(struct pollfd &clientFd)
 {
@@ -188,34 +194,38 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			this->flagSend = true;
 			return false;
 		}
-		char *buffer = new char[500000];
-		memset(buffer, 0, 500000 + 1);//clear the buffer
+		// char *buffer = new char[50000];
+		// memset(buffer, 0, 50000);//clear the buffer
 
 		if (this->sendBytes < this->videoSize)
 		{
 			lseek(this->videoFd, this->sendBytes, SEEK_SET);
-			int readStatus = read(this->videoFd, buffer, 500000);
-			if (readStatus == 0)
-			{
-				clientFd.events = POLLIN;
-				lseek(this->videoFd, 0, SEEK_SET);
-				this->sendBytes = 0;
-				this->flagSend = false;
-				return (false);
-			}
-			if (readStatus < 0)
-			{
-				perror("read");
-				return false;
-			}
-			int value_of_send = send(clientFd.fd, buffer, 500000, 0);
-			delete [] buffer;
+			// int readStatus = read(this->videoFd, buffer, 50000);
+			// if (readStatus == 0)
+			// {
+			// 	clientFd.events = POLLIN;
+			// 	resetVideoState();
+			// 	return (false);
+			// }
+			// if (readStatus < 0)
+			// {
+			// 	perror("read");
+			// 	return false;
+			// }
+			// int value_of_send = send(clientFd.fd, buffer, readStatus, 0);
+			// delete [] buffer;
+			int value_of_send = 0;
+			off_t offset = 0;
+			off_t* offsetPtr = &offset;
+			struct sf_hdtr hdtr;
+			int flags = 0;
+
+			value_of_send = sendfile(clientFd.fd, this->videoFd, offset, offsetPtr, &hdtr, flags);
+			
 			if (value_of_send == 0)
 			{
 				clientFd.events = POLLIN;
-				lseek(this->videoFd, 0, SEEK_SET);
-				this->sendBytes = 0;
-				this->flagSend = false;
+				resetVideoState();
 				return false;
 			}
 			if (value_of_send < 0)

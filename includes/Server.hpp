@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 00:37:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 04:45:54 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <vector>
 #include <string>
 #include "../includes/Request.hpp"
+
 
 class Server
 {
@@ -62,4 +63,5 @@ class Server
 		void    closefds();//close client sockets: close() function
 
 		int		get_file_size(int fd);
+		void	resetVideoState();
 };
