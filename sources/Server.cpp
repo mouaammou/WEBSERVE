@@ -6,17 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 04:51:21 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 22:13:05 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-
-#ifdef __linux__
-#include <sys/sendfile.h>
-#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#include <sys/socket.h>
-#endif
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
@@ -112,7 +106,7 @@ void   Server::pollEvents()//rename this function:
 {
 	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
-	this->videoFd = open("/goinfre/mouaammo/111.mp4", O_RDWR);
+	this->videoFd = open("/goinfre/mouaammo/vvvv.mp4", O_RDWR);
 	if (this->videoFd == -1)
 	{
 		perror("open");
@@ -149,7 +143,6 @@ void   Server::pollEvents()//rename this function:
 			{
 				receiveRequests(this->pollFds[i]);
 				pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
-				i++;
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
@@ -157,15 +150,12 @@ void   Server::pollEvents()//rename this function:
 				{
 					resetVideoState();
 					removeFileDescriptor(this->pollFds[i].fd);
-					break;
 				}
-				i++;
 			}
 			else if (pollFds[i].revents & (POLLHUP | POLLERR))//if the client close the connection
 			{
 				resetVideoState();
 				removeFileDescriptor(pollFds[i].fd);
-				break;
 			}
 		}
 	}
@@ -194,38 +184,31 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			this->flagSend = true;
 			return false;
 		}
-		// char *buffer = new char[50000];
-		// memset(buffer, 0, 50000);//clear the buffer
+		char *buffer = new char[50000];
+		memset(buffer, 0, 50000);//clear the buffer
 
 		if (this->sendBytes < this->videoSize)
 		{
 			lseek(this->videoFd, this->sendBytes, SEEK_SET);
-			// int readStatus = read(this->videoFd, buffer, 50000);
-			// if (readStatus == 0)
-			// {
-			// 	clientFd.events = POLLIN;
-			// 	resetVideoState();
-			// 	return (false);
-			// }
-			// if (readStatus < 0)
-			// {
-			// 	perror("read");
-			// 	return false;
-			// }
-			// int value_of_send = send(clientFd.fd, buffer, readStatus, 0);
-			// delete [] buffer;
-			int value_of_send = 0;
-			off_t offset = 0;
-			off_t* offsetPtr = &offset;
-			struct sf_hdtr hdtr;
-			int flags = 0;
-
-			value_of_send = sendfile(clientFd.fd, this->videoFd, offset, offsetPtr, &hdtr, flags);
+			int readStatus = read(this->videoFd, buffer, 50000);
+			if (readStatus == 0)
+			{
+				clientFd.events = POLLIN;
+				// resetVideoState();
+				return (false);
+			}
+			if (readStatus < 0)
+			{
+				perror("read");
+				return false;
+			}
+			int value_of_send = send(clientFd.fd, buffer, readStatus, 0);
+			delete [] buffer;
 			
 			if (value_of_send == 0)
 			{
 				clientFd.events = POLLIN;
-				resetVideoState();
+				// resetVideoState();
 				return false;
 			}
 			if (value_of_send < 0)
@@ -237,9 +220,7 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			this->sendBytes += value_of_send;
 		} else {
 			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
-			lseek(this->videoFd, 0, SEEK_SET);
-			this->sendBytes = 0;
-			this->flagSend = false;
+			resetVideoState();
 			return (true);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 04:45:54 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/04 22:22:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,13 @@
 #include <string>
 #include "../includes/Request.hpp"
 
+typedef struct srequest_values
+{
+	struct pollfd fd;
+	bool flagSend;
+	int sendBytes;
+	std::string responseHeader;
+}rqt_values;
 
 class Server
 {

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/11/30 14:50:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/05 18:45:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <sys/_types/_size_t.h>
 #include <sys/stat.h>
 
 #define COLOR_RED     "\033[0;31m"
@@ -36,6 +37,7 @@ class Request
 		std::string Path;
 		std::string Version;
 		std::string RequestBody;
+		size_t		ContentLength;
 		std::map<std::string, std::string> RequestHeaders;
 
 	public:
@@ -56,7 +58,8 @@ class Request
 		void	parseRequest();
 		void	parseRequestFirstLine(const std::string& line);
 		void	parseRequestHeaders(const std::string& line);
-		void	parseRequestBody(const std::string& line);
+		
+		void	storeRequestBody(std::stringstream& requestStream);
 		
 		void	checkMethod();
 		void	checkPath();
