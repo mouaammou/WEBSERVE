@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/05 18:46:06 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/05 20:11:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,9 +180,6 @@ void	Request::storeRequestBody(std::stringstream& requestStream)
 				std::cout << COLOR_CYAN "End of request body" COLOR_RESET << std::endl;
 				break;
 			}
-			size_t pos = line.find("\r\n");
-			if (pos == std::string::npos)
-				throw std::runtime_error("Invalid request body");
 			this->RequestBody += line;
 		}
 	}
