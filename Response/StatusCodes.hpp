@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpResponse.cpp                                   :+:      :+:    :+:   */
+/*   StatusCodes.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/12 23:04:03 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/11/12 23:06:22 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/12/01 20:35:20 by samjaabo          #+#    #+#             */
+/*   Updated: 2023/12/01 20:37:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HttpResponse.hpp"
+# pragma once
+# include <string>
+# include <map>
 
-HttpResponse::HttpResponse( void )
-{
-}
+// https://datatracker.ietf.org/doc/html/rfc"261",6#section-6
+// HTTP/1.1
 
-HttpResponse::HttpResponse( HttpResponse const &other )
+class StatusCodes
 {
-	(void)other;
-}
+	private:
 
-HttpResponse& HttpResponse::operator=( HttpResponse const &other )
-{
-	(void)other;
-	return *this;
-}
+	static std::string					_scodes[40][2];
+	std::map<std::string, std::string>	codes;
 
-HttpResponse::~HttpResponse( void )
-{
-}
+	public:
+
+	StatusCodes( void );
+	std::string getStatusLine( std::string code );
+};

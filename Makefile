@@ -6,7 +6,7 @@
 #    By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/19 15:22:28 by samjaabo          #+#    #+#              #
-#    Updated: 2023/11/12 23:07:50 by samjaabo         ###   ########.fr        #
+#    Updated: 2023/11/19 16:22:50 by samjaabo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,8 +14,8 @@ NAME	= webserv
 FLAGS	= -Wall -Wextra -Werror -std=c++98
 CC		= c++
 
-HEADERS	= HttpServer.hpp HttpResponse.hpp HttpRequest.hpp
-SRCS	= main.cpp HttpServer.cpp HttpResponse.cpp HttpRequest.cpp
+HEADERS	= HttpCgi.hpp
+SRCS	= main.cpp #HttpCgi.cpp
 OBJS	= $(SRCS:.cpp=.o)
 
 all: clear-terminal $(NAME) usage run clean
