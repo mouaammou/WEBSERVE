@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 16:10:40 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:03:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Request::Request(std::string requestString)
 	this->RequestBody = "";
 	this->ContentLength = 0;
 	this->isRecvHeaders = false;
+	this->isRecvBody = false;
 	parseRequest();
 }
 
@@ -56,6 +57,11 @@ size_t Request::getContentLength() const
 	return (this->ContentLength);
 }
 
+bool			Request::getIsRecvBody() const
+{
+	return (this->isRecvBody);
+}
+
 //display request headers
 void Request::displayRequestHeaders()
 {
@@ -66,7 +72,7 @@ void Request::displayRequestHeaders()
 		std::cout << COLOR_GREEN << "Version: " << COLOR_RESET << this->Version << std::endl;
 		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		for (std::map<std::string, std::string>::const_iterator it = this->RequestHeaders.begin(); it != this->RequestHeaders.end(); ++it)
-			std::cout << it->first << "=>" << it->second << std::endl;
+			std::cout << it->first << "=>" << it->second;
 		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->RequestBody << std::endl;
 	}
 }
@@ -192,17 +198,14 @@ void	Request::storeRequestBody(std::stringstream& requestStream)
 	std::string line;
 	if (this->ContentLength > 0)
 	{
+		this->isRecvBody = true;
 		while (getline(requestStream, line))
 		{
 			line += "\n";
-			if (line.empty() || line == "\r\n")
-			{
-				std::cout << COLOR_CYAN "End of request body" COLOR_RESET << std::endl;
-				break;
-			}
 			this->RequestBody += line;
 			line.clear();
 		}
+		std::cout << COLOR_CYAN "Reive the body \n" COLOR_RESET << std::endl;
 	}
 	else
 	{

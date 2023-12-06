@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 15:47:15 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:03:21 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class Request
 		size_t		ContentLength;
 		std::map<std::string, std::string> RequestHeaders;
 		bool		isRecvHeaders;
-
+		bool		isRecvBody;
 	public:
 		// Constructor to initialize the object with the raw HTTP request
 		Request(std::string requestString);
@@ -52,6 +52,7 @@ class Request
 		std::string 	getRequestBody() const;
 		size_t			getContentLength() const;
 		bool			getIsRecvHeaders() const;
+		bool			getIsRecvBody() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 

@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 15:53:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:04:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <sys/_types/_size_t.h>
 #include <sys/poll.h>
 
 Server::Server(std::string port):ClientRequest("")//constructor
@@ -214,7 +215,6 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 			if (value_of_send == 0)
 			{
 				clientFd.events = POLLIN;
-				// resetVideoState();
 				return false;
 			}
 			if (value_of_send < 0)
@@ -222,8 +222,8 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 				perror("send");
 				return false;
 			}
-			std::cout << COLOR_GREEN << "SEND: " << bitToMegaBit(this->sendBytes) << "Mg / " << bitToMegaBit(this->videoSize) << "Mg" << COLOR_RESET << std::endl;
-			std::cout << COLOR_GREEN << "to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
+			std::cout << COLOR_GREEN << "SEND: " << bitToMegaBit(this->sendBytes) << "Mg / " << bitToMegaBit(this->videoSize) << "Mg";
+			std::cout << COLOR_GREEN << " -- to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
 			this->sendBytes += value_of_send;
 		} else {
 			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
@@ -269,45 +269,35 @@ bool	Server::receiveRequests(struct pollfd &clientFd, int index)
 {
 	(void)index;
 	int recvStatus;
+	size_t dataLength = 0;
 
 	char *buffer = new char[MAX_REQUEST_SIZE];
 	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
-	recvStatus = recv(clientFd.fd, buffer, MAX_REQUEST_SIZE, 0);
-	lseek(clientFd.fd, recvStatus, SEEK_SET);
-	this->ClientRequest = Request(buffer);
 	
-	if (ClientRequest.getIsRecvHeaders())
+	if (ClientRequest.getIsRecvHeaders() == 0)
 	{
-		//get the request body
-		if (ClientRequest.getContentLength() > 0)
+		recvStatus = recv(clientFd.fd, buffer, MAX_REQUEST_SIZE, 0);
+		if (recvStatus <= 0)
+			return (false);
+		this->ClientRequest = Request(buffer);
+	}
+	else {
+		recvStatus = 0;
+		if (ClientRequest.getIsRecvBody())
 		{
-			while (recvStatus < (int)ClientRequest.getContentLength())
+			while (dataLength < ClientRequest.getContentLength())
 			{
-				recvStatus += recv(clientFd.fd, buffer, 1024, 0);
+				recvStatus = recv(clientFd.fd, buffer, 1024, 0);
 				if (recvStatus <= 0)
 					return (false);
+				dataLength += recvStatus;
 			}
 		}
 	}
-
-	std::cout << COLOR_GREEN << "RECV <--: " << recvStatus << "from client:: " << clientFd.fd << COLOR_RESET << std::endl;
-	std::cout << COLOR_MAGENTA "Request body: " COLOR_RESET << ClientRequest.getRequestBody() << std::endl;
+	
+	std::cout << COLOR_GREEN << "RECV from client:: " << clientFd.fd << COLOR_RESET << std::endl;
 	this->ClientRequest.displayRequestHeaders();
 
-	// this->requestValuesVector[index].recvBytes += recvStatus;
-	// if (recvStatus <= 0)
-	// 	return (false);
-	
-	// if (ClientRequest.getContentLength() > 0)
-	// {
-	// 	while (recvStatus < ClientRequest.getContentLength())
-	// 	{
-	// 		recvStatus += recv(clientFd.fd, buffer, 1024, 0);
-	// 		if (recvStatus <= 0)
-	// 			return (false);
-	// 	}
-	// }
-	
 	return (true);
 }
 
