@@ -5,44 +5,42 @@
 #                                                     +:+ +:+         +:+      #
 #    By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/06/19 15:22:28 by samjaabo          #+#    #+#              #
-#    Updated: 2023/11/19 16:22:50 by samjaabo         ###   ########.fr        #
+#    Created: 2023/12/06 18:00:59 by samjaabo          #+#    #+#              #
+#    Updated: 2023/12/06 18:01:02 by samjaabo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= webserv
-FLAGS	= -Wall -Wextra -Werror -std=c++98
-CC		= c++
 
-HEADERS	= HttpCgi.hpp
-SRCS	= main.cpp #HttpCgi.cpp
-OBJS	= $(SRCS:.cpp=.o)
+FLAGS 		= 	-Wall -Wextra -Werror #-g -fsanitize=address
+VERSION 	= 	-std=c++98
+NAME 		= 	webserver
+CCPP 		= 	c++
+RM 			= 	rm -fr
 
-all: clear-terminal $(NAME) usage run clean
+FILES 		= $(addprefix sources/, Server.cpp Request.cpp)  main.cpp
+HEADER_FILES 	= $(addprefix includes/, Server.hpp Request.hpp) Makefile
 
-clean:
-	@rm -rf $(OBJS)
+PORT = 5555
 
-fclean: clean
-	@rm -rf $(NAME)
+OBJECT_FILES = $(FILES:.cpp=.o)
 
-re: fclean all
-
-%.o:%.cpp $(HEADERS)
-	@$(CC) $(FLAGS) -c $< -o $@
-	@printf "\033[1m\033[2m\033[3mcompiling... $<\033[0m\n"
-
-$(NAME): $(OBJS)
-	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
-
-usage:
-	@printf "\033[1m\033[2m\033[3mUSAGE: ./$(NAME)\033[0m\n"
-
-clear-terminal:
-	@echo "\033c"
-	@printf "\033[1m\033[2m\033[3m-----------START-----------\033[0m\n"
+all: $(NAME) run
 
 run:
-	@./$(NAME)
+	./$(NAME) $(PORT)
+$(NAME): $(OBJECT_FILES)
+	$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
 
-.PHONY: all clean fclean re usage
+
+%.o:%.cpp $(HEADER_FILES)
+	$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
+
+clean:
+	$(RM) $(OBJECT_FILES)
+
+fclean: clean
+	$(RM) $(NAME)
+
+re: fclean all
+.PHONY: all fclean clean re
+
