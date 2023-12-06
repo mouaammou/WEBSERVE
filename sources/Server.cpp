@@ -5,12 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/18 14:56:03 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 22:13:05 by mouaammo         ###   ########.fr       */
+/*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
+/*   Updated: 2023/12/06 01:57:06 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <sys/poll.h>
 
 Server::Server(std::string port):ClientRequest("")//constructor
 {
@@ -18,6 +19,7 @@ Server::Server(std::string port):ClientRequest("")//constructor
     this->serverSocket = -1;
 	this->result = NULL;
 	this->sendBytes = 0;
+	this->requestValuesVector.resize(0);
 }
 
 Server::~Server()//close server socket
@@ -114,15 +116,13 @@ void   Server::pollEvents()//rename this function:
 	}
 	this->videoSize = this->get_file_size(this->videoFd);
 	
-	responseHeader = "HTTP/1.1 200 OK\r\n";
-	responseHeader += "Content-Type: video/mp4\r\n";
-	responseHeader += "Content-Length: " + std::to_string(this->videoSize) + "\r\n";
-	responseHeader += "\r\n";
+	this->responseHeader = "HTTP/1.1 200 OK\r\n";
+	this->responseHeader += "Content-Type: video/mp4\r\n";
+	this->responseHeader += "Content-Length: " + std::to_string(this->videoSize) + "\r\n";
+	this->responseHeader += "\r\n";
 	
     int timeout = 5000;//50 seconds
 	int pollStatus;
-	this->flagSend = false;
-	this->sendBytes = 0;
     while (true)
     {
 		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
@@ -137,12 +137,13 @@ void   Server::pollEvents()//rename this function:
 		}
 		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
 			acceptConnections();//only accept connection from the first fd
+
 		for (size_t i = 1; i < pollFds.size(); i++)
 		{
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
 			{
-				receiveRequests(this->pollFds[i]);
-				pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
+				if (receiveRequests(this->pollFds[i], i))
+					pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
@@ -152,7 +153,7 @@ void   Server::pollEvents()//rename this function:
 					removeFileDescriptor(this->pollFds[i].fd);
 				}
 			}
-			else if (pollFds[i].revents & (POLLHUP | POLLERR))//if the client close the connection
+			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
 			{
 				resetVideoState();
 				removeFileDescriptor(pollFds[i].fd);
@@ -258,16 +259,49 @@ void	Server::removeFileDescriptor(int &fd)
 	}
 }
 
-bool    Server::receiveRequests(struct pollfd &clientFd)
+bool	Server::receiveRequests(struct pollfd &clientFd, int index)
 {
-	char *buffer = new char[1024];
+	(void)index;
+	int recvStatus;
 
-	memset(buffer, 0, 1024);//clear the buffer
-	int bytes = recv(clientFd.fd, buffer, 1024, 0);
-	if (bytes <= 0)
-		return (false);
-	std::cout << COLOR_BLUE " recieve request from client :=> " COLOR_RESET<< clientFd.fd << std::endl;
-	std::cout << COLOR_YELLOW<< "BUFFER =:> " << buffer << COLOR_RESET << std::endl;
+	char *buffer = new char[MAX_REQUEST_SIZE];
+	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
+	recvStatus = recv(clientFd.fd, buffer, MAX_REQUEST_SIZE, 0);
+	lseek(clientFd.fd, recvStatus, SEEK_SET);
+	this->ClientRequest = Request(buffer);
+	
+	if (ClientRequest.getIsRecvHeaders())
+	{
+		//get the request body
+		if (ClientRequest.getContentLength() > 0)
+		{
+			while (recvStatus < (int)ClientRequest.getContentLength())
+			{
+				recvStatus += recv(clientFd.fd, buffer, 1024, 0);
+				if (recvStatus <= 0)
+					return (false);
+			}
+		}
+	}
+
+	std::cout << COLOR_GREEN << "RECV <--: " << recvStatus << "from client:: " << clientFd.fd << COLOR_RESET << std::endl;
+	std::cout << COLOR_MAGENTA "Request body: " COLOR_RESET << ClientRequest.getRequestBody() << std::endl;
+	this->ClientRequest.displayRequestHeaders();
+
+	// this->requestValuesVector[index].recvBytes += recvStatus;
+	// if (recvStatus <= 0)
+	// 	return (false);
+	
+	// if (ClientRequest.getContentLength() > 0)
+	// {
+	// 	while (recvStatus < ClientRequest.getContentLength())
+	// 	{
+	// 		recvStatus += recv(clientFd.fd, buffer, 1024, 0);
+	// 		if (recvStatus <= 0)
+	// 			return (false);
+	// 	}
+	// }
+	
 	return (true);
 }
 

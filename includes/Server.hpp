@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/04 22:22:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 01:34:07 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,10 @@
 
 typedef struct srequest_values
 {
-	struct pollfd fd;
+	int	*fd;
 	bool flagSend;
 	int sendBytes;
+	int recvBytes;
 	std::string responseHeader;
 }rqt_values;
 
@@ -52,9 +53,10 @@ class Server
 		int sendBytes;
 		// int recvBytes;
 		std::string responseHeader;//response header
-		
-    public:
 		Request ClientRequest;//request object
+		rqt_values requestValues;//request values
+		std::vector<rqt_values> requestValuesVector;//request values vector
+    public:
         Server(std::string port);
 		~Server();
 
@@ -65,8 +67,10 @@ class Server
 		void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
 		void    pollEvents();//wait for events: poll() function
 		void    acceptConnections();//check for events on server socket: accept() function
-		bool    receiveRequests(struct pollfd &fd);//receive requests from clients: recv() function
+		bool    receiveRequests(struct pollfd &fd, int index);//receive requests from clients: recv() function
+
 		bool    sendResponse(struct pollfd &clientFd);//send responses to clients: send() function
+
 		void    closefds();//close client sockets: close() function
 
 		int		get_file_size(int fd);

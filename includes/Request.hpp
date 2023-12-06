@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/05 18:45:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 01:44:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #define COLOR_RESET   "\033[0m"
 #define COLOR_CYAN    "\033[0;36m"
 #define PERMISSION_CHECK 0644
-
+#define MAX_REQUEST_SIZE 50000
 class Request
 {
 	private:
@@ -39,6 +39,7 @@ class Request
 		std::string RequestBody;
 		size_t		ContentLength;
 		std::map<std::string, std::string> RequestHeaders;
+		bool		isRecvHeaders;
 
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -49,16 +50,17 @@ class Request
 		std::string getPath() const;
 		std::string getVersion() const;
 		std::string getRequestBody() const;
+		size_t		getContentLength() const;
+		bool		getIsRecvHeaders() const;
 		std::map<std::string, std::string> getRequestHeaders() const;
 
 
 		//display request headers
-		void	displayRequestHeaders() const;
+		void	displayRequestHeaders();
 		// Function to parse the raw HTTP request
 		void	parseRequest();
 		void	parseRequestFirstLine(const std::string& line);
 		void	parseRequestHeaders(const std::string& line);
-		
 		void	storeRequestBody(std::stringstream& requestStream);
 		
 		void	checkMethod();

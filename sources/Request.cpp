@@ -6,20 +6,22 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/05 20:11:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 02:01:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
-#include <cstdio>
 #include <sys/_types/_size_t.h>
 
-Request::Request(std::string requestString)//Default constructor
+Request::Request(std::string requestString)
 {
 	this->RequestString = requestString;
 	this->Method = "";
 	this->Path = "";
 	this->Version = "";
+	this->RequestBody = "";
+	this->ContentLength = 0;
+	this->isRecvHeaders = false;
 	parseRequest();
 }
 
@@ -50,16 +52,24 @@ std::string Request::getRequestBody() const
 	return (this->RequestBody);
 }
 
-//display request headers
-void Request::displayRequestHeaders() const
+size_t Request::getContentLength() const
 {
-	std::cout << COLOR_GREEN << "Method: " << COLOR_RESET << this->Method << std::endl;
-	std::cout << COLOR_GREEN << "Path: " << COLOR_RESET << this->Path << std::endl;
-	std::cout << COLOR_GREEN << "Version: " << COLOR_RESET << this->Version << std::endl;
-	std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-	for (std::map<std::string, std::string>::const_iterator it = this->RequestHeaders.begin(); it != this->RequestHeaders.end(); ++it)
-		std::cout << it->first << "=>" << it->second << std::endl;
-	std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->RequestBody << std::endl;
+	return (this->ContentLength);
+}
+
+//display request headers
+void Request::displayRequestHeaders()
+{
+	if (!this->RequestString.empty())
+	{
+		std::cout << COLOR_GREEN << "Method: " << COLOR_RESET << this->Method << std::endl;
+		std::cout << COLOR_GREEN << "Path: " << COLOR_RESET << this->Path << std::endl;
+		std::cout << COLOR_GREEN << "Version: " << COLOR_RESET << this->Version << std::endl;
+		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = this->RequestHeaders.begin(); it != this->RequestHeaders.end(); ++it)
+			std::cout << it->first << "=>" << it->second << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->RequestBody << std::endl;
+	}
 }
 
 void Request::parseRequestFirstLine(const std::string& line)
@@ -90,7 +100,7 @@ void	Request::parseRequestHeaders(const std::string& line)
 		{
 			std::stringstream ss(value);
 			ss >> this->ContentLength;
-		}
+		}	
 		this->RequestHeaders[key] = value;
 	}
 }
@@ -136,6 +146,11 @@ void	Request::checkVersion()
 		throw std::runtime_error("Invalid request version");
 }
 
+bool		Request::getIsRecvHeaders() const
+{
+	return (this->isRecvHeaders);
+}
+
 void Request::parseRequest()
 {
 	std::stringstream requestStream(this->RequestString);
@@ -144,9 +159,9 @@ void Request::parseRequest()
 	std::string line;
 	if (std::getline(requestStream, line))
 	{
-		size_t pos = line.find("\r\n");
-		if (pos == std::string::npos)
-			throw std::runtime_error("Invalid request line");
+		// size_t pos = line.find("\n");
+		// if (pos == std::string::npos)
+		// 	throw std::runtime_error("Invalid request line");
 		parseRequestFirstLine(line);
 	}
 	// Parse the headers
@@ -155,11 +170,12 @@ void Request::parseRequest()
 		if (line.empty() || line == "\r\n")
 		{
 			std::cout << COLOR_CYAN "End of request headers" COLOR_RESET << std::endl;
+			this->isRecvHeaders = true;
 			break;
 		}
-		size_t pos = line.find("\r\n");
-		if (pos == std::string::npos)
-			throw std::runtime_error("Invalid request Header");
+		// size_t pos = line.find("\n");
+		// if (pos == std::string::npos)
+		// 	throw std::runtime_error("Invalid request Header");
 		parseRequestHeaders(line);
 	}
 	//parse the body
