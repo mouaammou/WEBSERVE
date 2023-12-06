@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 01:57:06 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 15:53:00 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,11 +104,16 @@ int Server::get_file_size(int fd)
     return file_size;
 }
 
+double	Server::bitToMegaBit(double bytes)
+{
+	return (bytes / 1000000);
+}
+
 void   Server::pollEvents()//rename this function: 
 {
 	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
-	this->videoFd = open("/goinfre/mouaammo/vvvv.mp4", O_RDWR);
+	this->videoFd = open("/goinfre/mouaammo/5.mp4", O_RDWR);
 	if (this->videoFd == -1)
 	{
 		perror("open");
@@ -217,7 +222,8 @@ bool    Server::sendResponse(struct pollfd &clientFd)
 				perror("send");
 				return false;
 			}
-			std::cout << COLOR_GREEN << "SEND -->: " << this->sendBytes << "to client:: " << clientFd.fd << COLOR_RESET << std::endl;
+			std::cout << COLOR_GREEN << "SEND: " << bitToMegaBit(this->sendBytes) << "Mg / " << bitToMegaBit(this->videoSize) << "Mg" << COLOR_RESET << std::endl;
+			std::cout << COLOR_GREEN << "to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
 			this->sendBytes += value_of_send;
 		} else {
 			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;

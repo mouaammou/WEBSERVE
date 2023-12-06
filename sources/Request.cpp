@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 02:01:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 16:10:40 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
-#include <sys/_types/_size_t.h>
 
 Request::Request(std::string requestString)
 {
@@ -72,7 +71,7 @@ void Request::displayRequestHeaders()
 	}
 }
 
-void Request::parseRequestFirstLine(const std::string& line)
+void	Request::parseRequestFirstLine(const std::string& line)
 {
 	std::istringstream lineStream(line);
 
@@ -100,7 +99,7 @@ void	Request::parseRequestHeaders(const std::string& line)
 		{
 			std::stringstream ss(value);
 			ss >> this->ContentLength;
-		}	
+		}
 		this->RequestHeaders[key] = value;
 	}
 }
@@ -159,24 +158,28 @@ void Request::parseRequest()
 	std::string line;
 	if (std::getline(requestStream, line))
 	{
-		// size_t pos = line.find("\n");
-		// if (pos == std::string::npos)
-		// 	throw std::runtime_error("Invalid request line");
+		line += "\n";
+		size_t pos = line.find("\r\n");
+		if (pos == std::string::npos)
+			throw std::runtime_error("Invalid request line");
 		parseRequestFirstLine(line);
+		line.clear();
 	}
 	// Parse the headers
 	while (std::getline(requestStream, line))
 	{
-		if (line.empty() || line == "\r\n")
+		line += "\n";
+		if (line.compare("\r\n") == 0)
 		{
 			std::cout << COLOR_CYAN "End of request headers" COLOR_RESET << std::endl;
 			this->isRecvHeaders = true;
 			break;
 		}
-		// size_t pos = line.find("\n");
-		// if (pos == std::string::npos)
-		// 	throw std::runtime_error("Invalid request Header");
+		size_t pos = line.find("\r\n");
+		if (pos == std::string::npos)
+			throw std::runtime_error("Invalid request Header");
 		parseRequestHeaders(line);
+		line.clear();
 	}
 	//parse the body
 	storeRequestBody(requestStream);
@@ -191,12 +194,18 @@ void	Request::storeRequestBody(std::stringstream& requestStream)
 	{
 		while (getline(requestStream, line))
 		{
+			line += "\n";
 			if (line.empty() || line == "\r\n")
 			{
 				std::cout << COLOR_CYAN "End of request body" COLOR_RESET << std::endl;
 				break;
 			}
 			this->RequestBody += line;
+			line.clear();
 		}
+	}
+	else
+	{
+		std::cout << COLOR_CYAN "No request body" COLOR_RESET << std::endl;
 	}
 }

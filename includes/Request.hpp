@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 01:44:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 15:47:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ class Request
 		Request(std::string requestString);
 		~Request();
 		// Getters to retrieve information from the parsed request
-		std::string getMethod() const;
-		std::string getPath() const;
-		std::string getVersion() const;
-		std::string getRequestBody() const;
-		size_t		getContentLength() const;
-		bool		getIsRecvHeaders() const;
-		std::map<std::string, std::string> getRequestHeaders() const;
+		std::string 	getMethod() const;
+		std::string 	getPath() const;
+		std::string 	getVersion() const;
+		std::string 	getRequestBody() const;
+		size_t			getContentLength() const;
+		bool			getIsRecvHeaders() const;
+		std::map<std::string, std::string>	getRequestHeaders() const;
 
 
 		//display request headers
@@ -62,7 +62,8 @@ class Request
 		void	parseRequestFirstLine(const std::string& line);
 		void	parseRequestHeaders(const std::string& line);
 		void	storeRequestBody(std::stringstream& requestStream);
-		
+
+
 		void	checkMethod();
 		void	checkPath();
 		void	checkVersion();
