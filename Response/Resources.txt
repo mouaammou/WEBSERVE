@@ -1,0 +1,3 @@
+
+// for http/1.1 status codes
+https://www.cheat-sheets.org/saved-copy/http-response-codes-1.pdf
