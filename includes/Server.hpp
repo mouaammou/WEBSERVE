@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 20:45:22 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 23:07:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,16 @@ class Server
 
 		void    bindServerSocket();//set server socket: create socket, set socket options
 		void	setServerSocket();//get server socket: getaddrinfo() function
-		void    addFileDescriptor(int &fd);//add file descriptor to the pollfd array
-		void	removeFileDescriptor(int &fd);//remove file descriptor from the pollfd array
+		void    addFileDescriptor(int fd);//add file descriptor to the pollfd array
+		void	removeFileDescriptor(int fd);//remove file descriptor from the pollfd array
 		void    listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
 		void    pollEvents();//wait for events: poll() function
 		void    acceptConnections();//check for events on server socket: accept() function
 
 		double	bitToMegaBit(double bytes);
 
-		void	addNewClient(int &fd);//add new client to the map
-		void	removeClient(int &fd);//remove client from the map
-		// void	updateClient(int &fd);//update client in the map
-		void	searchClient(int &fd);//search client in the map
+		void	addNewClient(int fd);//add new client to the map
+		void	removeClient(int fd);//remove client from the map
 
 		void    closefds();//close client sockets: close() function
-		int		get_file_size(int fd);
 };

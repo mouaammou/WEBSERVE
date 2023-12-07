@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 21:58:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 23:20:02 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ Server::~Server()//close server socket
     close(this->serverSocket);
 }
 
-void	Server::addFileDescriptor(int &fd)
+void	Server::addFileDescriptor(int fd)
 {
 	struct pollfd newFd;
 
@@ -93,31 +93,9 @@ void  Server::listenForConnections()
     std::cout << COLOR_BLUE << " Server is listening on port " << COLOR_RESET<< this->severPort << std::endl;
 }
 
-int Server::get_file_size(int fd)
-{
-    int file_size;
-    int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
-    file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
-    lseek(fd, current_position, SEEK_SET); // Return to the original position
-    return file_size;
-}
-
 double	Server::bitToMegaBit(double bytes)
 {
 	return (bytes / 1000000);
-}
-
-void	Server::searchClient(int &fd)
-{
-	for (size_t i = 0; i < this->httpClients.size(); i++)
-	{
-		if (this->httpClients[i]->getFd() == fd)
-		{
-			std::cout << COLOR_RED "Client found :=> " COLOR_RESET<< fd << std::endl;
-			return ;
-		}
-	}
-	std::cout << COLOR_RED "Client not found :=> " COLOR_RESET<< fd << std::endl;
 }
 
 void   Server::pollEvents()//rename this function: 
@@ -146,25 +124,24 @@ void   Server::pollEvents()//rename this function:
 		{
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
 			{
-				// this->searchClient(pollFds[i].fd);
 				if (this->httpClients[pollFds[i].fd]->receiveRequest())//receive the request
 				{
 					this->pollFds[i].events = POLLOUT;//set the client to write
-					// removeFileDescriptor(pollFds[i].fd);
+					this->httpClients[pollFds[i].fd]->displayRequest();
+					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
 					continue;
 				}
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
-				this->httpClients[pollFds[i].fd]->displayRequest();
 				std::cout << COLOR_GREEN "Client is ready to write" COLOR_RESET << std::endl;
 				if (this->httpClients[pollFds[i].fd]->sendResponse())//send the response
 				{
 					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
-					this->pollFds[i].events = POLLIN;//set the client to read
+					this->removeClient(pollFds[i].fd);//remove the client from the pollfd array
 					break;
 				}
-				removeClient(pollFds[i].fd);//remove the client from the pollfd array
+				this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
 			}
 			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
 			{
@@ -190,21 +167,21 @@ void   Server::acceptConnections()
 	addNewClient(clientSocket);
 }
 
-void	Server::addNewClient(int &fd)
+void	Server::addNewClient(int fd)
 {
 	addFileDescriptor(fd);
 	Client *newClient = new Client(fd);
 	this->httpClients.insert(std::pair<int, Client*>(fd, newClient));
 }
 
-void	Server::removeClient(int &fd)
+void	Server::removeClient(int fd)
 {
 	removeFileDescriptor(fd);
 	this->httpClients.erase(fd);
 }
 
 
-void	Server::removeFileDescriptor(int &fd)
+void	Server::removeFileDescriptor(int fd)
 {
 	for (size_t i = 0; i < this->pollFds.size(); i++)
 	{

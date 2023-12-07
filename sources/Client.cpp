@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 21:44:33 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 23:19:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
+#include <sys/_types/_size_t.h>
 
 Client::Client(int fd)
 {
@@ -87,6 +88,18 @@ void   Client::resetResponseState()
 	this->isSendBody = false;
 	this->isSendHeader = false;
 	this->responseBodySize = 0;
+}
+
+void   Client::resetRequestState()
+{
+	this->requestString = "";
+	this->method = "";
+	this->path = "";
+	this->version = "";
+	this->requestBody = "";
+	this->contentLength = 0;
+	this->_hasHeaders = false;
+	this->_hasBody = false;
 }
 
 //display request headers
@@ -282,13 +295,13 @@ bool	Client::receiveRequest()
 	return (false);
 }
 
-bool   Client::sendResponse()
+bool	Client::sendHeader()
 {
 	if (!this->isSendHeader)
 	{
 		this->responseHeader = "HTTP/1.1 200 OK\r\n";
 		this->responseHeader += "Content-Type: text/html\r\n";
-		this->responseHeader += "Content-Length: 12\r\n";
+		this->responseHeader += "Content-Length: " + std::to_string(this->responseBodySize) + "\r\n";
 		this->responseHeader += "\r\n";
 		this->sendBytes = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);
 		if (this->sendBytes <= 0)
@@ -298,72 +311,60 @@ bool   Client::sendResponse()
 		}
 		this->isSendHeader = true;
 	}
-	
-	if (!this->isSendBody)
-	{
-		this->responseBody = "Hello World!";
-		this->sendBytes += send(this->fd, this->responseBody.c_str(), this->responseBody.length(), 0);
-		if (this->sendBytes <= 0)
-		{
-			perror("send");
-			return (false);
-		}
-		this->isSendBody = true;
-		this->responseBodySize = this->responseBody.length();
-	}
-	printf("sendBytes = %zu\n", this->sendBytes);
-	printf("responseBodySize = %zu\n", this->responseBodySize);
 	return (true);
 }
 
-// bool   Client::sendResponse()
-// {
-// 	if (this->sendBytes == 0)
-// 	{
-// 		std::string response = "HTTP/1.1 200 OK\r\n";
-// 		response += "Content-Type: text/html\r\n";
-// 		response += "Content-Length: 12\r\n";
-// 		response += "\r\n";
-// 		response += "Hello World!";
-// 		this->responseHeader = response;
-// 	}
-// 	if (this->sendBytes < this->responseHeader.length())
-// 	{
-// 		int writeBytes = write(this->fd, this->responseHeader.c_str() + this->sendBytes, this->responseHeader.length() - this->sendBytes);
-// 		if (writeBytes < 0)
-// 		{
-// 			perror("write");
-// 			return (false);
-// 		}
-// 		this->sendBytes += writeBytes;
-// 	}
-// 	else
-// 	{
-// 		if (!this->isSendBody)
-// 		{
-// 			std::string response = "HTTP/1.1 200 OK\r\n";
-// 			response += "Content-Type: text/html\r\n";
-// 			response += "Content-Length: 12\r\n";
-// 			response += "\r\n";
-// 			response += "Hello World!";
-// 			this->responseBody = response;
-// 			this->isSendBody = true;
-// 		}
-// 		if (this->sendBytes < this->responseBody.length())
-// 		{
-// 			int writeBytes = write(this->fd, this->responseBody.c_str() + this->sendBytes, this->responseBody.length() - this->sendBytes);
-// 			if (writeBytes < 0)
-// 			{
-// 				perror("write");
-// 				return (false);
-// 			}
-// 			this->sendBytes += writeBytes;
-// 		}
-// 		else
-// 		{
-// 			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
-// 			return (true);
-// 		}
-// 	}
-// 	return (false);
-// }
+bool	Client::sendPage(int pageFd, size_t pageSize)
+{
+	off_t len = 10;
+	// off_t offset = 0;
+	
+	if (this->isSendBody == false)
+	{
+		if (sendfile(pageFd, this->fd, this->sendBytes, &len, NULL, 0) == -1)
+		{
+			perror("sendfile");
+			return false;
+		}
+		this->sendBytes += len;
+		lseek(pageFd, this->sendBytes, SEEK_SET);
+		
+		printf("sendBytes = %zu\n", this->sendBytes);
+		printf("pageSize = %zu\n", pageSize);
+		if (this->sendBytes == pageSize)
+		{
+			this->isSendBody = true;
+			this->responseBodySize = pageSize;
+			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
+			return true;
+		}
+	}
+	return (false);
+}
+
+int Client::get_file_size(int fd)
+{
+    int file_size;
+    int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
+    file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
+    lseek(fd, current_position, SEEK_SET); // Return to the original position
+    return file_size;
+}
+
+bool   Client::sendResponse()
+{
+	int pageFd = open("html/index.html", O_RDONLY);
+	if (pageFd == -1)
+	{
+		perror("open");
+		return (false);
+	}
+	this->responseBodySize = get_file_size(pageFd);
+	if (!this->sendHeader())
+		return (false);
+
+	if (!this->sendPage(pageFd, this->responseBodySize))
+		return (false);
+	lseek(pageFd, 0, SEEK_SET);
+	return (true);
+}

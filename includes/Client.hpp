@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 00:12:15 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 21:41:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 23:15:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,5 +103,10 @@ class Client
 		bool   receiveRequest();
 		bool   sendResponse();
 
+		bool	sendPage(int pageFd, size_t pageSize);
+		bool	sendHeader();
+		int		get_file_size(int fd);
+
 		void   resetResponseState();
+		void   resetRequestState();
 };
