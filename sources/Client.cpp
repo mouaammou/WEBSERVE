@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 02:27:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 02:35:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,13 +221,13 @@ bool	Client::receiveRequest()
 {
 	char *buffer = new char[MAX_REQUEST_SIZE];
 	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
-	this->recvBytes = read(this->fd, buffer, MAX_REQUEST_SIZE - 1);
-	if (this->recvBytes < 0)
+	int readBytes = read(this->fd, buffer, MAX_REQUEST_SIZE - 1);
+	if (readBytes < 0)
 	{
 		perror("read");
 		exit(1);
 	}
-	if (this->recvBytes == 0)
+	if (readBytes == 0)
 	{
 		std::cout << COLOR_CYAN "Client disconnected" COLOR_RESET << std::endl;
 		exit(1);
@@ -235,7 +235,6 @@ bool	Client::receiveRequest()
 	this->requestString += buffer;
 	this->parseRequest(this->requestString);
 	delete [] buffer;
-
 
 	if (this->hasHeaders() && this->contentLength == 0)
 	{
@@ -250,7 +249,11 @@ bool	Client::receiveRequest()
 			return (true);
 		}
 		else
+		{
+			std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
 			return (false);
+		}
 	}
+	std::cout << COLOR_CYAN "Waiting for the headers" COLOR_RESET << std::endl;
 	return (false);
 }

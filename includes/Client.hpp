@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 00:12:15 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 02:16:38 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 02:35:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ class Client
 
 		int fd;
 		
-		size_t recvBytes;
 		std::string requestString;
 		std::string method;
 		std::string path;

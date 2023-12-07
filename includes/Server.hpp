@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 01:27:31 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 02:37:48 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,7 @@
 #include <vector>
 #include <string>
 
-
-typedef struct srequest_values
-{
-	int	*fd;
-	bool flagSend;
-	int sendBytes;
-	int recvBytes;
-	std::string responseHeader;
-}rqt_values;
+#include "../includes/Client.hpp"
 
 class Server
 {
@@ -47,15 +39,9 @@ class Server
         int serverSocket;//server socket: socket() function
         std::string severPort;//server port
         std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
-		int videoFd;//video file descriptor
-		int videoSize;//video file size
-		bool flagSend;
-		int sendBytes;
-		// int recvBytes;
-		std::string responseHeader;//response header
-		Request ClientRequest;//request object
-		rqt_values requestValues;//request values
-		std::vector<rqt_values> requestValuesVector;//request values vector
+		//map for clients
+		std::map<int, Client*> httpClients;
+	
     public:
         Server(std::string port);
 		~Server();
