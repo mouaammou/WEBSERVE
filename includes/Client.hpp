@@ -1,24 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/23 13:11:44 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 17:03:21 by mouaammo         ###   ########.fr       */
+/*   Created: 2023/12/07 00:12:15 by mouaammo          #+#    #+#             */
+/*   Updated: 2023/12/07 02:16:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <poll.h>
+#include <sys/fcntl.h>
+#include <sys/signal.h>
+
+#include <csignal>
+#include <sstream>
 #include <iostream>
-#include <sstream>
-#include <map>
+#include <vector>
 #include <string>
-#include <sstream>
-#include <sys/_types/_size_t.h>
-#include <sys/stat.h>
+#include <map>
 
 #define COLOR_RED     "\033[0;31m"
 #define COLOR_GREEN   "\033[0;32m"
@@ -27,39 +38,51 @@
 #define COLOR_MAGENTA "\033[0;35m"
 #define COLOR_RESET   "\033[0m"
 #define COLOR_CYAN    "\033[0;36m"
+
 #define PERMISSION_CHECK 0644
 #define MAX_REQUEST_SIZE 50000
-class Request
+
+class Client
 {
 	private:
-		std::string RequestString;
-		std::string Method;
-		std::string Path;
-		std::string Version;
-		std::string RequestBody;
-		size_t		ContentLength;
-		std::map<std::string, std::string> RequestHeaders;
-		bool		isRecvHeaders;
-		bool		isRecvBody;
+
+		int fd;
+		
+		size_t recvBytes;
+		std::string requestString;
+		std::string method;
+		std::string path;
+		std::string version;
+		std::map<std::string, std::string> requestHeaders;
+		std::string requestBody;
+		size_t contentLength;
+		bool _hasHeaders;
+		bool _hasBody;
+
+		size_t sendBytes;
+		std::string responseHeader;
+		std::string responseBody;
+		bool isSendBody;
+		
 	public:
 		// Constructor to initialize the object with the raw HTTP request
-		Request(std::string requestString);
-		~Request();
+		Client(int fd);
+		~Client();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
 		std::string 	getPath() const;
 		std::string 	getVersion() const;
 		std::string 	getRequestBody() const;
 		size_t			getContentLength() const;
-		bool			getIsRecvHeaders() const;
-		bool			getIsRecvBody() const;
+		bool			hasHeaders() const;
+		bool			hasBody() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 
 		//display request headers
 		void	displayRequestHeaders();
 		// Function to parse the raw HTTP request
-		void	parseRequest();
+		void	parseRequest(std::string bufferString);
 		void	parseRequestFirstLine(const std::string& line);
 		void	parseRequestHeaders(const std::string& line);
 		void	storeRequestBody(std::stringstream& requestStream);
@@ -70,4 +93,6 @@ class Request
 		void	checkVersion();
 		void	checkRequestHeaders();
 		void	parseURIencoded();
+
+		bool   receiveRequest();
 };

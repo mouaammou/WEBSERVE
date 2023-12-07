@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 17:04:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/06 23:20:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,33 +267,8 @@ void	Server::removeFileDescriptor(int &fd)
 
 bool	Server::receiveRequests(struct pollfd &clientFd, int index)
 {
-	(void)index;
-	int recvStatus;
-	size_t dataLength = 0;
-
-	char *buffer = new char[MAX_REQUEST_SIZE];
-	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
-	
-	if (ClientRequest.getIsRecvHeaders() == 0)
-	{
-		recvStatus = recv(clientFd.fd, buffer, MAX_REQUEST_SIZE, 0);
-		if (recvStatus <= 0)
-			return (false);
-		this->ClientRequest = Request(buffer);
-	}
-	else {
-		recvStatus = 0;
-		if (ClientRequest.getIsRecvBody())
-		{
-			while (dataLength < ClientRequest.getContentLength())
-			{
-				recvStatus = recv(clientFd.fd, buffer, 1024, 0);
-				if (recvStatus <= 0)
-					return (false);
-				dataLength += recvStatus;
-			}
-		}
-	}
+	char *buffer = new char[50000];
+	memset(buffer, 0, 50000);//clear the buffer
 	
 	std::cout << COLOR_GREEN << "RECV from client:: " << clientFd.fd << COLOR_RESET << std::endl;
 	this->ClientRequest.displayRequestHeaders();
