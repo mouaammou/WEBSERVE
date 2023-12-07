@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 00:12:15 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 02:35:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 21:41:02 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/_types/_size_t.h>
 #include <sys/types.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -23,6 +24,7 @@
 #include <poll.h>
 #include <sys/fcntl.h>
 #include <sys/signal.h>
+#include <sys/stat.h>
 
 #include <csignal>
 #include <sstream>
@@ -52,8 +54,8 @@ class Client
 		std::string method;
 		std::string path;
 		std::string version;
-		std::map<std::string, std::string> requestHeaders;
 		std::string requestBody;
+		std::map<std::string, std::string> requestHeaders;
 		size_t contentLength;
 		bool _hasHeaders;
 		bool _hasBody;
@@ -61,7 +63,9 @@ class Client
 		size_t sendBytes;
 		std::string responseHeader;
 		std::string responseBody;
+		size_t	responseBodySize;
 		bool isSendBody;
+		bool isSendHeader;
 		
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -73,13 +77,16 @@ class Client
 		std::string 	getVersion() const;
 		std::string 	getRequestBody() const;
 		size_t			getContentLength() const;
+		bool			hasSendBody() const;
+		bool			hasSendHeader() const;
 		bool			hasHeaders() const;
 		bool			hasBody() const;
+		int				getFd() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 
 		//display request headers
-		void	displayRequestHeaders();
+		void	displayRequest();
 		// Function to parse the raw HTTP request
 		void	parseRequest(std::string bufferString);
 		void	parseRequestFirstLine(const std::string& line);
@@ -94,4 +101,7 @@ class Client
 		void	parseURIencoded();
 
 		bool   receiveRequest();
+		bool   sendResponse();
+
+		void   resetResponseState();
 };

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/06 23:20:38 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 21:58:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,10 @@
 #include <sys/_types/_size_t.h>
 #include <sys/poll.h>
 
-Server::Server(std::string port):ClientRequest("")//constructor
+Server::Server(std::string port)//constructor
 {
     this->severPort = port;
-    this->serverSocket = -1;
-	this->result = NULL;
-	this->sendBytes = 0;
-	this->requestValuesVector.resize(0);
+	this->serverSocket = -1;
 }
 
 Server::~Server()//close server socket
@@ -28,7 +25,7 @@ Server::~Server()//close server socket
     close(this->serverSocket);
 }
 
-void	Server::addFileDescriptor(int fd)
+void	Server::addFileDescriptor(int &fd)
 {
 	struct pollfd newFd;
 
@@ -110,23 +107,24 @@ double	Server::bitToMegaBit(double bytes)
 	return (bytes / 1000000);
 }
 
+void	Server::searchClient(int &fd)
+{
+	for (size_t i = 0; i < this->httpClients.size(); i++)
+	{
+		if (this->httpClients[i]->getFd() == fd)
+		{
+			std::cout << COLOR_RED "Client found :=> " COLOR_RESET<< fd << std::endl;
+			return ;
+		}
+	}
+	std::cout << COLOR_RED "Client not found :=> " COLOR_RESET<< fd << std::endl;
+}
+
 void   Server::pollEvents()//rename this function: 
 {
 	//LISTEN:
 	this->listenForConnections();//socket(), bind(), listen()
-	this->videoFd = open("/goinfre/mouaammo/5.mp4", O_RDWR);
-	if (this->videoFd == -1)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	this->videoSize = this->get_file_size(this->videoFd);
-	
-	this->responseHeader = "HTTP/1.1 200 OK\r\n";
-	this->responseHeader += "Content-Type: video/mp4\r\n";
-	this->responseHeader += "Content-Length: " + std::to_string(this->videoSize) + "\r\n";
-	this->responseHeader += "\r\n";
-	
+	//POLL
     int timeout = 5000;//50 seconds
 	int pollStatus;
     while (true)
@@ -148,90 +146,32 @@ void   Server::pollEvents()//rename this function:
 		{
 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
 			{
-				if (receiveRequests(this->pollFds[i], i))
-					pollFds[i].events = POLLOUT;//if the data is read, the client is ready to write
+				// this->searchClient(pollFds[i].fd);
+				if (this->httpClients[pollFds[i].fd]->receiveRequest())//receive the request
+				{
+					this->pollFds[i].events = POLLOUT;//set the client to write
+					// removeFileDescriptor(pollFds[i].fd);
+					continue;
+				}
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
-				if (sendResponse(this->pollFds[i]))//write the data
+				this->httpClients[pollFds[i].fd]->displayRequest();
+				std::cout << COLOR_GREEN "Client is ready to write" COLOR_RESET << std::endl;
+				if (this->httpClients[pollFds[i].fd]->sendResponse())//send the response
 				{
-					resetVideoState();
-					removeFileDescriptor(this->pollFds[i].fd);
+					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
+					this->pollFds[i].events = POLLIN;//set the client to read
+					break;
 				}
+				removeClient(pollFds[i].fd);//remove the client from the pollfd array
 			}
 			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
 			{
-				resetVideoState();
-				removeFileDescriptor(pollFds[i].fd);
+				removeClient(pollFds[i].fd);//remove the client from the pollfd array
 			}
 		}
 	}
-}
-
-void	Server::resetVideoState()
-{
-	lseek(this->videoFd, 0, SEEK_SET);
-	this->sendBytes = 0;
-	this->flagSend = false;
-	std::cout << COLOR_CYAN "Video state reseted" COLOR_RESET << std::endl;
-}
-
-bool    Server::sendResponse(struct pollfd &clientFd)
-{
-	if ((clientFd.fd != -1))
-	{
-		if (!flagSend)
-		{
-			int sendStatus = send(clientFd.fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);	
-			if (sendStatus < 0)
-			{
-				perror("send");
-				return false;
-			}
-			this->flagSend = true;
-			return false;
-		}
-		char *buffer = new char[50000];
-		memset(buffer, 0, 50000);//clear the buffer
-
-		if (this->sendBytes < this->videoSize)
-		{
-			lseek(this->videoFd, this->sendBytes, SEEK_SET);
-			int readStatus = read(this->videoFd, buffer, 50000);
-			if (readStatus == 0)
-			{
-				clientFd.events = POLLIN;
-				// resetVideoState();
-				return (false);
-			}
-			if (readStatus < 0)
-			{
-				perror("read");
-				return false;
-			}
-			int value_of_send = send(clientFd.fd, buffer, readStatus, 0);
-			delete [] buffer;
-			
-			if (value_of_send == 0)
-			{
-				clientFd.events = POLLIN;
-				return false;
-			}
-			if (value_of_send < 0)
-			{
-				perror("send");
-				return false;
-			}
-			std::cout << COLOR_GREEN << "SEND: " << bitToMegaBit(this->sendBytes) << "Mg / " << bitToMegaBit(this->videoSize) << "Mg";
-			std::cout << COLOR_GREEN << " -- to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
-			this->sendBytes += value_of_send;
-		} else {
-			std::cout << COLOR_GREEN << "Video sent SUCCESS to client :=> " << clientFd.fd << COLOR_RESET << std::endl;
-			resetVideoState();
-			return (true);
-		}
-	}
-	return (false);
 }
 
 void   Server::acceptConnections()
@@ -247,8 +187,22 @@ void   Server::acceptConnections()
     }
     //add the new client socket to the pollfd array
 	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
-	addFileDescriptor(clientSocket);
+	addNewClient(clientSocket);
 }
+
+void	Server::addNewClient(int &fd)
+{
+	addFileDescriptor(fd);
+	Client *newClient = new Client(fd);
+	this->httpClients.insert(std::pair<int, Client*>(fd, newClient));
+}
+
+void	Server::removeClient(int &fd)
+{
+	removeFileDescriptor(fd);
+	this->httpClients.erase(fd);
+}
+
 
 void	Server::removeFileDescriptor(int &fd)
 {
@@ -263,17 +217,6 @@ void	Server::removeFileDescriptor(int &fd)
 			break;
 		}
 	}
-}
-
-bool	Server::receiveRequests(struct pollfd &clientFd, int index)
-{
-	char *buffer = new char[50000];
-	memset(buffer, 0, 50000);//clear the buffer
-	
-	std::cout << COLOR_GREEN << "RECV from client:: " << clientFd.fd << COLOR_RESET << std::endl;
-	this->ClientRequest.displayRequestHeaders();
-
-	return (true);
 }
 
 void    Server::closefds()

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 02:35:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/07 21:44:33 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,10 @@ Client::Client(int fd)
 	this->contentLength = 0;
 	this->_hasHeaders = false;
 	this->_hasBody = false;
-	this->recvBytes = 0;
 	this->sendBytes = 0;
-	parseRequest();
+	this->isSendBody = false;
+	this->isSendHeader = false;
+	this->responseBodySize = 0;
 }
 
 Client::~Client(){}//Default destructor
@@ -65,8 +66,31 @@ bool			Client::hasBody() const
 	return (this->_hasBody);
 }
 
+bool			Client::hasSendBody() const
+{
+	return (this->isSendBody);
+}
+
+bool			Client::hasSendHeader() const
+{
+	return (this->isSendHeader);
+}
+
+int				Client::getFd() const
+{
+	return (this->fd);
+}
+
+void   Client::resetResponseState()
+{
+	this->sendBytes = 0;
+	this->isSendBody = false;
+	this->isSendHeader = false;
+	this->responseBodySize = 0;
+}
+
 //display request headers
-void Client::displayRequestHeaders()
+void Client::displayRequest()
 {
 	if (!this->requestString.empty())
 	{
@@ -147,8 +171,6 @@ void	Client::parseURIencoded()
 		mychar = static_cast<char>(decimal);
 		this->path.replace(this->path.find("%"), 3, 1, mychar);
 	}
-	std::cout << COLOR_CYAN "path after replacing: " COLOR_RESET << this->path << std::endl;
-	exit(88);
 }
 
 void	Client::checkVersion()
@@ -225,25 +247,27 @@ bool	Client::receiveRequest()
 	if (readBytes < 0)
 	{
 		perror("read");
-		exit(1);
+		return (false);
 	}
 	if (readBytes == 0)
 	{
 		std::cout << COLOR_CYAN "Client disconnected" COLOR_RESET << std::endl;
-		exit(1);
+		return (false);
 	}
 	this->requestString += buffer;
 	this->parseRequest(this->requestString);
 	delete [] buffer;
 
+	printf("requestBody.length() = %zu\n", this->requestBody.length());
+	printf("contentLength = %zu\n", this->contentLength);
 	if (this->hasHeaders() && this->contentLength == 0)
 	{
 		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
 		return (true);
 	}
-	else if (this->hasHeaders() && this->contentLength > 0)
+	else if (this->hasHeaders() && this->hasBody())
 	{
-		if (this->requestBody.length() == this->contentLength)
+		if (this->requestBody.length() == (this->contentLength + 1))
 		{
 			std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
 			return (true);
@@ -257,3 +281,89 @@ bool	Client::receiveRequest()
 	std::cout << COLOR_CYAN "Waiting for the headers" COLOR_RESET << std::endl;
 	return (false);
 }
+
+bool   Client::sendResponse()
+{
+	if (!this->isSendHeader)
+	{
+		this->responseHeader = "HTTP/1.1 200 OK\r\n";
+		this->responseHeader += "Content-Type: text/html\r\n";
+		this->responseHeader += "Content-Length: 12\r\n";
+		this->responseHeader += "\r\n";
+		this->sendBytes = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);
+		if (this->sendBytes <= 0)
+		{
+			perror("send");
+			return (false);
+		}
+		this->isSendHeader = true;
+	}
+	
+	if (!this->isSendBody)
+	{
+		this->responseBody = "Hello World!";
+		this->sendBytes += send(this->fd, this->responseBody.c_str(), this->responseBody.length(), 0);
+		if (this->sendBytes <= 0)
+		{
+			perror("send");
+			return (false);
+		}
+		this->isSendBody = true;
+		this->responseBodySize = this->responseBody.length();
+	}
+	printf("sendBytes = %zu\n", this->sendBytes);
+	printf("responseBodySize = %zu\n", this->responseBodySize);
+	return (true);
+}
+
+// bool   Client::sendResponse()
+// {
+// 	if (this->sendBytes == 0)
+// 	{
+// 		std::string response = "HTTP/1.1 200 OK\r\n";
+// 		response += "Content-Type: text/html\r\n";
+// 		response += "Content-Length: 12\r\n";
+// 		response += "\r\n";
+// 		response += "Hello World!";
+// 		this->responseHeader = response;
+// 	}
+// 	if (this->sendBytes < this->responseHeader.length())
+// 	{
+// 		int writeBytes = write(this->fd, this->responseHeader.c_str() + this->sendBytes, this->responseHeader.length() - this->sendBytes);
+// 		if (writeBytes < 0)
+// 		{
+// 			perror("write");
+// 			return (false);
+// 		}
+// 		this->sendBytes += writeBytes;
+// 	}
+// 	else
+// 	{
+// 		if (!this->isSendBody)
+// 		{
+// 			std::string response = "HTTP/1.1 200 OK\r\n";
+// 			response += "Content-Type: text/html\r\n";
+// 			response += "Content-Length: 12\r\n";
+// 			response += "\r\n";
+// 			response += "Hello World!";
+// 			this->responseBody = response;
+// 			this->isSendBody = true;
+// 		}
+// 		if (this->sendBytes < this->responseBody.length())
+// 		{
+// 			int writeBytes = write(this->fd, this->responseBody.c_str() + this->sendBytes, this->responseBody.length() - this->sendBytes);
+// 			if (writeBytes < 0)
+// 			{
+// 				perror("write");
+// 				return (false);
+// 			}
+// 			this->sendBytes += writeBytes;
+// 		}
+// 		else
+// 		{
+// 			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
+// 			return (true);
+// 		}
+// 	}
+// 	return (false);
+// }
