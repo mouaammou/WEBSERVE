@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 23:20:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/08 11:54:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,13 @@ void   Server::pollEvents()//rename this function:
 	//POLL
     int timeout = 5000;//50 seconds
 	int pollStatus;
+
+	int pageFd = open("/goinfre/mouaammo/dj.mp4", O_RDONLY);
+	if (pageFd == -1)
+	{
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
     while (true)
     {
 		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
@@ -129,19 +136,18 @@ void   Server::pollEvents()//rename this function:
 					this->pollFds[i].events = POLLOUT;//set the client to write
 					this->httpClients[pollFds[i].fd]->displayRequest();
 					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
+					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
 					continue;
 				}
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
 			{
 				std::cout << COLOR_GREEN "Client is ready to write" COLOR_RESET << std::endl;
-				if (this->httpClients[pollFds[i].fd]->sendResponse())//send the response
+				if (this->httpClients[pollFds[i].fd]->sendResponse(pageFd))//send the response
 				{
-					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
 					this->removeClient(pollFds[i].fd);//remove the client from the pollfd array
 					break;
 				}
-				this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
 			}
 			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
 			{

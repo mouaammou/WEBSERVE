@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/07 23:05:49 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/08 10:51:29 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ PORT = 5555
 
 OBJECT_FILES = $(FILES:.cpp=.o)
 
-all: $(NAME)
+all: $(NAME) run
 
 run:
 	./$(NAME) $(PORT)

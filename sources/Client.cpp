@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/07 23:19:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/08 12:14:43 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
+#include <sys/_types/_off_t.h>
 #include <sys/_types/_size_t.h>
 
 Client::Client(int fd)
@@ -300,25 +301,25 @@ bool	Client::sendHeader()
 	if (!this->isSendHeader)
 	{
 		this->responseHeader = "HTTP/1.1 200 OK\r\n";
-		this->responseHeader += "Content-Type: text/html\r\n";
+		this->responseHeader += "Content-Type: video/mp4\r\n";
 		this->responseHeader += "Content-Length: " + std::to_string(this->responseBodySize) + "\r\n";
 		this->responseHeader += "\r\n";
-		this->sendBytes = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);
-		if (this->sendBytes <= 0)
+		int sendStatus = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);
+		if (sendStatus <= 0)
 		{
 			perror("send");
 			return (false);
 		}
 		this->isSendHeader = true;
 	}
+
 	return (true);
 }
 
 bool	Client::sendPage(int pageFd, size_t pageSize)
 {
-	off_t len = 10;
-	// off_t offset = 0;
-	
+	off_t len = 1024 * 2;
+
 	if (this->isSendBody == false)
 	{
 		if (sendfile(pageFd, this->fd, this->sendBytes, &len, NULL, 0) == -1)
@@ -327,19 +328,19 @@ bool	Client::sendPage(int pageFd, size_t pageSize)
 			return false;
 		}
 		this->sendBytes += len;
-		lseek(pageFd, this->sendBytes, SEEK_SET);
 		
 		printf("sendBytes = %zu\n", this->sendBytes);
 		printf("pageSize = %zu\n", pageSize);
 		if (this->sendBytes == pageSize)
 		{
 			this->isSendBody = true;
-			this->responseBodySize = pageSize;
 			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
 			return true;
 		}
+		else 
+			return false;
 	}
-	return (false);
+	return (true);
 }
 
 int Client::get_file_size(int fd)
@@ -351,14 +352,8 @@ int Client::get_file_size(int fd)
     return file_size;
 }
 
-bool   Client::sendResponse()
+bool   Client::sendResponse(int pageFd)
 {
-	int pageFd = open("html/index.html", O_RDONLY);
-	if (pageFd == -1)
-	{
-		perror("open");
-		return (false);
-	}
 	this->responseBodySize = get_file_size(pageFd);
 	if (!this->sendHeader())
 		return (false);
