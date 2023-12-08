@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/08 12:14:43 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/08 12:19:49 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,10 +337,8 @@ bool	Client::sendPage(int pageFd, size_t pageSize)
 			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
 			return true;
 		}
-		else 
-			return false;
 	}
-	return (true);
+	return (false);
 }
 
 int Client::get_file_size(int fd)
