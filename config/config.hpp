@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:43 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/08 20:23:24 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/09 10:44:33 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Config
 		void error_call(std::string error);
 		void handle_brackets(void);
 		//server :
-		void handle_port(Directives& server, int *indice);
+		void handle_port(Directives& server,std::vector<int> &ports, int *indice);
 		std::string next_str_arg(int *indice);
 		int max_body_size(int *indice);
 		void handle_error_page(Directives &server, int *indice);

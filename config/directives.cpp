@@ -53,3 +53,13 @@ int Directives::getBodySize() const {
 void Directives::setBodySize(int bodySize) {
     body_size = bodySize;
 }
+
+std::vector<int> Directives::getPorts()const
+{
+	return port;
+}
+
+void Directives::setPorts(std::vector<int>& ports)
+{
+	this->port = ports;
+}
