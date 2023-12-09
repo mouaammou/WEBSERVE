@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/08 20:25:10 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/09 10:46:41 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,15 @@ void Config::print_file()
 void Config::print_file2(Config &conf)
 {
 	size_t j = 0;
+	std::vector<int> ports;
 	while (j < conf.directs.size())
 	{
 		std::cout << "Server : " << j << std::endl;
 		std::cout << conf.directs[j].getServerId() << std::endl;
-		for (size_t i = 0; i < conf.directs[j].port.size() ; i++)
+		ports = conf.directs[j].getPorts();
+		for (size_t i = 0; i < ports.size() ; i++)
 		{
-			std::cout << "port " << i << " " << conf.directs[j].port[i] << std::endl;
+			std::cout << "port " << i << " " << ports[i] << std::endl;
 		}
 		std::cout << "server name    "<< conf.directs[j].getServerName() << std::endl;
 		std::cout << "Error pages:" << std::endl;
@@ -368,8 +370,9 @@ bool containsElement(const std::vector<int>& vec, int element)
 }
 
 
-void Config::handle_port(Directives& server, int *indice)
+void Config::handle_port(Directives& server,std::vector<int> &ports, int *indice)
 {
+	;
 	int size;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
@@ -382,10 +385,10 @@ void Config::handle_port(Directives& server, int *indice)
 	int port;
 	port = atoi(ftokens[*indice].c_str());
 	if (port < 0 || port > 65535)
-		error_call("use a port between 1024 and 65535!");
-	if (containsElement(server.port, port))
+		error_call("use a port between 1 and 65535!");
+	if (containsElement(ports, port))
 		error_call("port is duplicated!");
-	server.port.push_back(port);
+	ports.push_back(port);
 }
 
 std::string Config::next_str_arg(int *indice)
@@ -422,12 +425,13 @@ int Config::max_body_size(int *indice)
 
 bool valid_status(int status)
 {
-	// not valid information;
-	if (status % 10 < 0 || status % 10 > 5)
-		return false;
-	if (status / 100 < 1 || status / 100 > 5)
-		return false;
-	return true;
+	if ((status >= 100 && status <= 101) || (status >= 200 && status <= 206))
+		return true;
+	if ((status >= 300 && status <= 307) || (status >= 400 && status <= 417))
+		return true;
+	if ((status >= 500 && status <= 505))
+		return true;
+	return false;
 }
 
 void Config::handle_error_page(Directives &server, int *indice)
@@ -478,6 +482,7 @@ void Config::check_server_name_dup(std::string serv_name)
 void Config::handle_servers(int *indice)
 {
 	Directives server;
+	std::vector<int> ports;
 	int size;
 	int port = 0;
 	int srv_name = 0;
@@ -493,7 +498,7 @@ void Config::handle_servers(int *indice)
 	{
 		if (ftokens[*indice] == "port")
 		{
-			handle_port(server, indice);
+			handle_port(server, ports, indice);
 			port = 1;
 		}
 		else if (ftokens[*indice] == "server_name")
@@ -519,10 +524,15 @@ void Config::handle_servers(int *indice)
 	}
 	if (!srv_name)
 		error_call("Server name not set for server ");
-	if (server.getServerId() < 2 && !port)
+	if (port)
+		server.setPorts(ports);
+	else if (server.getServerId() < 2 && !port)
 		error_call("port not set in the first server!");
 	else if (server.getServerId() > 1 && !port)
-		server.port.push_back(this->directs[0].port[0]);
+	{
+		ports = this->directs[0].getPorts();
+		server.setPorts(ports);
+	}
 	this->directs.push_back(server);
 }
 

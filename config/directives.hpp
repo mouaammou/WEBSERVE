@@ -5,15 +5,16 @@
 
 class Directives
 {
-		int server_id;
+	private:
 		std::string server_name;
 		std::string host_name;
-		int body_size;
 		std::map<int, std::string> error_page;
+		std::vector<int> port;
+		int server_id;
+		int body_size;
 	public:
 		Directives();
 		~Directives();
-		std::vector<int> port;
 		std::vector<Location> my_lct;
 		int getServerId() const;
 		void setServerId(int serverId);
@@ -24,7 +25,8 @@ class Directives
 		const std::string& getHostName() const;
 		void setHostName(const std::string& hostName);
 		int getBodySize() const;
+		std::vector<int> getPorts()const;
+		void setPorts(std::vector<int>& ports);
 		void setBodySize(int bodySize);
 };
-
 #endif
