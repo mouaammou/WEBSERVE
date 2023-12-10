@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/08 13:09:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/10 18:49:42 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void   Server::pollEvents()//rename this function:
     int timeout = 5000;//50 seconds
 	int pollStatus;
 
-	int pageFd = open("/goinfre/mouaammo/vvvv.mp4", O_RDONLY);
+	int pageFd = open("./html/index.html", O_RDONLY);
 	if (pageFd == -1)
 	{
 		perror("open");
@@ -137,7 +137,7 @@ void   Server::pollEvents()//rename this function:
 					this->httpClients[pollFds[i].fd]->displayRequest();
 					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
 					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
-					continue;
+					// continue;
 				}
 			}
 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write

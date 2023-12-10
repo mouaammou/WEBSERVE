@@ -6,13 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/08 12:19:49 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/10 18:35:02 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
-#include <sys/_types/_off_t.h>
-#include <sys/_types/_size_t.h>
 
 Client::Client(int fd)
 {
@@ -108,9 +106,9 @@ void Client::displayRequest()
 {
 	if (!this->requestString.empty())
 	{
-		std::cout << COLOR_GREEN << "Method: " << COLOR_RESET << this->method << std::endl;
-		std::cout << COLOR_GREEN << "Path: " << COLOR_RESET << this->path << std::endl;
-		std::cout << COLOR_GREEN << "Version: " << COLOR_RESET << this->version << std::endl;
+		std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
+		std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
+		std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
 		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
 			std::cout << it->first << "=>" << it->second;
@@ -301,7 +299,7 @@ bool	Client::sendHeader()
 	if (!this->isSendHeader)
 	{
 		this->responseHeader = "HTTP/1.1 200 OK\r\n";
-		this->responseHeader += "Content-Type: video/mp4\r\n";
+		this->responseHeader += "Content-Type: text/html\r\n";
 		this->responseHeader += "Content-Length: " + std::to_string(this->responseBodySize) + "\r\n";
 		this->responseHeader += "\r\n";
 		int sendStatus = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);

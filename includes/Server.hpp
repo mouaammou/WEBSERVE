@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/08 13:27:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/10 23:24:24 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,37 @@
 
 #include "../includes/Client.hpp"
 
+typedef struct config
+{
+	std::string location="/index.html";
+	std::string root="/Users/mouaammo/Desktop/WEBSERVE/html";
+	std::string translated_path = location + root;
+	std::string index;
+	std::string autoindex;
+	std::string cgi;
+	std::string cgi_path;
+	std::string cgi_extension;
+	std::string cgi_param;
+	std::string upload;
+	std::string upload_path;
+	std::string upload_store;
+	std::string upload_size;
+	std::string methods;
+}				t_config;
+
 class Server
 {
-    private:
+	private:
 		struct addrinfo *result;//getaddrinfo() function
-        int serverSocket;//server socket: socket() function
-        std::string severPort;//server port
-        std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
+		int serverSocket;//server socket: socket() function
+		std::string severPort;//server port
+		std::vector<pollfd> pollFds;//pollfd structure for server socket and connected clients
 		//map for clients
 		std::map<int, Client*> httpClients;
 	
-    public:
-        Server(std::string port);
+		t_config server_config;
+	public:
+		Server(std::string port);
 		~Server();
 
 		void    bindServerSocket();//set server socket: create socket, set socket options
