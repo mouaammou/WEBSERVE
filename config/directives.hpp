@@ -8,13 +8,14 @@ class Directives
 	private:
 		std::string server_name;
 		std::string host_name;
+		std::vector<std::string> def_method;
 		std::map<int, std::string> error_page;
 		std::vector<int> port;
 		int server_id;
 		int body_size;
 	public:
 		Directives();
-		~Directives();
+		~Directives();      
 		std::vector<Location> my_lct;
 		int getServerId() const;
 		void setServerId(int serverId);
@@ -22,6 +23,8 @@ class Directives
 		void setErrorPage(int key, std::string value);
 		const std::string& getServerName() const;
 		void setServerName(const std::string& serverName);
+		const std::vector<std::string>& getDefMethod() const;
+		void setDefMethod(const std::vector<std::string>& serverName);
 		const std::string& getHostName() const;
 		void setHostName(const std::string& hostName);
 		int getBodySize() const;

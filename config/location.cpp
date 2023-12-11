@@ -1,7 +1,7 @@
 #include "location.hpp"
 
 Location::Location() {
-    // Constructor implementation
+    setAutoindex(-1);
 }
 
 Location::~Location() {

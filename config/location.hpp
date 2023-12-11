@@ -40,15 +40,17 @@ class Location
 		int getAutoindex() const;
 		void setAutoindex(int autoindex);
 
+		// const std::string& getPhysicalUri();
 	private:
 		std::string name;
+		std::string path;
 		std::string index;
 		std::string root;
 		std::string cgi_exe;
 		std::vector<std::string> methods;
 		std::string	return_str;
-		int	return_int;
-		int	autoindex;
+		bool	return_int;
+		int		autoindex;
 };
 
 #endif

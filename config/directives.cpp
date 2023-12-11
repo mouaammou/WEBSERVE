@@ -38,6 +38,14 @@ void Directives::setServerName(const std::string& serverName) {
     server_name = serverName;
 }
 
+const std::vector<std::string>& Directives::getDefMethod() const {
+	return def_method;
+}
+
+void Directives::setDefMethod(const std::vector<std::string>& method) {
+    def_method = method;
+}
+
 const std::string& Directives::getHostName() const {
 	return host_name;
 }

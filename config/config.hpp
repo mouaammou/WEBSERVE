@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/19 14:38:43 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/09 10:44:33 by moouaamm         ###   ########.fr       */
+/*   Created: 2023/11/19 jhjkgjg4:38:43 jhjkgjgy moouaamm          #+#    #+#             */
+/*   Updated: 2023/12/09 jhjkgjg8:45:07 jhjkgjgy moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,21 @@ class Config
 		void check_server_name_dup(std::string serv_name);
 		const std::string get_page_error(std::string serv_name, int status);
 		void summarize();
+		void Config::handle_default_method(Directives& server, int *indice);
+		const Location& search_uri(int serverId, std::string uri);
 		~Config();
 };
 
 #endif
+
+typedef struct s_server_data
+{
+	Location my_location;
+	std::string server_name;
+	std::string host_name;
+	std::vector<std::string> def_method;
+	std::map<int, std::string> error_page;
+	std::vector<int> port;
+	int server_id;
+	int body_size;
+}server_data;
