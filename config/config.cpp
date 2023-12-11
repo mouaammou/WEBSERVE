@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/09 10:46:41 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:29:20 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,7 @@ Config::Config(std::string file)
 		this->ftokens.push_back(line);
 	}
 	if (this->ftokens.size() == 0)
-	{
-		std::cout << "Config file is empthy" << std::endl;
-		exit(0);
-	}
+		error_call("Config file is empthy");
 	this->open_brack = 0;
 	this->close_brack = 0;
 	tmp_infile.close();
@@ -176,7 +173,6 @@ void Config::tokenizer(std::string token)
 	}
 	this->ftokens.clear();
 	this->ftokens = tmp_vec;
-	// Add the remaining part of the string after the last occurrence of "{"
 }
 
 void Config::remove_spces()
@@ -306,6 +302,33 @@ void Config::handle_proxy_methode(Location &location, int *indice)
 }
 
 
+void Config::handle_default_method(Directives& server, int *indice)
+{
+	int tmp;
+	std::vector<std::string> methods;
+	tmp = (*indice);
+	while (ftokens[tmp].compare(";"))
+		tmp++;
+	(*indice)++;
+	if ((*indice) == tmp || tmp - (*indice) > 3)
+		error_call("error default_method!");
+	while ((*indice) < tmp)
+	{
+		if (ftokens[(*indice)] == "GET")
+			methods.push_back(ftokens[(*indice)]);
+		else if (ftokens[(*indice)] == "POST")
+			methods.push_back(ftokens[(*indice)]);
+		else if (ftokens[(*indice)] == "DELETE")
+			methods.push_back(ftokens[(*indice)]);
+		else
+			error_call("only GET,POST and DELETE accepted!");
+		(*indice)++;
+	}
+	if (methods.size() > 3 || methode_duplicated(methods))
+		error_call("methods must not be duplicated!");
+	server.setDefMethod(methods);
+}
+
 void Config::handle_inside_locations(Directives& server, int *indice)
 {
 	Location locat;
@@ -334,7 +357,7 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 		else if (ftokens[*indice] == "index")
 			locat.setIndex(next_str_arg(indice));
 		else if (!is_token(indice))
-			error_call(ftokens[*indice] + " not refer to any directive!");
+			error_call(ftokens[*indice] + " not refer to any arg inside location!");
 		(*indice)++;
 	}
 	if (!locat.getReturnInt() && !root)
@@ -518,6 +541,8 @@ void Config::handle_servers(int *indice)
 			handle_locations(indice);
 			handle_inside_locations(server, indice);
 		}
+		else if (ftokens[*indice] == "default_method")
+			handle_default_method(server, indice);
 		else if (!is_token(indice))
 			error_call(ftokens[*indice] + " not refering to any directive!");
 		(*indice)++;
@@ -577,6 +602,20 @@ void Config::summarize()
 	handle_brackets();
 	fill_directive();
 }
+
+// const server_data Config::search_uri(int serverId, std::string uri)
+// {
+// 	for (size_t i = 0; i < this->directs.size(); i++)
+// 	{
+// 		if (directs[i].getServerId() == serverId)
+// 		{
+// 			return directs[i].my_lct[i];
+// 			directs[i].getBodySize();
+// 		}
+// 	}
+
+// }
+
 
 int Config::count = 0;
 
