@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/10 23:24:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/11 00:40:34 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@
 
 typedef struct config
 {
-	std::string location="/index.html";
-	std::string root="/Users/mouaammo/Desktop/WEBSERVE/html";
-	std::string translated_path = location + root;
+	std::string location;
+	std::string root;
+	std::string translated_path;
 	std::string index;
 	std::string autoindex;
 	std::string cgi;
@@ -60,7 +60,7 @@ class Server
 		//map for clients
 		std::map<int, Client*> httpClients;
 	
-		t_config server_config;
+		t_config serverConfigFile;
 	public:
 		Server(std::string port);
 		~Server();
