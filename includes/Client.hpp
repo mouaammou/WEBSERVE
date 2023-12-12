@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/07 00:12:15 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/08 10:54:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/12 18:32:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,20 @@
 #define PERMISSION_CHECK 0644
 #define MAX_REQUEST_SIZE 50000
 
+typedef struct config
+{
+	std::string location;
+	std::string root;
+	std::string translated_path;
+	std::string indexfile;
+	std::string autoindex;
+	std::string cgi;
+	std::string cgi_path;
+	std::string upload;
+	std::string upload_path;
+	std::string methods;
+}				t_config;
+
 class Client
 {
 	private:
@@ -57,15 +71,19 @@ class Client
 		std::string requestBody;
 		std::map<std::string, std::string> requestHeaders;
 		size_t contentLength;
+		std::string transferEncoding;
 		bool _hasHeaders;
 		bool _hasBody;
 
 		size_t sendBytes;
-		std::string responseHeader;
-		std::string responseBody;
 		size_t	responseBodySize;
 		bool isSendBody;
 		bool isSendHeader;
+
+		std::string statusCode;
+		std::string responseString;
+
+		//Method, response
 		
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -73,40 +91,45 @@ class Client
 		~Client();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
-		std::string 	getPath() const;
-		std::string 	getVersion() const;
-		std::string 	getRequestBody() const;
-		size_t			getContentLength() const;
-		bool			hasSendBody() const;
-		bool			hasSendHeader() const;
-		bool			hasHeaders() const;
-		bool			hasBody() const;
-		int				getFd() const;
+		std::string 	 getPath() const;
+		std::string 	  getVersion() const;
+		std::string 	   getRequestBody() const;
+		size_t			    getContentLength() const;
+		int				     getFd() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
+
+		bool			hasSendBody() const;
+		bool			 hasSendHeader() const;
+		bool			  hasHeaders() const;
+		bool			   hasBody() const;
 
 
 		//display request headers
 		void	displayRequest();
 		// Function to parse the raw HTTP request
-		void	parseRequest(std::string bufferString);
-		void	parseRequestFirstLine(const std::string& line);
-		void	parseRequestHeaders(const std::string& line);
-		void	storeRequestBody(std::stringstream& requestStream);
+		void parseRequest(std::string bufferString);
+		void  parseRequestFirstLine(const std::string& line);
+		void   parseRequestHeaders(const std::string& line);
+		void    storeRequestBody(std::stringstream& requestStream);
 
 
-		void	checkMethod();
-		void	checkPath();
-		void	checkVersion();
-		void	checkRequestHeaders();
-		void	parseURIencoded();
-
+		void		checkMethod();
+		void		 checkVersion();
+		void		  checkPath();
+		bool		   allowedURIchars(std::string& str);
+		void		    checkRequestHeaders();
+		
+		void requestFormatError();
+		bool  checkRequestLocation();//STILL NEED TO BE IMPLEMENTED
+		bool   requestHasRedirection();//STILL NEED TO BE IMPLEMENTED
+		
 		bool   receiveRequest();
-		bool   sendResponse(int pageFd);
+		bool    sendResponse(int pageFd);
 
-		bool	sendPage(int pageFd, size_t pageSize);
-		bool	sendHeader();
-		int		get_file_size(int fd);
+		bool		sendPage(int pageFd, size_t pageSize);
+		bool		 sendHeader();
+		int			  get_file_size(int fd);
 
 		void   resetResponseState();
-		void   resetRequestState();
+		void    resetRequestState();
 };

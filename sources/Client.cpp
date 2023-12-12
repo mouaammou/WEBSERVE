@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/10 18:35:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:12:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ Client::Client(int fd)
 	this->isSendBody = false;
 	this->isSendHeader = false;
 	this->responseBodySize = 0;
+	this->transferEncoding = "";
 }
 
 Client::~Client(){}//Default destructor
@@ -116,6 +117,19 @@ void Client::displayRequest()
 	}
 }
 
+bool	allowedURIchars(std::string& str)
+{
+	std::string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n')
+			return (false);
+		if (allowedChars.find(str[i]) == std::string::npos)
+			return (false);
+	}
+	return (true);
+}
+
 void	Client::parseRequestFirstLine(const std::string& line)
 {
 	std::istringstream lineStream(line);
@@ -145,6 +159,10 @@ void	Client::parseRequestHeaders(const std::string& line)//hasheaders, requesthe
 			std::stringstream ss(value);
 			ss >> this->contentLength;
 		}
+		if (key.compare("Transfer-Encoding:") == 0)//if the key is Transfer-Encoding
+		{
+			this->transferEncoding = value;
+		}
 		this->requestHeaders[key] = value;
 	}
 	if (this->requestHeaders.size() > 0)
@@ -159,19 +177,8 @@ void	Client::checkMethod()
 
 void Client::checkPath()
 {
-	struct stat info;
-	stat(this->path.c_str(), &info);
-	if (S_ISDIR(info.st_mode))
-	{
-		if (this->path[this->path.length() - 1] != '/')
-			this->path += "/";
-		this->path += "index.html";
-	}
-	this->parseURIencoded();
-}
-
-void	Client::parseURIencoded()
-{
+	if (this->allowedURIchars(this->path) == false)
+		throw std::runtime_error("Invalid request path");
 	while (this->path.find("%") != std::string::npos)
 	{
 		int decimal;
@@ -183,6 +190,14 @@ void	Client::parseURIencoded()
 		mychar = static_cast<char>(decimal);
 		this->path.replace(this->path.find("%"), 3, 1, mychar);
 	}
+}
+
+void	Client::requestFormatError()
+{
+	if (this->transferEncoding == "" && this->contentLength == 0 && this->method == "POST")
+		throw std::runtime_error("Invalid request format");
+	if (this->path.length() > 2048)
+		throw std::runtime_error("Request-URI Too Long");
 }
 
 void	Client::checkVersion()
