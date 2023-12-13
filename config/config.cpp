@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/11 16:29:20 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/13 22:39:15 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 Config::Config(/* args */)
 {
 }
+
+std::vector<Directives> Config::get_directives() const
+{
+	return this->directs;
+}
+
 
 void Config::check_coma(std::string line)
 {
@@ -633,7 +639,51 @@ int main(int argc, char *argv[])
 		file = argv[1];
 		Config conf(file);
 		conf.summarize();
-		conf.print_file2(conf);
+		// conf.print_file2(conf);
+		std::vector<Directives> directs;
+		directs = conf.get_directives();
+		size_t j = 0;
+	std::vector<int> ports;
+	while (j < directs.size())
+	{
+		std::cout << "Server : " << j << std::endl;
+		std::cout << directs[j].getServerId() << std::endl;
+		ports = directs[j].getPorts();
+		for (size_t i = 0; i < ports.size() ; i++)
+		{
+			std::cout << "port " << i << " " << ports[i] << std::endl;
+		}
+		std::cout << "server name    "<< directs[j].getServerName() << std::endl;
+		std::cout << "Error pages:" << std::endl;
+		std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
+		std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
+		std::cout << "201 " << directs[j].getErrorPage(201)<< std::endl;
+		std::cout << "500 " << directs[j].getErrorPage(500)<< std::endl;
+		std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
+		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
+		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
+		std::cout << "Locations for server "<< j << std::endl;
+		for (size_t i = 0; i < directs[j].my_lct.size(); i++)
+		{
+			std::cout<<"name " << directs[j].my_lct[i].getName() << std::endl;
+			std::cout<<"root " << directs[j].my_lct[i].getRoot() << std::endl;
+			std::cout<<"auto index " << directs[j].my_lct[i].getAutoindex() << std::endl;
+			std::cout<<"index " << directs[j].my_lct[i].getIndex() << std::endl;
+			if (directs[j].my_lct[i].getReturnInt())
+				std::cout<<"return " << directs[j].my_lct[i].getReturnString() << std::endl;
+			if (!directs[j].my_lct[i].getCgiExe().empty())
+			std::cout<<"exec " << directs[j].my_lct[i].getCgiExe() << std::endl;
+			std::cout << "Methodes ";
+			std::vector<std::string> methods;
+			methods = directs[j].my_lct[i].getMethods();
+			for (size_t k = 0; k < methods.size(); k++)
+			{
+				std::cout << methods[k] << "   ";
+			}
+			std::cout << std::endl;
+		}
+		j++;
+	}
 		return 0;
 	}
 	std::cout << "Error usage: <./webserv config_file>" << std::endl;
