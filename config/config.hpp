@@ -34,6 +34,7 @@ class Config
 		std::vector<Directives> directs;
 	public:
 		Config();
+		std::vector<Directives> get_directives() const;
 		Config(std::string file);
 		void tokenizer(std::string token);
 		bool str_digit(std::string str);
@@ -60,7 +61,7 @@ class Config
 		void check_server_name_dup(std::string serv_name);
 		const std::string get_page_error(std::string serv_name, int status);
 		void summarize();
-		void Config::handle_default_method(Directives& server, int *indice);
+		void handle_default_method(Directives& server, int *indice);
 		const Location& search_uri(int serverId, std::string uri);
 		~Config();
 };
