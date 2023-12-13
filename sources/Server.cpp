@@ -6,13 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/10 18:49:42 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/13 20:36:29 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <sys/_types/_size_t.h>
-#include <sys/poll.h>
 
 Server::Server(std::string port)//constructor
 {

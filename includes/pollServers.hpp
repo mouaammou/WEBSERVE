@@ -1,39 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Method.hpp                                         :+:      :+:    :+:   */
+/*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/12 20:31:05 by mouaammo         ###   ########.fr       */
+/*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
+/*   Updated: 2023/12/13 21:49:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+class Server;
+
 #include "../includes/Server.hpp"
 
-class Method
+class pollServers
 {
 	private:
-		std::string		statusCode;
-		std::string		location;
-		std::string		file_type;
-		bool			autoindex;
-		bool			cgi;
-		t_config		 config_file;
-
+		std::vector<struct pollfd> pollFds;//servers and clients
+		std::map<int, Server*> servers;//severs
 	public:
-		Method(std::string location, t_config config_file);
-		~Method();
+		pollServers();
+		~pollServers();
 
-		bool			get_method_location(std::string location);
-		std::string		get_method_file_type();
-		std::string		get_status_code();
-		bool			has_cgi();
-		
-		bool	has_indexfile();
-		bool	has_autoindex();
+		bool isServer(int fd);
+		void addFileDescriptor(int fd, config *conf);
+		Server  witchServer(int clientFd);
 };
-

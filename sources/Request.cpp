@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
+/*   Request.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,11 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "../includes/Request.hpp"
 
-Client::Client(int fd)
+Request::Request(int fd, t_config config_file)
 {
 	this->fd = fd;
+	this->server_config = config_file;
 	this->requestString = "";
 	this->method = "";
 	this->path = "";
@@ -23,74 +24,52 @@ Client::Client(int fd)
 	this->contentLength = 0;
 	this->_hasHeaders = false;
 	this->_hasBody = false;
-	this->sendBytes = 0;
-	this->isSendBody = false;
-	this->isSendHeader = false;
-	this->responseBodySize = 0;
 	this->transferEncoding = "";
 }
 
-Client::~Client(){}//Default destructor
+Request::~Request(){}//Default destructor
 
-std::string Client::getMethod() const
+std::string Request::getMethod() const
 {
 	return (this->method);
 }
 
-std::string Client::getPath() const
+std::string Request::getPath() const
 {
 	return (this->path);
 }
 
-std::string Client::getVersion() const
+std::string Request::getVersion() const
 {
 	return (this->version);
 }
 
-std::map<std::string, std::string> Client::getRequestHeaders() const
+std::map<std::string, std::string> Request::getRequestHeaders() const
 {
 	return (this->requestHeaders);
 }
 
-std::string Client::getRequestBody() const
+std::string Request::getRequestBody() const
 {
 	return (this->requestBody);
 }
 
-size_t Client::getContentLength() const
+size_t Request::getContentLength() const
 {
 	return (this->contentLength);
 }
 
-bool			Client::hasBody() const
+bool			Request::hasBody() const
 {
 	return (this->_hasBody);
 }
 
-bool			Client::hasSendBody() const
-{
-	return (this->isSendBody);
-}
-
-bool			Client::hasSendHeader() const
-{
-	return (this->isSendHeader);
-}
-
-int				Client::getFd() const
+int				Request::getFd() const
 {
 	return (this->fd);
 }
 
-void   Client::resetResponseState()
-{
-	this->sendBytes = 0;
-	this->isSendBody = false;
-	this->isSendHeader = false;
-	this->responseBodySize = 0;
-}
-
-void   Client::resetRequestState()
+void   Request::resetRequestState()
 {
 	this->requestString = "";
 	this->method = "";
@@ -103,7 +82,7 @@ void   Client::resetRequestState()
 }
 
 //display request headers
-void Client::displayRequest()
+void Request::displayRequest()
 {
 	if (!this->requestString.empty())
 	{
@@ -130,7 +109,7 @@ bool	allowedURIchars(std::string& str)
 	return (true);
 }
 
-void	Client::parseRequestFirstLine(const std::string& line)
+void	Request::parseRequestFirstLine(const std::string& line)
 {
 	std::istringstream lineStream(line);
 
@@ -144,7 +123,7 @@ void	Client::parseRequestFirstLine(const std::string& line)
 	this->checkVersion();
 }
 
-void	Client::parseRequestHeaders(const std::string& line)//hasheaders, requestheaders, contentlength
+void	Request::parseRequestHeaders(const std::string& line)//hasheaders, requestheaders, contentlength
 {
 	std::size_t pos = line.find(':');
 	if (pos != std::string::npos)
@@ -169,13 +148,13 @@ void	Client::parseRequestHeaders(const std::string& line)//hasheaders, requesthe
 		this->_hasHeaders = true;
 }
 
-void	Client::checkMethod()
+void	Request::checkMethod()
 {
 	if (this->method.compare("GET") != 0 && this->method.compare("POST") != 0 && this->method.compare("DELETE") != 0)
 		throw std::runtime_error("Invalid request method");
 }
 
-void Client::checkPath()
+void Request::checkPath()
 {
 	if (this->allowedURIchars(this->path) == false)
 		throw std::runtime_error("Invalid request path");
@@ -192,7 +171,7 @@ void Client::checkPath()
 	}
 }
 
-void	Client::requestFormatError()
+void	Request::requestFormatError()
 {
 	if (this->transferEncoding == "" && this->contentLength == 0 && this->method == "POST")
 		throw std::runtime_error("Invalid request format");
@@ -200,18 +179,18 @@ void	Client::requestFormatError()
 		throw std::runtime_error("Request-URI Too Long");
 }
 
-void	Client::checkVersion()
+void	Request::checkVersion()
 {
 	if (this->version.compare("HTTP/1.1") != 0)
 		throw std::runtime_error("Invalid request version");
 }
 
-bool		Client::hasHeaders() const
+bool		Request::hasHeaders() const
 {
 	return (this->_hasHeaders);
 }
 
-void Client::parseRequest(std::string bufferString)
+void Request::parseRequest(std::string bufferString)
 {
 	std::stringstream requestStream(bufferString);
 
@@ -247,7 +226,7 @@ void Client::parseRequest(std::string bufferString)
 }
 
 
-void	Client::storeRequestBody(std::stringstream& requestStream)//hasbody, requestbody
+void	Request::storeRequestBody(std::stringstream& requestStream)//hasbody, requestbody
 {
 	// Parse the body
 	std::string line;
@@ -266,7 +245,7 @@ void	Client::storeRequestBody(std::stringstream& requestStream)//hasbody, reques
 		std::cout << COLOR_CYAN "No request body" COLOR_RESET << std::endl;
 }
 
-bool	Client::receiveRequest()
+bool	Request::receiveRequest()
 {
 	char *buffer = new char[MAX_REQUEST_SIZE];
 	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
@@ -278,7 +257,7 @@ bool	Client::receiveRequest()
 	}
 	if (readBytes == 0)
 	{
-		std::cout << COLOR_CYAN "Client disconnected" COLOR_RESET << std::endl;
+		std::cout << COLOR_CYAN "Request disconnected" COLOR_RESET << std::endl;
 		return (false);
 	}
 	this->requestString += buffer;
@@ -309,68 +288,3 @@ bool	Client::receiveRequest()
 	return (false);
 }
 
-bool	Client::sendHeader()
-{
-	if (!this->isSendHeader)
-	{
-		this->responseHeader = "HTTP/1.1 200 OK\r\n";
-		this->responseHeader += "Content-Type: text/html\r\n";
-		this->responseHeader += "Content-Length: " + std::to_string(this->responseBodySize) + "\r\n";
-		this->responseHeader += "\r\n";
-		int sendStatus = send(this->fd, this->responseHeader.c_str(), this->responseHeader.length(), 0);
-		if (sendStatus <= 0)
-		{
-			perror("send");
-			return (false);
-		}
-		this->isSendHeader = true;
-	}
-
-	return (true);
-}
-
-bool	Client::sendPage(int pageFd, size_t pageSize)
-{
-	off_t len = 1024 * 2;
-
-	if (this->isSendBody == false)
-	{
-		if (sendfile(pageFd, this->fd, this->sendBytes, &len, NULL, 0) == -1)
-		{
-			perror("sendfile");
-			return false;
-		}
-		this->sendBytes += len;
-		
-		printf("sendBytes = %zu\n", this->sendBytes);
-		printf("pageSize = %zu\n", pageSize);
-		if (this->sendBytes == pageSize)
-		{
-			this->isSendBody = true;
-			std::cout << COLOR_CYAN "End of response" COLOR_RESET << std::endl;
-			return true;
-		}
-	}
-	return (false);
-}
-
-int Client::get_file_size(int fd)
-{
-    int file_size;
-    int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
-    file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
-    lseek(fd, current_position, SEEK_SET); // Return to the original position
-    return file_size;
-}
-
-bool   Client::sendResponse(int pageFd)
-{
-	this->responseBodySize = get_file_size(pageFd);
-	if (!this->sendHeader())
-		return (false);
-
-	if (!this->sendPage(pageFd, this->responseBodySize))
-		return (false);
-	lseek(pageFd, 0, SEEK_SET);
-	return (true);
-}

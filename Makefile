@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/08 10:51:29 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/12 20:17:15 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ NAME 		= 	webserver
 CCPP 		= 	c++
 RM 			= 	rm -fr
 
-FILES 		= $(addprefix sources/, Server.cpp Client.cpp)  main.cpp 
-HEADER_FILES 	= $(addprefix includes/, Server.hpp Client.hpp) Makefile
+FILES 		= $(addprefix sources/, Server.cpp Request.cpp)  main.cpp 
+HEADER_FILES 	= $(addprefix includes/, Server.hpp Request.hpp) Makefile
 
 PORT = 5555
 
