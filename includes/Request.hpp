@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/13 23:49:06 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 23:37:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,6 @@ class Request
 		
 		void parseRequest(std::string bufferString);
 		bool   receiveRequest();
+		bool   sendResponse();
+		int get_file_size(int fd);
 };

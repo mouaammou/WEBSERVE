@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
+#include <sys/fcntl.h>
 
 Request::Request(int fd, t_config config_file)
 {
@@ -288,3 +289,37 @@ bool	Request::receiveRequest()
 	return (false);
 }
 
+
+// Response
+
+bool   Request::sendResponse()
+{
+	int pageFd = open("/Users/mouaammo/Desktop/WEBSERVE/html/index.html", O_RDWR);
+	if (pageFd == -1)
+	{
+		perror("open:error");
+		exit(EXIT_FAILURE);
+	}
+	int fileSize = get_file_size(pageFd);
+	off_t len = fileSize;
+
+	std::string responseHeader = "HTTP/1.1 200 OK\r\n";
+		responseHeader += "Content-Type: text/html\r\n";
+		responseHeader += "Content-Length: " + std::to_string(fileSize) + "\r\n";
+
+	if (sendfile(pageFd, this->fd, 0, &len, NULL, 0) == -1)
+	{
+		perror("sendfile");
+		return false;
+	}
+	return (true);
+}
+
+int Request::get_file_size(int fd)
+{
+    int file_size;
+    int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
+    file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
+    lseek(fd, current_position, SEEK_SET); // Return to the original position
+    return file_size;
+}

@@ -6,12 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 21:59:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 23:55:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/PollServers.hpp"
 #include <string>
+#include <sys/poll.h>
 
 PollServers::PollServers(Config config_file)
 {
@@ -74,11 +75,20 @@ void 				PollServers::initPoll()
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())
 						{
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
-							
-							// this->poll_Fds[i].events = POLL_OUT;
+							this->poll_Fds[i].events = POLL_OUT;
 						}
+						continue;
 					}
 				}
+				else if (this->poll_Fds[i].revents & POLLOUT)
+				{
+					std::cout << COLOR_GREEN "sending response to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+					Server *server = this->witchServer(this->poll_Fds[i].fd);
+					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
+						this->poll_Fds[i].events = POLL_IN;
+				}
+				if (this->poll_Fds[i].revents & (POLLHUP))
+					this->removeFileDescriptor(this->poll_Fds[i].fd);
 			}
 		}
 	}
@@ -119,7 +129,7 @@ void	PollServers::addFileDescriptor(int fd)
 	struct pollfd newFd;
 
 	newFd.fd = fd;
-	newFd.events = POLL_IN;
+	newFd.events = (POLL_IN | POLLOUT);
 	fcntl(newFd.fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
 	this->poll_Fds.push_back(newFd);
 }
@@ -130,7 +140,7 @@ void	PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
-			std::cout << COLOR_RED "SERVER disconnected :=> " COLOR_RESET<< fd << std::endl;
+			std::cout << COLOR_RED << fd << ":: removed from poll()" COLOR_RESET << std::endl;
 			close(fd);
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
 			break;
