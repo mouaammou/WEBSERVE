@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 18:35:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:59:56 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pollServers.hpp"
+#include "../includes/PollServers.hpp"
+#include <string>
 
 PollServers::PollServers(Config config_file)
 {
@@ -28,6 +29,7 @@ void				PollServers::setServerConfigurations(int i)
 {
 	this->servers_config[i].server_locations = this->config_file.get_directives()[i].getLocations();
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
+	this->servers_config[i].port = std::to_string(this->config_file.get_directives()[i].getPorts()[0]);
 }
 
 void	PollServers::bindServers()
@@ -38,14 +40,16 @@ void	PollServers::bindServers()
 		this->http_servers[i] = new Server(this->servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();
 		addFileDescriptor(this->servers_config[i].server_fd);
+		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
 }
 
 void 				PollServers::initPoll()
 {
-	int timeout = 50000;
+	int timeout = 5000;
 	int pollStatu;
-
+	puts("init poll");
+	this->bindServers();
 	while (true)
 	{
 		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), timeout);
@@ -55,7 +59,7 @@ void 				PollServers::initPoll()
 			exit (EXIT_FAILURE);
 		}
 		else if (pollStatu == 0)
-			std::cout << "poll timeout" << std::endl;
+			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
 		else
 		{
 			for (size_t i = 0; i < this->poll_Fds.size(); i++)
@@ -67,9 +71,12 @@ void 				PollServers::initPoll()
 					else
 					{
 						Server *server = this->witchServer(this->poll_Fds[i].fd);
-						// server->httpClients[this->poll_Fds[i].fd]->receiveRequest();
-						server->httpClients[this->poll_Fds[i].fd]->receiveRequest();
-						this->poll_Fds[i].events = POLL_OUT;
+						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())
+						{
+							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
+							
+							// this->poll_Fds[i].events = POLL_OUT;
+						}
 					}
 				}
 			}

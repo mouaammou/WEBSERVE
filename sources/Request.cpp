@@ -96,7 +96,7 @@ void Request::displayRequest()
 	}
 }
 
-bool	allowedURIchars(std::string& str)
+bool	Request::allowedURIchars(std::string& str)
 {
 	std::string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
 	for (size_t i = 0; i < str.length(); i++)

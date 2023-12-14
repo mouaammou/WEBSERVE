@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/13 22:39:15 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:12:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
+
+int Config::count = 0;
 
 Config::Config(/* args */)
 {
@@ -102,19 +104,19 @@ void Config::print_file2(Config &conf)
 		std::cout << "body_size    "<< conf.directs[j].getBodySize() << std::endl;
 		std::cout << "host_name    "<< conf.directs[j].getHostName() << std::endl;
 		std::cout << "Locations for server "<< j << std::endl;
-		for (size_t i = 0; i < conf.directs[j].my_lct.size(); i++)
+		for (size_t i = 0; i < conf.directs[j].server_locations.size(); i++)
 		{
-			std::cout<<"name " << conf.directs[j].my_lct[i].getName() << std::endl;
-			std::cout<<"root " << conf.directs[j].my_lct[i].getRoot() << std::endl;
-			std::cout<<"auto index " << conf.directs[j].my_lct[i].getAutoindex() << std::endl;
-			std::cout<<"index " << conf.directs[j].my_lct[i].getIndex() << std::endl;
-			if (conf.directs[j].my_lct[i].getReturnInt())
-				std::cout<<"return " << conf.directs[j].my_lct[i].getReturnString() << std::endl;
-			if (!conf.directs[j].my_lct[i].getCgiExe().empty())
-			std::cout<<"exec " << conf.directs[j].my_lct[i].getCgiExe() << std::endl;
+			std::cout<<"name " << conf.directs[j].server_locations[i].getName() << std::endl;
+			std::cout<<"root " << conf.directs[j].server_locations[i].getRoot() << std::endl;
+			std::cout<<"auto index " << conf.directs[j].server_locations[i].getAutoindex() << std::endl;
+			std::cout<<"index " << conf.directs[j].server_locations[i].getIndex() << std::endl;
+			if (conf.directs[j].server_locations[i].getReturnInt())
+				std::cout<<"return " << conf.directs[j].server_locations[i].getReturnString() << std::endl;
+			if (!conf.directs[j].server_locations[i].getCgiExe().empty())
+			std::cout<<"exec " << conf.directs[j].server_locations[i].getCgiExe() << std::endl;
 			std::cout << "Methodes ";
 			std::vector<std::string> methods;
-			methods = conf.directs[j].my_lct[i].getMethods();
+			methods = conf.directs[j].server_locations[i].getMethods();
 			for (size_t k = 0; k < methods.size(); k++)
 			{
 				std::cout << methods[k] << "   ";
@@ -368,7 +370,7 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 	}
 	if (!locat.getReturnInt() && !root)
 		error_call("root must be present in location section");
-	server.my_lct.push_back(locat);
+	server.server_locations.push_back(locat);
 }
 
 void Config::handle_locations(int *indice)
@@ -401,7 +403,7 @@ bool containsElement(const std::vector<int>& vec, int element)
 
 void Config::handle_port(Directives& server,std::vector<int> &ports, int *indice)
 {
-	;
+	(void)server;
 	int size;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
@@ -609,6 +611,11 @@ void Config::summarize()
 	fill_directive();
 }
 
+
+Config::~Config()
+{
+	this->ftokens.clear();
+}
 // const server_data Config::search_uri(int serverId, std::string uri)
 // {
 // 	for (size_t i = 0; i < this->directs.size(); i++)
@@ -622,69 +629,61 @@ void Config::summarize()
 
 // }
 
-
-int Config::count = 0;
-
-Config::~Config()
-{
-	this->ftokens.clear();
-}
-
-int main(int argc, char *argv[])
-{
-	if (argc == 2)
-	{
-		// directives dir;
-		std::string file;
-		file = argv[1];
-		Config conf(file);
-		conf.summarize();
-		// conf.print_file2(conf);
-		std::vector<Directives> directs;
-		directs = conf.get_directives();
-		size_t j = 0;
-	std::vector<int> ports;
-	while (j < directs.size())
-	{
-		std::cout << "Server : " << j << std::endl;
-		std::cout << directs[j].getServerId() << std::endl;
-		ports = directs[j].getPorts();
-		for (size_t i = 0; i < ports.size() ; i++)
-		{
-			std::cout << "port " << i << " " << ports[i] << std::endl;
-		}
-		std::cout << "server name    "<< directs[j].getServerName() << std::endl;
-		std::cout << "Error pages:" << std::endl;
-		std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
-		std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
-		std::cout << "201 " << directs[j].getErrorPage(201)<< std::endl;
-		std::cout << "500 " << directs[j].getErrorPage(500)<< std::endl;
-		std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
-		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
-		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
-		std::cout << "Locations for server "<< j << std::endl;
-		for (size_t i = 0; i < directs[j].my_lct.size(); i++)
-		{
-			std::cout<<"name " << directs[j].my_lct[i].getName() << std::endl;
-			std::cout<<"root " << directs[j].my_lct[i].getRoot() << std::endl;
-			std::cout<<"auto index " << directs[j].my_lct[i].getAutoindex() << std::endl;
-			std::cout<<"index " << directs[j].my_lct[i].getIndex() << std::endl;
-			if (directs[j].my_lct[i].getReturnInt())
-				std::cout<<"return " << directs[j].my_lct[i].getReturnString() << std::endl;
-			if (!directs[j].my_lct[i].getCgiExe().empty())
-			std::cout<<"exec " << directs[j].my_lct[i].getCgiExe() << std::endl;
-			std::cout << "Methodes ";
-			std::vector<std::string> methods;
-			methods = directs[j].my_lct[i].getMethods();
-			for (size_t k = 0; k < methods.size(); k++)
-			{
-				std::cout << methods[k] << "   ";
-			}
-			std::cout << std::endl;
-		}
-		j++;
-	}
-		return 0;
-	}
-	std::cout << "Error usage: <./webserv config_file>" << std::endl;
-}
+// int main(int argc, char *argv[])
+// {
+// 	if (argc == 2)
+// 	{
+// 		// directives dir;
+// 		std::string file;
+// 		file = argv[1];
+// 		Config conf(file);
+// 		conf.summarize();
+// 		// conf.print_file2(conf);
+// 		std::vector<Directives> directs;
+// 		directs = conf.get_directives();
+// 		size_t j = 0;
+// 	std::vector<int> ports;
+// 	while (j < directs.size())
+// 	{
+// 		std::cout << "Server : " << j << std::endl;
+// 		std::cout << directs[j].getServerId() << std::endl;
+// 		ports = directs[j].getPorts();
+// 		for (size_t i = 0; i < ports.size() ; i++)
+// 		{
+// 			std::cout << "port " << i << " " << ports[i] << std::endl;
+// 		}
+// 		std::cout << "server name    "<< directs[j].getServerName() << std::endl;
+// 		std::cout << "Error pages:" << std::endl;
+// 		std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
+// 		std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
+// 		std::cout << "201 " << directs[j].getErrorPage(201)<< std::endl;
+// 		std::cout << "500 " << directs[j].getErrorPage(500)<< std::endl;
+// 		std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
+// 		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
+// 		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
+// 		std::cout << "Locations for server "<< j << std::endl;
+// 		for (size_t i = 0; i < directs[j].server_locations.size(); i++)
+// 		{
+// 			std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
+// 			std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
+// 			std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
+// 			std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
+// 			if (directs[j].server_locations[i].getReturnInt())
+// 				std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
+// 			if (!directs[j].server_locations[i].getCgiExe().empty())
+// 			std::cout<<"exec " << directs[j].server_locations[i].getCgiExe() << std::endl;
+// 			std::cout << "Methodes ";
+// 			std::vector<std::string> methods;
+// 			methods = directs[j].server_locations[i].getMethods();
+// 			for (size_t k = 0; k < methods.size(); k++)
+// 			{
+// 				std::cout << methods[k] << "   ";
+// 			}
+// 			std::cout << std::endl;
+// 		}
+// 		j++;
+// 	}
+// 		return 0;
+// 	}
+// 	std::cout << "Error usage: <./webserv config_file>" << std::endl;
+// }

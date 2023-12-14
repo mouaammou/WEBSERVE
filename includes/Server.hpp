@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 18:34:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 19:17:34 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ class Server
 
 		void	addClient(int fd);//add new client to the map
 		void	removeClient(int fd);//remove client from the map
-
-		void	handleRequest(int fd);//handle client request
 
 		bool	isClient(int fd);//check if the fd is a client
 		void    closefds();//close client sockets: close() function

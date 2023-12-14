@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 18:33:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:32:26 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Server::Server(t_config serverConfigFile)//constructor
 {
 	this->serverConfigFile = serverConfigFile;
 	this->serverSocket = -1;
-	this->severPort = "8080";
+	this->severPort = serverConfigFile.port;
 }
 
 Server::~Server()//close server socket
@@ -102,10 +102,3 @@ int		Server::getServerSocket() const
 	return (this->serverSocket);
 }
 
-
-void	Server::handleRequest(int fd)
-{
-	std::cout << COLOR_CYAN "Handle request" COLOR_RESET << std::endl;
-	
-		
-}

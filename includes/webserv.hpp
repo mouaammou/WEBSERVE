@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 01:23:19 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:20:34 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,6 @@ typedef struct config
 {
 	std::vector<Location> server_locations;
 	std::string server_name;
+	std::string port;
 	int	server_fd;
 }		t_config;
