@@ -6,31 +6,22 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/13 20:36:29 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 03:30:11 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-Server::Server(std::string port)//constructor
+Server::Server(t_config serverConfigFile)//constructor
 {
-    this->severPort = port;
+	this->serverConfigFile = serverConfigFile;
 	this->serverSocket = -1;
+	this->severPort = "8080";
 }
 
 Server::~Server()//close server socket
 {
     close(this->serverSocket);
-}
-
-void	Server::addFileDescriptor(int fd)
-{
-	struct pollfd newFd;
-
-	newFd.fd = fd;
-	newFd.events = POLL_IN;
-	this->pollFds.push_back(newFd);
-	fcntl(newFd.fd , F_SETFL, O_NONBLOCK);//set server socket to non-blocking mode
 }
 
 void	Server::setServerSocket()
@@ -76,7 +67,7 @@ void    Server::bindServerSocket()
     freeaddrinfo(this->result);//free the linked list
 }
 
-void  Server::listenForConnections()
+int  Server::listenForConnections()
 {
 	//BIND
 	this->bindServerSocket();
@@ -86,9 +77,7 @@ void  Server::listenForConnections()
         perror("listen");
         exit (EXIT_FAILURE);
     }
-    //ADD SERVER SOCKET TO POLLFDS
-	addFileDescriptor(this->serverSocket);
-    std::cout << COLOR_BLUE << " Server is listening on port " << COLOR_RESET<< this->severPort << std::endl;
+    return (this->serverSocket);
 }
 
 double	Server::bitToMegaBit(double bytes)
@@ -96,118 +85,118 @@ double	Server::bitToMegaBit(double bytes)
 	return (bytes / 1000000);
 }
 
-void   Server::pollEvents()//rename this function: 
-{
-	//LISTEN:
-	this->listenForConnections();//socket(), bind(), listen()
-	//POLL
-    int timeout = 5000;//50 seconds
-	int pollStatus;
+// void   Server::pollEvents()//rename this function: 
+// {
+// 	//LISTEN:
+// 	this->listenForConnections();//socket(), bind(), listen()
+// 	//POLL
+//     int timeout = 5000;//50 seconds
+// 	int pollStatus;
 
-	int pageFd = open("./html/index.html", O_RDONLY);
-	if (pageFd == -1)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-    while (true)
-    {
-		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
-		if (pollStatus == -1)
-		{
-			perror("poll");
-			exit(EXIT_FAILURE);
-		}
-		else if (pollStatus == 0)
-		{
-			std::cout << COLOR_YELLOW "waiting for connections ... " COLOR_RESET << std::endl;
-		}
-		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
-			acceptConnections();//only accept connection from the first fd
+// 	int pageFd = open("./html/index.html", O_RDONLY);
+// 	if (pageFd == -1)
+// 	{
+// 		perror("open");
+// 		exit(EXIT_FAILURE);
+// 	}
+//     while (true)
+//     {
+// 		pollStatus = poll(this->pollFds.data(), pollFds.size(), timeout);
+// 		if (pollStatus == -1)
+// 		{
+// 			perror("poll");
+// 			exit(EXIT_FAILURE);
+// 		}
+// 		else if (pollStatus == 0)
+// 		{
+// 			std::cout << COLOR_YELLOW "waiting for connections ... " COLOR_RESET << std::endl;
+// 		}
+// 		if ((pollFds[0].fd == this->serverSocket) && (pollFds[0].revents & POLLIN))//if the first fd is ready to read
+// 			acceptConnections();//only accept connection from the first fd
 
-		for (size_t i = 1; i < pollFds.size(); i++)
-		{
-			if (pollFds[i].revents & POLLIN)//if the client is ready to read
-			{
-				if (this->httpClients[pollFds[i].fd]->receiveRequest())//receive the request
-				{
-					this->pollFds[i].events = POLLOUT;//set the client to write
-					this->httpClients[pollFds[i].fd]->displayRequest();
-					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
-					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
-					// continue;
-				}
-			}
-			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
-			{
-				std::cout << COLOR_GREEN "Client is ready to write" COLOR_RESET << std::endl;
-				if (this->httpClients[pollFds[i].fd]->sendResponse(pageFd))//send the response
-				{
-					this->pollFds[i].events = POLLIN;//set the client to read
-					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
-					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
-					this->removeClient(pollFds[i].fd);//remove the client from the pollfd array
-					break;
-				}
-			}
-			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
-			{
-				removeClient(pollFds[i].fd);//remove the client from the pollfd array
-			}
-		}
-	}
-}
+// 		for (size_t i = 1; i < pollFds.size(); i++)
+// 		{
+// 			if (pollFds[i].revents & POLLIN)//if the client is ready to read
+// 			{
+// 				if (this->httpClients[pollFds[i].fd]->receiveRequest())//receive the request
+// 				{
+// 					this->pollFds[i].events = POLLOUT;//set the client to write
+// 					this->httpClients[pollFds[i].fd]->displayRequest();
+// 					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
+// 					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
+// 					// continue;
+// 				}
+// 			}
+// 			else if (pollFds[i].revents & POLLOUT)//if the client is ready to write
+// 			{
+// 				std::cout << COLOR_GREEN "Client is ready to write" COLOR_RESET << std::endl;
+// 				if (this->httpClients[pollFds[i].fd]->sendResponse(pageFd))//send the response
+// 				{
+// 					this->pollFds[i].events = POLLIN;//set the client to read
+// 					this->httpClients[pollFds[i].fd]->resetRequestState();//reset the client
+// 					this->httpClients[pollFds[i].fd]->resetResponseState();//reset the client
+// 					this->removeClient(pollFds[i].fd);//remove the client from the pollfd array
+// 					break;
+// 				}
+// 			}
+// 			if ((pollFds[i].revents & POLLHUP) || (pollFds[i].revents & POLLERR))//if the client close the connection
+// 			{
+// 				removeClient(pollFds[i].fd);//remove the client from the pollfd array
+// 			}
+// 		}
+// 	}
+// }
 
-void   Server::acceptConnections()
-{
-    struct sockaddr clientAddr;
-    int clientSocket;
-    socklen_t clientAddrLen = sizeof(clientAddr);
+// void   Server::acceptConnections()
+// {
+//     struct sockaddr clientAddr;
+//     int clientSocket;
+//     socklen_t clientAddrLen = sizeof(clientAddr);
 
-    if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) == -1)
-    {
-        perror("accept");
-        return;
-    }
-    //add the new client socket to the pollfd array
-	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
-	addNewClient(clientSocket);
-}
+//     if ((clientSocket = accept(this->serverSocket, &clientAddr, &clientAddrLen)) == -1)
+//     {
+//         perror("accept");
+//         return;
+//     }
+//     //add the new client socket to the pollfd array
+// 	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
+// 	addNewClient(clientSocket);
+// }
 
-void	Server::addNewClient(int fd)
-{
-	addFileDescriptor(fd);
-	Client *newClient = new Client(fd);
-	this->httpClients.insert(std::pair<int, Client*>(fd, newClient));
-}
+// void	Server::addNewClient(int fd)
+// {
+// 	addFileDescriptor(fd);
+// 	Client *newClient = new Client(fd);
+// 	this->httpClients.insert(std::pair<int, Client*>(fd, newClient));
+// }
 
-void	Server::removeClient(int fd)
-{
-	removeFileDescriptor(fd);
-	this->httpClients.erase(fd);
-}
+// void	Server::removeClient(int fd)
+// {
+// 	removeFileDescriptor(fd);
+// 	this->httpClients.erase(fd);
+// }
 
 
-void	Server::removeFileDescriptor(int fd)
-{
-	for (size_t i = 0; i < this->pollFds.size(); i++)
-	{
-		if (this->pollFds[i].fd == fd)
-		{
-			std::cout << COLOR_RED "Client disconnected :=> " COLOR_RESET<< fd << std::endl;
-			close(fd);
-			fd = -1;
-			this->pollFds.erase(this->pollFds.begin() + i);
-			break;
-		}
-	}
-}
+// void	Server::removeFileDescriptor(int fd)
+// {
+// 	for (size_t i = 0; i < this->pollFds.size(); i++)
+// 	{
+// 		if (this->pollFds[i].fd == fd)
+// 		{
+// 			std::cout << COLOR_RED "Client disconnected :=> " COLOR_RESET<< fd << std::endl;
+// 			close(fd);
+// 			fd = -1;
+// 			this->pollFds.erase(this->pollFds.begin() + i);
+// 			break;
+// 		}
+// 	}
+// }
 
-void    Server::closefds()
-{
-//close all the client sockets and the server socket
-	for (size_t i = 0; i < this->pollFds.size(); i++)
-	{
-		close(this->pollFds[i].fd);
-	}
-}
+// void    Server::closefds()
+// {
+// //close all the client sockets and the server socket
+// 	for (size_t i = 0; i < this->pollFds.size(); i++)
+// 	{
+// 		close(this->pollFds[i].fd);
+// 	}
+// }
