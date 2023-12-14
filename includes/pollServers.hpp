@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pollServers.hpp                                    :+:      :+:    :+:   */
+/*   PollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 03:29:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:59:22 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,11 @@ class PollServers
 
 		void 				initPoll();
 		void 				bindServers();
-		void		addFileDescriptor(int fd);
-		void		removeFileDescriptor(int fd);
+		void				addFileDescriptor(int fd);
+		void				removeFileDescriptor(int fd);
 		bool 				isServer(int fd);
-		Server  			&witchServer(int clientFd);
+		Server  			*witchServer(int clientFd);
+		Server  			*getTheServer(int fd);
 		void				setServerConfigurations(int index);
 		void   				acceptConnections(int serverfd);
 };

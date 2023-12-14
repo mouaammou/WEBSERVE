@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pollServers.cpp                                    :+:      :+:    :+:   */
+/*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 03:34:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/14 18:35:00 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,10 @@ void 				PollServers::initPoll()
 						this->acceptConnections(this->poll_Fds[i].fd);
 					else
 					{
-						Server &server = this->witchServer(this->poll_Fds[i].fd);
-						// server.handleRequest(this->poll_Fds[i].fd);
+						Server *server = this->witchServer(this->poll_Fds[i].fd);
+						// server->httpClients[this->poll_Fds[i].fd]->receiveRequest();
+						server->httpClients[this->poll_Fds[i].fd]->receiveRequest();
+						this->poll_Fds[i].events = POLL_OUT;
 					}
 				}
 			}
@@ -85,13 +87,24 @@ bool 				PollServers::isServer(int fd)
 	return (false);
 }
 
-
-Server&				PollServers::witchServer(int clientFd)
+Server*				PollServers::getTheServer(int fd)
 {
 	for (size_t i = 0; i < this->num_servers; i++)
 	{
-		
+		if (this->http_servers[i]->getServerSocket() == fd)
+			return (this->http_servers[i]);
 	}
+	return (NULL);
+}
+
+Server*				PollServers::witchServer(int clientFd)
+{
+	for (size_t i = 0; i < this->num_servers; i++)
+	{
+		if (this->http_servers[i]->isClient(clientFd))
+			return (this->http_servers[i]);
+	}
+	return (NULL);
 }
 
 void	PollServers::addFileDescriptor(int fd)
@@ -131,5 +144,10 @@ void   PollServers::acceptConnections(int serverfd)
     }
     //add the new client socket to the pollfd array
 	addFileDescriptor(clientSocket);
+	//add the new client to the map
+	
+	Server *server = this->getTheServer(serverfd);
+	if (server)
+		server->addClient(clientSocket);
 	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 }
