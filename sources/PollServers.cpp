@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 23:55:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/15 18:19:20 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void 				PollServers::initPoll()
 {
 	int timeout = 5000;
 	int pollStatu;
+	Server *server = NULL;
 	puts("init poll");
 	this->bindServers();
 	while (true)
@@ -71,24 +72,31 @@ void 				PollServers::initPoll()
 						this->acceptConnections(this->poll_Fds[i].fd);
 					else
 					{
-						Server *server = this->witchServer(this->poll_Fds[i].fd);
+						server = this->witchServer(this->poll_Fds[i].fd);
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())
 						{
+							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
-							this->poll_Fds[i].events = POLL_OUT;
+							this->poll_Fds[i].events = POLLOUT;
+							continue;
 						}
-						continue;
 					}
 				}
 				else if (this->poll_Fds[i].revents & POLLOUT)
 				{
 					std::cout << COLOR_GREEN "sending response to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-					Server *server = this->witchServer(this->poll_Fds[i].fd);
+					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 						this->poll_Fds[i].events = POLL_IN;
 				}
-				if (this->poll_Fds[i].revents & (POLLHUP))
+				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				{
+					int fd = this->poll_Fds[i].fd;
 					this->removeFileDescriptor(this->poll_Fds[i].fd);
+					printf("vector size = %zu\n", this->poll_Fds.size());
+					if (server)
+						server->removeClient(fd);
+				}
 			}
 		}
 	}
@@ -129,8 +137,8 @@ void	PollServers::addFileDescriptor(int fd)
 	struct pollfd newFd;
 
 	newFd.fd = fd;
-	newFd.events = (POLL_IN | POLLOUT);
-	fcntl(newFd.fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
+	newFd.events = POLL_IN;
+	fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
 	this->poll_Fds.push_back(newFd);
 }
 
@@ -140,9 +148,9 @@ void	PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
-			std::cout << COLOR_RED << fd << ":: removed from poll()" COLOR_RESET << std::endl;
-			close(fd);
+			std::cout << COLOR_RED << "removed fd: "<< fd << COLOR_RESET << std::endl;
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
+			close(fd);
 			break;
 		}
 	}
@@ -161,10 +169,10 @@ void   PollServers::acceptConnections(int serverfd)
     }
     //add the new client socket to the pollfd array
 	addFileDescriptor(clientSocket);
+	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 	//add the new client to the map
 	
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
-	std::cout << COLOR_RED "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 }

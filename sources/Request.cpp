@@ -90,10 +90,10 @@ void Request::displayRequest()
 		std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
 		std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
 		std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
-		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-		for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
-			std::cout << it->first << "=>" << it->second;
-		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->requestBody << std::endl;
+		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
+		// for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
+		// 	std::cout << it->first << "=>" << it->second;
+		// std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->requestBody << std::endl;
 	}
 }
 
@@ -259,7 +259,7 @@ bool	Request::receiveRequest()
 	if (readBytes == 0)
 	{
 		std::cout << COLOR_CYAN "Request disconnected" COLOR_RESET << std::endl;
-		return (false);
+		return (true);
 	}
 	this->requestString += buffer;
 	this->parseRequest(this->requestString);
@@ -294,6 +294,7 @@ bool	Request::receiveRequest()
 
 bool   Request::sendResponse()
 {
+	puts("SEND RESPONSE");
 	int pageFd = open("/Users/mouaammo/Desktop/WEBSERVE/html/index.html", O_RDWR);
 	if (pageFd == -1)
 	{
@@ -306,7 +307,8 @@ bool   Request::sendResponse()
 	std::string responseHeader = "HTTP/1.1 200 OK\r\n";
 		responseHeader += "Content-Type: text/html\r\n";
 		responseHeader += "Content-Length: " + std::to_string(fileSize) + "\r\n";
-
+		responseHeader += "\r\n";
+	send(this->fd, responseHeader.c_str(), responseHeader.length(), 0);
 	if (sendfile(pageFd, this->fd, 0, &len, NULL, 0) == -1)
 	{
 		perror("sendfile");
