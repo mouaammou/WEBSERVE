@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 17:59:22 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/15 20:07:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class PollServers
 
 		void 				initPoll();
 		void 				bindServers();
+		void				removeFromPoll(Server *server, int fd);
 		void				addFileDescriptor(int fd);
 		void				removeFileDescriptor(int fd);
 		bool 				isServer(int fd);

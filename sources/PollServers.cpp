@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/15 18:19:20 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/15 21:07:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/PollServers.hpp"
-#include <string>
 #include <sys/poll.h>
 
 PollServers::PollServers(Config config_file)
@@ -28,15 +27,17 @@ PollServers::~PollServers()
 
 void				PollServers::setServerConfigurations(int i)
 {
+	std::stringstream ss;
+	ss << this->config_file.get_directives()[i].getPorts()[0];
+	ss >> this->servers_config[i].port;
 	this->servers_config[i].server_locations = this->config_file.get_directives()[i].getLocations();
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
-	this->servers_config[i].port = std::to_string(this->config_file.get_directives()[i].getPorts()[0]);
 }
 
 void	PollServers::bindServers()
 {
 	for(size_t i = 0; i < this->num_servers; i++)
-	{	
+	{
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();
@@ -73,29 +74,34 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
-						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())
+						if (server && server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
-							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+							//	GET, post, delete ==> status code
+							//	
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
+							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+							std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 							this->poll_Fds[i].events = POLLOUT;
-							continue;
 						}
 					}
 				}
 				else if (this->poll_Fds[i].revents & POLLOUT)
 				{
+					//CALL CLASS RESPONSE ==> status code, 
+					//run cgi: CGI::build()
+					//reponse::getClientResponse() ==> Pollin
 					std::cout << COLOR_GREEN "sending response to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
-						this->poll_Fds[i].events = POLL_IN;
+					{
+						// this->poll_Fds[i].events = POLLIN;
+						removeFromPoll(server, this->poll_Fds[i].fd);
+						printf("vector size: %lu\n", this->poll_Fds.size());
+					}
 				}
-				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				else if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 				{
-					int fd = this->poll_Fds[i].fd;
-					this->removeFileDescriptor(this->poll_Fds[i].fd);
-					printf("vector size = %zu\n", this->poll_Fds.size());
-					if (server)
-						server->removeClient(fd);
+					removeFromPoll(server, this->poll_Fds[i].fd);
 				}
 			}
 		}
@@ -132,12 +138,19 @@ Server*				PollServers::witchServer(int clientFd)
 	return (NULL);
 }
 
+void				PollServers::removeFromPoll(Server *server ,int fd)
+{
+	this->removeFileDescriptor(fd);
+	if (server)
+		server->removeClient(fd);
+}
+
 void	PollServers::addFileDescriptor(int fd)
 {
 	struct pollfd newFd;
 
 	newFd.fd = fd;
-	newFd.events = POLL_IN;
+	newFd.events = POLLIN | POLLOUT;
 	fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
 	this->poll_Fds.push_back(newFd);
 }

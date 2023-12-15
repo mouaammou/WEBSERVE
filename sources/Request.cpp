@@ -90,10 +90,10 @@ void Request::displayRequest()
 		std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
 		std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
 		std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
-		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-		// for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
-		// 	std::cout << it->first << "=>" << it->second;
-		// std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->requestBody << std::endl;
+		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
+			std::cout << it->first << "=>" << it->second;
+		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->requestBody << std::endl;
 	}
 }
 
@@ -246,7 +246,7 @@ void	Request::storeRequestBody(std::stringstream& requestStream)//hasbody, reque
 		std::cout << COLOR_CYAN "No request body" COLOR_RESET << std::endl;
 }
 
-bool	Request::receiveRequest()
+bool	Request::receiveRequest()//must read the request
 {
 	char *buffer = new char[MAX_REQUEST_SIZE];
 	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
@@ -258,15 +258,13 @@ bool	Request::receiveRequest()
 	}
 	if (readBytes == 0)
 	{
-		std::cout << COLOR_CYAN "Request disconnected" COLOR_RESET << std::endl;
+		std::cout << COLOR_RED "Request disconnected" COLOR_RESET << std::endl;
 		return (true);
 	}
 	this->requestString += buffer;
 	this->parseRequest(this->requestString);
 	delete [] buffer;
 
-	printf("requestBody.length() = %zu\n", this->requestBody.length());
-	printf("contentLength = %zu\n", this->contentLength);
 	if (this->hasHeaders() && this->contentLength == 0)
 	{
 		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
@@ -294,11 +292,10 @@ bool	Request::receiveRequest()
 
 bool   Request::sendResponse()
 {
-	puts("SEND RESPONSE");
 	int pageFd = open("/Users/mouaammo/Desktop/WEBSERVE/html/index.html", O_RDWR);
 	if (pageFd == -1)
 	{
-		perror("open:error");
+		perror("open");
 		exit(EXIT_FAILURE);
 	}
 	int fileSize = get_file_size(pageFd);
@@ -308,12 +305,17 @@ bool   Request::sendResponse()
 		responseHeader += "Content-Type: text/html\r\n";
 		responseHeader += "Content-Length: " + std::to_string(fileSize) + "\r\n";
 		responseHeader += "\r\n";
-	send(this->fd, responseHeader.c_str(), responseHeader.length(), 0);
+	if (send(this->fd, responseHeader.c_str(), responseHeader.length(), 0) == -1)
+	{
+		perror("send");
+		return false;
+	}
 	if (sendfile(pageFd, this->fd, 0, &len, NULL, 0) == -1)
 	{
 		perror("sendfile");
 		return false;
 	}
+	close(pageFd);
 	return (true);
 }
 

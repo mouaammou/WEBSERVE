@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/15 18:02:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/15 20:14:34 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	Server::addClient(int fd)
 
 void	Server::removeClient(int fd)
 {
-	std::cout << COLOR_CYAN "Client removed" COLOR_RESET << std::endl;
+	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->httpClients.erase(fd);
 }
 
