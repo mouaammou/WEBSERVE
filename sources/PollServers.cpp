@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/16 01:07:41 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/16 23:23:58 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void 				PollServers::initPoll()
 						if (server && server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
 							//	GET, post, delete ==> status code
-							//	
+							
 							// if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "GET")
 							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Get(server->httpClients[this->poll_Fds[i].fd]);
 							// else if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "POST")
@@ -97,6 +97,7 @@ void 				PollServers::initPoll()
 					//CALL CLASS RESPONSE ==> status code, 
 					//run cgi: CGI::build()
 					//reponse::getClientResponse() ==> Pollin
+					
 					std::cout << COLOR_GREEN "sending response to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
@@ -163,7 +164,7 @@ void	PollServers::addFileDescriptor(int fd)
 }
 
 void	PollServers::removeFileDescriptor(int fd)
-{ 
+{
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
 		if (this->poll_Fds[i].fd == fd)

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 23:37:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/16 23:30:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Request
 		std::string 	  getVersion() const;
 		std::string 	   getRequestBody() const;
 		size_t			    getContentLength() const;
+		std::string 		 getTransferEncoding() const;
 		int				     getFd() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 

@@ -60,6 +60,11 @@ size_t Request::getContentLength() const
 	return (this->contentLength);
 }
 
+std::string 		Request::getTransferEncoding() const
+{
+	return (this->transferEncoding);
+}
+
 bool			Request::hasBody() const
 {
 	return (this->_hasBody);
