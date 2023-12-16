@@ -1,36 +1,50 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/06 18:00:10 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/06 18:13:40 by samjaabo         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-#include "includes/Server.hpp"
-#include <exception>
 #include <iostream>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <cstdio>
+//
+# include "ATcpServer.hpp"
 
-int main(int ac, char **av)
+int main()
 {
-	signal(SIGPIPE, SIG_IGN);
-	try {
-		if (ac != 2)
-		{
-			std::cout << "Usage: ./webserv [port]" << std::endl;
-			return (1);
-		}
-
-		Server myserver(av[1]);
-		myserver.pollEvents();// here where the magic happens, the server will wait for events, and when it receives one, it will call the appropriate function
-		myserver.closefds();
-	} catch (std::exception &e) {
-		std::cout << COLOR_RED "ERROR: " << e.what() << std::endl;
-	}
+	ATcpServer	server;
+	server.pollEventLoop();
 	return (0);
 }
 
+// int main( void )
+// {
+// 	t_config		config;
+// 	CGI::build(config, 0);
+// 	while(1)
+// 	{
+// 		usleep(1000000);
+// 		CGI::checkTimeoutAndExitedProcesses(1000);
+// 	}
+// 	return 0;
+// }
+
+// #include <iostream>
+// #include <ctime>
+// #include <poll.h>
+
+// int main() {
+//     clock_t start, end;
+
+//     start = clock();
+
+//     // Example poll usage
+//     struct pollfd fds[1];
+//     fds[0].fd = 0 /* your file descriptor */;
+//     fds[0].events = POLLIN;
+//     // int result = poll(fds, 1, 3000);
+// 	usleep(3000000);
+
+//     end = clock();
+
+//     uint64_t elapsedSeconds = static_cast<uint64_t>(end - start) / CLOCKS_PER_SEC;
+
+//     std::cout << "poll elapsed time: " << elapsedSeconds << " seconds." << std::endl;
+
+//     return 0;
+// }
