@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/15 21:07:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/16 01:07:41 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,13 @@ void 				PollServers::initPoll()
 						{
 							//	GET, post, delete ==> status code
 							//	
+							// if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "GET")
+							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Get(server->httpClients[this->poll_Fds[i].fd]);
+							// else if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "POST")
+							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Post(server->httpClients[this->poll_Fds[i].fd]);
+							// else if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "DELETE")
+							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Delete(server->httpClients[this->poll_Fds[i].fd]);
+								
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;

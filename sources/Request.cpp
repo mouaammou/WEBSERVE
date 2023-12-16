@@ -283,7 +283,6 @@ bool	Request::receiveRequest()//must read the request
 			return (false);
 		}
 	}
-	std::cout << COLOR_CYAN "Waiting for the headers" COLOR_RESET << std::endl;
 	return (false);
 }
 

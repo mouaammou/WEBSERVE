@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/15 20:14:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/16 01:01:22 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void    Server::bindServerSocket()
 	//set server socket
 	this->setServerSocket();
 	int sendBufferSize = 1;  // Adjust the buffer size as needed
-	if (setsockopt(this->serverSocket , SOL_SOCKET,  SO_REUSEPORT , &sendBufferSize, sizeof(sendBufferSize)) == -1) {
+	if (setsockopt(this->serverSocket , SOL_SOCKET, SO_REUSEPORT , &sendBufferSize, sizeof(sendBufferSize)) == -1) {
 		perror("setsockopt");
 		exit (EXIT_FAILURE);
 	}
