@@ -22,59 +22,59 @@
 # include <ctime>
 # include "StatusCodes.cpp"
 
-// typedef struct config
-// {
-// 	std::string location;
-// 	std::string root;
-// 	std::string translated_path;
-// 	std::string methods;
+typedef struct config
+{
+	std::string location;
+	std::string root;
+	std::string translated_path;
+	std::string methods;
 
-// 	std::string index; //main.py
-// 	std::string type; //text/html
-// 	std::string charset; //utf-8
-// 	std::string language; //en
+	std::string index; //main.py
+	std::string type; //text/html
+	std::string charset; //utf-8
+	std::string language; //en
 
-// 	bool		autoindex;
-// 	std::string	autoindex_format;
+	bool		autoindex;
+	std::string	autoindex_format;
 
-// 	std::string cgi_extension;
-// 	bool		is_a_cgi;
+	std::string cgi_extension;
+	bool		is_a_cgi;
 
-// 	bool		is_a_redirection;
-// 	std::string	redirection_path;
+	bool		is_a_redirection;
+	std::string	redirection_path;
 
-// 	std::string getErrorPage( std::string code )
-// 	{
-// 		(void)code;
-// 		return "/Users/samjaabo/Desktop/webserv/tmp/templates/error_page.html";
-// 	}
-// 	config( void )
-// 	{
-// 		location = "/";
-// 		root = "/Users/samjaabo/Desktop/webserv/tmp/templates/";
-// 		translated_path = "/Users/samjaabo/Desktop/webserv/tmp/templates/main.py";
-// 		methods = "GET,POST,DELETE";
+	std::string getErrorPage( std::string code )
+	{
+		(void)code;
+		return "/Users/samjaabo/Desktop/webserv/tmp/templates/error_page.html";
+	}
+	config( void )
+	{
+		location = "/";
+		root = "/Users/samjaabo/Desktop/webserv/tmp/templates/";
+		translated_path = "/Users/samjaabo/Desktop/webserv/tmp/templates/main.py";
+		methods = "GET,POST,DELETE";
 
-// 		index = "index.html"; //main.py
-// 		type = "text/html"; //text/html
-// 		charset = "utf-8"; //utf-8
-// 		language = "en"; //en
+		index = "index.html"; //main.py
+		type = "text/html"; //text/html
+		charset = "utf-8"; //utf-8
+		language = "en"; //en
 
-// 		autoindex = true;
-// 		autoindex_format = ".html";
+		autoindex = true;
+		autoindex_format = ".html";
 
-// 		cgi_extension = ".py";
-// 		is_a_cgi = false;
+		cgi_extension = ".py";
+		is_a_cgi = false;
 
-// 		is_a_redirection = false;
-// 		redirection_path = "/home/";
-// 	}
+		is_a_redirection = false;
+		redirection_path = "/home/";
+	}
 
-// }	t_config;
+}	t_config;
 
 class Location;
 
-typedef struct config
+typedef struct configg
 {
 	std::vector<Location> server_locations;
 	std::string server_name;
@@ -82,7 +82,7 @@ typedef struct config
 	Location *location;
 	std::string translated_path;
 	int	server_fd;
-}		t_config;
+}		t_configg;
 
 class Response
 {
@@ -184,3 +184,4 @@ class Response
 
 std::map<int, std::string>	Response::ready_responses;
 const StatusCodes Response::status_codes = StatusCodes();
+
