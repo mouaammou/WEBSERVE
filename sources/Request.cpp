@@ -26,6 +26,7 @@ Request::Request(int fd, t_config config_file)
 	this->_hasHeaders = false;
 	this->_hasBody = false;
 	this->transferEncoding = "";
+	this->read_bytes = 0;
 }
 
 Request::~Request(){}//Default destructor
@@ -53,6 +54,11 @@ std::map<std::string, std::string> Request::getRequestHeaders() const
 std::string Request::getRequestBody() const
 {
 	return (this->requestBody);
+}
+
+int				Request::getReadBytes() const
+{
+	return (this->read_bytes);
 }
 
 size_t Request::getContentLength() const
@@ -85,6 +91,7 @@ void   Request::resetRequestState()
 	this->contentLength = 0;
 	this->_hasHeaders = false;
 	this->_hasBody = false;
+	this->read_bytes = 0;
 }
 
 //display request headers
@@ -115,28 +122,29 @@ bool	Request::allowedURIchars(std::string& str)
 	return (true);
 }
 
-void	Request::parseRequestFirstLine(const std::string& line)
+bool	Request::parseRequestFirstLine(const std::string& line)
 {
 	std::istringstream lineStream(line);
 
 	lineStream >> this->method >> this->path >> this->version;
 	if (this->method.empty() || this->path.empty() || this->version.empty())
 	{
-		throw std::runtime_error("Invalid request line");
+		return (false);
 	}
-	this->checkMethod();
-	this->checkPath();
-	this->checkVersion();
+	if (!this->checkMethod() || !this->checkVersion() || !this->checkPath())
+		return (false);
+	puts("parseRequest FirstLine FUNCTION");
+	return (true);
 }
 
-void	Request::parseRequestHeaders(const std::string& line)//hasheaders, requestheaders, contentlength
+bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requestheaders, contentlength
 {
 	std::size_t pos = line.find(':');
 	if (pos != std::string::npos)
 	{
 		std::string key = line.substr(0, pos + 1);
 		if (key.find(" ") != std::string::npos || key.find(":") == std::string::npos)
-			throw std::runtime_error("Invalid header Key");
+			return (false);
 		std::string value = line.substr(pos + 1);
 
 		if (key.compare("Content-Length:") == 0)//if the key is Content-Length
@@ -150,20 +158,23 @@ void	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		}
 		this->requestHeaders[key] = value;
 	}
-	if (this->requestHeaders.size() > 0)
-		this->_hasHeaders = true;
+	// if (this->requestHeaders.size() > 0)
+	// 	this->_hasHeaders = true;
+	puts("parseRequest Headers FUNCTION");
+	return (true);
 }
 
-void	Request::checkMethod()
+bool	Request::checkMethod()
 {
 	if (this->method.compare("GET") != 0 && this->method.compare("POST") != 0 && this->method.compare("DELETE") != 0)
-		throw std::runtime_error("Invalid request method");
+		return (false);
+	return (true);
 }
 
-void Request::checkPath()
+bool Request::checkPath()
 {
 	if (this->allowedURIchars(this->path) == false)
-		throw std::runtime_error("Invalid request path");
+		return (false);
 	while (this->path.find("%") != std::string::npos)
 	{
 		int decimal;
@@ -175,20 +186,24 @@ void Request::checkPath()
 		mychar = static_cast<char>(decimal);
 		this->path.replace(this->path.find("%"), 3, 1, mychar);
 	}
+	return (true);
 }
 
-void	Request::requestFormatError()
+bool	Request::requestFormatError()
 {
 	if (this->transferEncoding == "" && this->contentLength == 0 && this->method == "POST")
-		throw std::runtime_error("Invalid request format");
+		return( false);
 	if (this->path.length() > 2048)
-		throw std::runtime_error("Request-URI Too Long");
+		return( false);
+	puts("requestFormatError FUNCTION");
+	return (true);
 }
 
-void	Request::checkVersion()
+bool	Request::checkVersion()
 {
 	if (this->version.compare("HTTP/1.1") != 0)
-		throw std::runtime_error("Invalid request version");
+		return (false);
+	return (true);
 }
 
 bool		Request::hasHeaders() const
@@ -196,9 +211,10 @@ bool		Request::hasHeaders() const
 	return (this->_hasHeaders);
 }
 
-void Request::parseRequest(std::string bufferString)
+bool Request::parseRequest(std::string bufferString)
 {
-	std::stringstream requestStream(bufferString);
+	std::stringstream requestStream;
+	requestStream << bufferString;
 
 	// Parse the request line
 	std::string line;
@@ -207,9 +223,10 @@ void Request::parseRequest(std::string bufferString)
 		line += "\n";
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
-			throw std::runtime_error("Invalid request line");
-		parseRequestFirstLine(line);
-		line.clear();
+			return (false);
+		if (!parseRequestFirstLine(line))
+			return (false);
+		line = "";
 	}
 	// Parse the headers
 	while (std::getline(requestStream, line))
@@ -223,27 +240,38 @@ void Request::parseRequest(std::string bufferString)
 		}
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
-			throw std::runtime_error("Invalid request Header");
-		parseRequestHeaders(line);
-		line.clear();
+			return (false);
+		if (!parseRequestHeaders(line))
+			return (false);
+		line = "";
 	}
-	//parse the body
-	storeRequestBody(requestStream);
+	if (!requestFormatError())//check if the request format is valid
+		return (false);
+	//if the request headers end with \r\n\r\n
+	// if (this->requestString.find("\r\n\r\n") == std::string::npos)
+	// {
+	// 	std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
+	// 	return (false);
+	// }
+	puts("parseRequest FUNCTION finished");
+	return (true);
 }
 
 
-void	Request::storeRequestBody(std::stringstream& requestStream)//hasbody, requestbody
+void	Request::storeRequestBody(std::string body_string)//hasbody, requestbody
 {
 	// Parse the body
+	std::stringstream requestStream(body_string);
 	std::string line;
 	if (this->contentLength > 0)
 	{
 		this->_hasBody = true;
+		puts("storeRequestBody FUNCTION");
 		while (getline(requestStream, line))
 		{
 			line += "\n";
 			this->requestBody += line;
-			line.clear();
+			line = "";
 		}
 		std::cout << COLOR_CYAN "Receive the body \n" COLOR_RESET << std::endl;
 	}
@@ -253,41 +281,79 @@ void	Request::storeRequestBody(std::stringstream& requestStream)//hasbody, reque
 
 bool	Request::receiveRequest()//must read the request
 {
-	char *buffer = new char[MAX_REQUEST_SIZE];
-	memset(buffer, 0, MAX_REQUEST_SIZE);//clear the buffer
-	int readBytes = read(this->fd, buffer, MAX_REQUEST_SIZE - 1);
-	if (readBytes < 0)
+	int readStatus;
+	char *buffer = new char[MAX_REQUEST_SIZE + 1];
+	readStatus = read(this->fd, buffer, MAX_REQUEST_SIZE);
+	printf("READSTATUS: %d\n", readStatus);
+	if (readStatus < 0)
 	{
+		this->read_bytes = 0;
 		perror("read");
 		return (false);
 	}
-	if (readBytes == 0)
+	if (readStatus == 0)
 	{
-		std::cout << COLOR_RED "Request disconnected" COLOR_RESET << std::endl;
-		return (true);
+		this->read_bytes = 0;
+		std::cout << COLOR_CYAN "client disconnected" COLOR_RESET << std::endl;
+		return (false);
 	}
-	this->requestString += buffer;
-	this->parseRequest(this->requestString);
-	delete [] buffer;
-
-	if (this->hasHeaders() && this->contentLength == 0)
+	buffer[readStatus] = '\0';
+	this->read_bytes += readStatus;
+	if (this->requestString.find("\r\n\r\n") == std::string::npos)
 	{
-		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
-		return (true);
+		this->requestString += buffer;
+		delete [] buffer;
+		if (!this->parseRequest(this->requestString))
+			return (false);
 	}
-	else if (this->hasHeaders() && this->hasBody())
+	else if (this->hasHeaders() && this->contentLength > 0)
 	{
-		if (this->requestBody.length() == (this->contentLength + 1))
+		if (this->requestBody == "")
+			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + buffer;
+		else
+			this->requestBody += buffer;
+		delete [] buffer;
+		if (this->requestBody.length() >= (this->contentLength))
 		{
-			std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
+			printf("requestBody len: %zu\n", this->requestBody.length());
+			printf("contentLength: %zu\n", this->contentLength);
+			std::cout << COLOR_CYAN "End of request: return true" COLOR_RESET << std::endl;
+			this->_hasBody = true;
 			return (true);
 		}
 		else
 		{
-			std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
+			std::cout << COLOR_CYAN "Waiting for the body:  return false" COLOR_RESET << std::endl;
 			return (false);
 		}
 	}
+	else if (this->hasHeaders() && this->contentLength == 0)
+	{
+		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
+		return (true);
+	}
+//edn
+	// if (this->hasHeaders() && this->contentLength == 0)
+	// {
+	// 	std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
+	// 	return (true);
+	// }
+	// else if (this->hasHeaders() && this->hasBody())
+	// {
+	// 	printf("requestBody len: %zu\n", this->requestBody.length());
+	// 	printf("contentLength: %zu\n", this->contentLength);
+	// 	if (this->requestBody.length() >= (this->contentLength))
+	// 	{
+	// 		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
+	// 		return (true);
+	// 	}
+	// 	else
+	// 	{
+	// 		std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
+	// 		return (false);
+	// 	}
+	// }
+	// std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
 	return (false);
 }
 

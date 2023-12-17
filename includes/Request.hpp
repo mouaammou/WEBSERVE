@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/16 23:30:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 03:59:59 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../includes/Server.hpp"
 #include "../includes/Method.hpp"
+#include <_types/_intmax_t.h>
 class Method;
 
 class Request
@@ -32,6 +33,7 @@ class Request
 		std::string transferEncoding;
 		bool _hasHeaders;
 		bool _hasBody;
+		int read_bytes;
 
 		std::string 	 statusCode;
 		std::string 	responseString;
@@ -45,6 +47,7 @@ class Request
 		~Request();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
+		int				getReadBytes() const;
 		std::string 	 getPath() const;
 		std::string 	  getVersion() const;
 		std::string 	   getRequestBody() const;
@@ -60,24 +63,24 @@ class Request
 		//display request headers
 		void	displayRequest();
 		// Function to parse the raw HTTP request
-		void  	parseRequestFirstLine(const std::string& line);
-		void   		parseRequestHeaders(const std::string& line);
-		void    		storeRequestBody(std::stringstream& requestStream);
+		bool  	parseRequestFirstLine(const std::string& line);
+		bool   		parseRequestHeaders(const std::string& line);
+		void    		storeRequestBody(std::string body_string);
 
 
-		void		checkMethod();
-		void		 checkVersion();
-		void		  checkPath();
+		bool		checkMethod();
+		bool		 checkVersion();
+		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
 		void		    checkRequestHeaders();
 		
 		
-		void requestFormatError();
+		bool requestFormatError();
 		void    resetRequestState();
 
 
 		
-		void parseRequest(std::string bufferString);
+		bool parseRequest(std::string bufferString);
 		bool   receiveRequest();
 		bool   sendResponse();
 		int get_file_size(int fd);

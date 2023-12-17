@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/16 23:25:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 05:39:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@
 #define COLOR_CYAN    "\033[0;36m"
 
 #define PERMISSION_CHECK 0644
-#define MAX_REQUEST_SIZE 50000
+#define MAX_REQUEST_SIZE 1024
 class Config;
 class Location;
 

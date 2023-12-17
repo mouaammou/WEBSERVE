@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/16 23:23:58 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 06:18:57 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,41 +74,33 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
+						
 						if (server && server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
-							//	GET, post, delete ==> status code
-							
-							// if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "GET")
-							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Get(server->httpClients[this->poll_Fds[i].fd]);
-							// else if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "POST")
-							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Post(server->httpClients[this->poll_Fds[i].fd]);
-							// else if (server->httpClients[this->poll_Fds[i].fd]->getMethod() == "DELETE")
-							// 	server->httpClients[this->poll_Fds[i].fd]->request_method = new Delete(server->httpClients[this->poll_Fds[i].fd]);
-								
+							puts("GET, POST, DELETE");
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 							this->poll_Fds[i].events = POLLOUT;
 						}
+						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0){
+							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+							removeFromPoll(server, this->poll_Fds[i].fd);
+						}
 					}
 				}
 				else if (this->poll_Fds[i].revents & POLLOUT)
-				{
-					//CALL CLASS RESPONSE ==> status code, 
-					//run cgi: CGI::build()
-					//reponse::getClientResponse() ==> Pollin
-					
-					std::cout << COLOR_GREEN "sending response to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+				{					
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 					{
-						// this->poll_Fds[i].events = POLLIN;
-						removeFromPoll(server, this->poll_Fds[i].fd);
-						printf("vector size: %lu\n", this->poll_Fds.size());
+						std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+						this->poll_Fds[i].events = POLLIN;
 					}
 				}
 				else if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 				{
+					server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 					removeFromPoll(server, this->poll_Fds[i].fd);
 				}
 			}
