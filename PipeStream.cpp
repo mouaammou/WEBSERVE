@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PipeStream.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo < samjaabo@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/14 22:05:30 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 17:58:40 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ class PipeStream
 
 	void parentRead( void ) // true on error or eof
 	{
-		if (readfd == -2)
-			return ;
+		// if (readfd == -2)
+		// 	return ;
 		char *buffer = new char[buffer_size + 1];
 		ssize_t n = ::read(readfd, buffer, buffer_size);
 		if (n == -1 || n == 0)

@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ATcpServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo < samjaabo@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:52:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/16 00:32:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/18 00:15:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ATcpServer.hpp"
 #include "CGI.cpp"
 #include <sys/time.h>
+#include "SendResponse.cpp"
+#include "ResponseGeneration.cpp"
+
 uint32_t ATcpServer::buffsize = 1024;
 
 ATcpServer::ATcpServer( void )
@@ -72,7 +75,7 @@ void ATcpServer::pollEventLoop( void )
 		// std::cout<< "enterpoll" << std::endl;
 		
 		num = poll(pollfds.data(), pollfds.size(), 1000000);
-		CGI::checkTimeoutAndExitedProcesses();
+		// CGI::checkTimeoutAndExitedProcesses();
 		// std::cout<< "poll" << std::endl;
 		if (pollfds.begin()->revents & POLLIN) // main socket fd
 		{
@@ -113,23 +116,48 @@ bool ATcpServer::onPollIn( int fd )
 	std::cout << buff << "---->"<<fd <<std::endl;
 	buffers[fd] += buff;
 	static t_config		config;
-	CGI::build(config, fd);
+
+	uri = buffers[fd].substr(0, buffers[fd].find("\r\n"));
+	uri.erase(0, uri.find("/"));
+	uri.erase(uri.find(" "), uri.length());
+	buffers[fd].clear();
+	// uri = uri.substr(0, uri.find(" "));
+	if (uri == "/favicon.ico")
+	{
+		removeFd(fd);
+		return false;
+	}
+
+	std::cout << "uri->: " << uri << std::endl;
+	AutoIndex ai("/Users/samjaabo/Desktop/WEBSERVE", uri);
+	std::string output = ai.getOutput();
+	// CGI::build(config, fd);
+	// int ffd = open("templates/index.html", O_RDONLY);
+	// struct stat stat_buf;
+	// fstat(ffd, &stat_buf);
+	// (void)stat_buf.st_size;
+	// std::stringstream response;
+	// response  << "HTTP/1.1 200 OK\r\n";
+	// response << "Content-Length: " << output.length() << "\r\n";
+	// response  << "Content-Type: text/html\r\n\r\n";
+	// response << output;
+	SendResponse(output, -1, fd);
 	return true;
 }
 
 bool ATcpServer::onPollOut( int fd )
 {
-	std::string response = Response::getClientResponse(fd);
+	// std::string response = Response::getClientResponse(fd);
 	// std::cout << response;; 
-	if (response.empty())
-	{
+	// if (response.empty())
+	// {
 
-		return false;
-	}
-	std::cout << "response: " << response << std::endl;
-	int a  = write(fd, response.c_str(), response.size());
-	std::cout << "write: " << a << std::endl;
-	return true;
+	// 	return false;
+	// }
+	// // std::cout << "response: " << response << std::endl;
+	// int a  = write(fd, response.c_str(), response.size());
+	// std::cout << "write: " << a << std::endl;
+	return SendResponse::send(fd);
 }
 
 void ATcpServer::onPollAccept( int fd )

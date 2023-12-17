@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/17 01:50:40 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 18:57:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,17 @@ class SendFile
 		files[sfd] = new SendFile(ffd, sfd);
 	}
 
-	static void send( int sfd )
+	static bool send( int sfd )
 	{
 		if (files.find(sfd) == files.end())
-			return ;
+			return true;
 		if (files[sfd]->sendString())
 		{
 			delete files[sfd];
 			files.erase(sfd);
+			return true;
 		}
+		return false;
 	}
 };
 std::map<int, SendFile*>	SendFile::files;
@@ -81,7 +83,7 @@ class SendString
 	std::string	data;
 	int			sfd;
 
-	SendString( std::string &data, int sfd )
+	SendString( std::string const &data, int sfd )
 	{
 		this->data = data;
 		this->sfd = sfd;
@@ -98,7 +100,7 @@ class SendString
 		return false;
 	}
 
-	static void build( std::string &data, int sfd )
+	static void build( std::string const &data, int sfd )
 	{
 		headers[sfd] = new SendString(data, sfd);
 	}
@@ -116,26 +118,34 @@ class SendString
 		return false;
 	}
 };
+
 std::map<int, SendString*>	SendString::headers;
 
 class SendResponse
 {
+	private:
+
+	bool is_sent;
+
 	public:
 
-	SendResponse( int sfd )
+	static bool send( int sfd )
 	{
 		// call this from poll loop
 		if ( ! SendString::send(sfd))
-			return ;
-		SendFile::send(sfd);
+			return false;
+		if (SendFile::send(sfd))
+			return true;
+		return false;
 	}
 
-	SendResponse( std::string &data, int ffd, int sfd )
+	SendResponse( std::string const &data, int ffd, int sfd )
 	{
 		// call this from Response class
 		// 'ffd = -1' if you don't want to send any file
 		SendString::build(data, sfd);
 		if (ffd != -1)
 			SendFile::build(ffd, sfd);
+		is_sent = false;
 	}
 };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ATcpServer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo < samjaabo@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:18:20 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/15 00:02:08 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 23:39:22 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class ATcpServer
 		static uint32_t buffsize;
 		std::vector<struct pollfd>	pollfds;
 		std::map<int, std::string>	buffers;
+		std::string			uri;
 
 		void addNewFd( int fd );
 		void removeFd( int fd );

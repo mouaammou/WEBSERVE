@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/16 01:26:08 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 17:58:01 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ class CGI
 
 	private:
 
-	static const int64_t	MAX_MSEC_TO_TIMEOUT = 1000;
+	static const int64_t	MAX_MSEC_TO_TIMEOUT = 10000;
 	int64_t					timeout_start;
 	bool					one_time_kill;
 
@@ -234,8 +234,8 @@ class CGI
 			return ;
 		int64_t now = getTime() - timeout_start;
 		// std::cout << "timeout_counter: " << now << std::endl;
-		if (now < 0)
-			exit(0);
+		// if (now < 0)
+		// 	exit(0);
 		if (now >= MAX_MSEC_TO_TIMEOUT)
 		{
 			kill(pid, SIGKILL);
