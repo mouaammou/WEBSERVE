@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/17 01:44:27 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 01:47:41 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,17 +124,17 @@ class SendResponse
 
 	SendResponse( int sfd )
 	{
-		//call this from poll loop
+		// call this from poll loop
 		if ( ! SendHeaders::send(sfd))
 			return ;
 		SendFile::send(sfd);
 	}
 
-	SendResponse( std::string &headers, int ffd, int sfd )
+	SendResponse( std::string &data, int ffd, int sfd )
 	{
 		// call this from Response class
-		SendHeaders::build(headers, sfd);
-		if (ffd != -1)
+		SendHeaders::build(data, sfd);
+		if (ffd != -1)s
 			SendFile::build(ffd, sfd);
 	}
 };
