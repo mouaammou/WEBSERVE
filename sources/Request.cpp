@@ -27,6 +27,7 @@ Request::Request(int fd, t_config config_file)
 	this->_hasBody = false;
 	this->transferEncoding = "";
 	this->read_bytes = 0;
+	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 }
 
 Request::~Request(){}//Default destructor
@@ -282,78 +283,38 @@ void	Request::storeRequestBody(std::string body_string)//hasbody, requestbody
 bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
-	char *buffer = new char[MAX_REQUEST_SIZE + 1];
-	readStatus = read(this->fd, buffer, MAX_REQUEST_SIZE);
-	printf("READSTATUS: %d\n", readStatus);
+	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus < 0)
-	{
-		this->read_bytes = 0;
-		perror("read");
-		return (false);
-	}
+		return (perror("read"), this->read_bytes = 0, false);
 	if (readStatus == 0)
 	{
-		this->read_bytes = 0;
 		std::cout << COLOR_CYAN "client disconnected" COLOR_RESET << std::endl;
-		return (false);
+		return (this->read_bytes = 0, false);
 	}
-	buffer[readStatus] = '\0';
+	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
 	if (this->requestString.find("\r\n\r\n") == std::string::npos)
 	{
-		this->requestString += buffer;
-		delete [] buffer;
+		this->requestString += this->buffer;
 		if (!this->parseRequest(this->requestString))
 			return (false);
 	}
 	else if (this->hasHeaders() && this->contentLength > 0)
 	{
 		if (this->requestBody == "")
-			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + buffer;
+			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + this->buffer;
 		else
-			this->requestBody += buffer;
-		delete [] buffer;
+			this->requestBody += this->buffer;
 		if (this->requestBody.length() >= (this->contentLength))
 		{
-			printf("requestBody len: %zu\n", this->requestBody.length());
-			printf("contentLength: %zu\n", this->contentLength);
-			std::cout << COLOR_CYAN "End of request: return true" COLOR_RESET << std::endl;
 			this->_hasBody = true;
 			return (true);
 		}
 		else
-		{
-			std::cout << COLOR_CYAN "Waiting for the body:  return false" COLOR_RESET << std::endl;
 			return (false);
-		}
 	}
-	else if (this->hasHeaders() && this->contentLength == 0)
-	{
-		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
+	if (this->hasHeaders() && this->contentLength == 0)
 		return (true);
-	}
-//edn
-	// if (this->hasHeaders() && this->contentLength == 0)
-	// {
-	// 	std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
-	// 	return (true);
-	// }
-	// else if (this->hasHeaders() && this->hasBody())
-	// {
-	// 	printf("requestBody len: %zu\n", this->requestBody.length());
-	// 	printf("contentLength: %zu\n", this->contentLength);
-	// 	if (this->requestBody.length() >= (this->contentLength))
-	// 	{
-	// 		std::cout << COLOR_CYAN "End of request" COLOR_RESET << std::endl;
-	// 		return (true);
-	// 	}
-	// 	else
-	// 	{
-	// 		std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
-	// 		return (false);
-	// 	}
-	// }
-	// std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
 	return (false);
 }
 

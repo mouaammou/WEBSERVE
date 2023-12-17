@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 06:18:57 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 06:44:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void 				PollServers::initPoll()
 						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0){
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							removeFromPoll(server, this->poll_Fds[i].fd);
+							continue;
 						}
 					}
 				}
@@ -98,7 +99,7 @@ void 				PollServers::initPoll()
 						this->poll_Fds[i].events = POLLIN;
 					}
 				}
-				else if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 				{
 					server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 					removeFromPoll(server, this->poll_Fds[i].fd);

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 03:59:59 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 06:35:47 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Request
 		bool _hasHeaders;
 		bool _hasBody;
 		int read_bytes;
+		char *buffer;
 
 		std::string 	 statusCode;
 		std::string 	responseString;
