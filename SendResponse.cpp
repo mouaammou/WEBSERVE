@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/17 01:47:41 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/17 01:50:40 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class SendFile
 
 	public:
 
-	bool sendData( void )
+	bool sendString( void )
 	{
 		short d = sendfile(filefd, sfd, offset, &length, NULL, 0);
 		offset += length;
@@ -64,7 +64,7 @@ class SendFile
 	{
 		if (files.find(sfd) == files.end())
 			return ;
-		if (files[sfd]->sendData())
+		if (files[sfd]->sendString())
 		{
 			delete files[sfd];
 			files.erase(sfd);
@@ -73,15 +73,15 @@ class SendFile
 };
 std::map<int, SendFile*>	SendFile::files;
 
-class SendHeaders
+class SendString
 {
 	private:
 
-	static std::map<int, SendHeaders*>	headers;
+	static std::map<int, SendString*>	headers;
 	std::string	data;
 	int			sfd;
 
-	SendHeaders( std::string &data, int sfd )
+	SendString( std::string &data, int sfd )
 	{
 		this->data = data;
 		this->sfd = sfd;
@@ -89,7 +89,7 @@ class SendHeaders
 
 	public:
 
-	bool sendData( void )
+	bool sendString( void )
 	{
 		ssize_t d = write(sfd, data.c_str(), data.length());
 		if (d == 0 && data.empty())
@@ -100,14 +100,14 @@ class SendHeaders
 
 	static void build( std::string &data, int sfd )
 	{
-		headers[sfd] = new SendHeaders(data, sfd);
+		headers[sfd] = new SendString(data, sfd);
 	}
 
 	static bool send( int sfd )
 	{
 		if (headers.find(sfd) == headers.end())
 			return true;
-		if (headers[sfd]->sendData())
+		if (headers[sfd]->sendString())
 		{
 			delete headers[sfd];
 			headers.erase(sfd);
@@ -116,7 +116,7 @@ class SendHeaders
 		return false;
 	}
 };
-std::map<int, SendHeaders*>	SendHeaders::headers;
+std::map<int, SendString*>	SendString::headers;
 
 class SendResponse
 {
@@ -125,7 +125,7 @@ class SendResponse
 	SendResponse( int sfd )
 	{
 		// call this from poll loop
-		if ( ! SendHeaders::send(sfd))
+		if ( ! SendString::send(sfd))
 			return ;
 		SendFile::send(sfd);
 	}
@@ -133,8 +133,9 @@ class SendResponse
 	SendResponse( std::string &data, int ffd, int sfd )
 	{
 		// call this from Response class
-		SendHeaders::build(data, sfd);
-		if (ffd != -1)s
+		// 'ffd = -1' if you don't want to send any file
+		SendString::build(data, sfd);
+		if (ffd != -1)
 			SendFile::build(ffd, sfd);
 	}
 };
