@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:52:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/18 00:15:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/18 00:25:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ bool ATcpServer::onPollIn( int fd )
 	}
 
 	std::cout << "uri->: " << uri << std::endl;
-	AutoIndex ai("/Users/samjaabo/Desktop/WEBSERVE", uri);
+	AutoIndex ai("/Users/samjaabo", uri);
 	std::string output = ai.getOutput();
 	// CGI::build(config, fd);
 	// int ffd = open("templates/index.html", O_RDONLY);

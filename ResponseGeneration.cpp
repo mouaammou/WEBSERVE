@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/18 00:22:36 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/18 00:28:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class AutoIndex
 		oss << 	"\t\t\ttd {\n";
 		oss << 	"\t\t\t\tpadding: 0 25px 0 0;\n";
 		oss << 	"\t\t\t}\n";
+		oss << "\t\t\ta {text-decoration: none;}\n";
 		oss << 	"\t\t</style>\n";
 		oss << "\t</head>\n";
 		oss << "<body>\n";
