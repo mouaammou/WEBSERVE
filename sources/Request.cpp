@@ -284,13 +284,9 @@ bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
-	if (readStatus < 0)
+	if (readStatus <= 0)
 		return (perror("read"), this->read_bytes = 0, false);
-	if (readStatus == 0)
-	{
-		std::cout << COLOR_CYAN "client disconnected" COLOR_RESET << std::endl;
-		return (this->read_bytes = 0, false);
-	}
+	printf("readStatus = %d\n", readStatus);
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
 	if (this->requestString.find("\r\n\r\n") == std::string::npos)

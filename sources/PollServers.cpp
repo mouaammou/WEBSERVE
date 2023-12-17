@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 06:44:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 06:51:57 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void 				PollServers::initPoll()
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 					{
+						server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 						std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 						this->poll_Fds[i].events = POLLIN;
 					}
