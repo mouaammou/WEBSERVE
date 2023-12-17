@@ -6,15 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 19:17:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 15:49:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-
 #include "../includes/webserv.hpp"
-#include <_types/_intmax_t.h>
 
 class Request;
 #include "../includes/Request.hpp"

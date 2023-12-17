@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 06:51:57 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 15:49:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,9 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
-						
-						if (server && server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
+						if (server == NULL)
+							continue;
+						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
 							puts("GET, POST, DELETE");
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
@@ -83,8 +84,8 @@ void 				PollServers::initPoll()
 							std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 							this->poll_Fds[i].events = POLLOUT;
 						}
-						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0){
-							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
+						{
 							removeFromPoll(server, this->poll_Fds[i].fd);
 							continue;
 						}
@@ -93,9 +94,8 @@ void 				PollServers::initPoll()
 				else if (this->poll_Fds[i].revents & POLLOUT)
 				{					
 					server = this->witchServer(this->poll_Fds[i].fd);
-					if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
+					if (server && server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 					{
-						server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 						std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 						this->poll_Fds[i].events = POLLIN;
 					}

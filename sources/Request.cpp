@@ -134,7 +134,6 @@ bool	Request::parseRequestFirstLine(const std::string& line)
 	}
 	if (!this->checkMethod() || !this->checkVersion() || !this->checkPath())
 		return (false);
-	puts("parseRequest FirstLine FUNCTION");
 	return (true);
 }
 
@@ -159,9 +158,6 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		}
 		this->requestHeaders[key] = value;
 	}
-	// if (this->requestHeaders.size() > 0)
-	// 	this->_hasHeaders = true;
-	puts("parseRequest Headers FUNCTION");
 	return (true);
 }
 
@@ -196,7 +192,6 @@ bool	Request::requestFormatError()
 		return( false);
 	if (this->path.length() > 2048)
 		return( false);
-	puts("requestFormatError FUNCTION");
 	return (true);
 }
 
@@ -217,7 +212,6 @@ bool Request::parseRequest(std::string bufferString)
 	std::stringstream requestStream;
 	requestStream << bufferString;
 
-	// Parse the request line
 	std::string line;
 	if (std::getline(requestStream, line))
 	{
@@ -248,54 +242,15 @@ bool Request::parseRequest(std::string bufferString)
 	}
 	if (!requestFormatError())//check if the request format is valid
 		return (false);
-	//if the request headers end with \r\n\r\n
-	// if (this->requestString.find("\r\n\r\n") == std::string::npos)
-	// {
-	// 	std::cout << COLOR_CYAN "Waiting for the body" COLOR_RESET << std::endl;
-	// 	return (false);
-	// }
-	puts("parseRequest FUNCTION finished");
+	if (this->requestString.find("\r\n\r\n") == std::string::npos)
+		return (false);
 	return (true);
 }
 
 
-void	Request::storeRequestBody(std::string body_string)//hasbody, requestbody
+bool	Request::storeRequestBody()//hasbody, requestbody
 {
-	// Parse the body
-	std::stringstream requestStream(body_string);
-	std::string line;
-	if (this->contentLength > 0)
-	{
-		this->_hasBody = true;
-		puts("storeRequestBody FUNCTION");
-		while (getline(requestStream, line))
-		{
-			line += "\n";
-			this->requestBody += line;
-			line = "";
-		}
-		std::cout << COLOR_CYAN "Receive the body \n" COLOR_RESET << std::endl;
-	}
-	else
-		std::cout << COLOR_CYAN "No request body" COLOR_RESET << std::endl;
-}
-
-bool	Request::receiveRequest()//must read the request
-{
-	int readStatus;
-	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
-	if (readStatus <= 0)
-		return (perror("read"), this->read_bytes = 0, false);
-	printf("readStatus = %d\n", readStatus);
-	this->buffer[readStatus] = '\0';
-	this->read_bytes += readStatus;
-	if (this->requestString.find("\r\n\r\n") == std::string::npos)
-	{
-		this->requestString += this->buffer;
-		if (!this->parseRequest(this->requestString))
-			return (false);
-	}
-	else if (this->hasHeaders() && this->contentLength > 0)
+	if (this->hasHeaders() && this->contentLength > 0)
 	{
 		if (this->requestBody == "")
 			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + this->buffer;
@@ -306,16 +261,51 @@ bool	Request::receiveRequest()//must read the request
 			this->_hasBody = true;
 			return (true);
 		}
+	}
+	return (false);
+}
+
+bool			Request::storeChunkedRequestBody()
+{
+	if (this->hasHeaders() && this->transferEncoding == "chunked")
+	{
+		if (this->requestBody == "")
+			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + this->buffer;
 		else
+			this->requestBody += this->buffer;
+		//check if EOF of chunked body
+		if (this->requestBody.find("0\r\n\r\n") != std::string::npos)
+		{
+			this->_hasBody = true;
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool	Request::receiveRequest()//must read the request
+{
+	int readStatus;
+	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
+	if (readStatus <= 0)
+		return (perror("read"), this->read_bytes = 0, false);
+	this->buffer[readStatus] = '\0';
+	this->read_bytes += readStatus;
+	if (this->requestString.find("\r\n\r\n") == std::string::npos)
+	{
+		this->requestString += this->buffer;
+		if (!this->parseRequest(this->requestString))
 			return (false);
 	}
-	if (this->hasHeaders() && this->contentLength == 0)
+	else if (this->transferEncoding == "chunked" || this->contentLength > 0)
+	{
+		return (this->storeChunkedRequestBody() || this->storeRequestBody());
+	}
+	if (this->hasHeaders() && this->contentLength == 0 && this->transferEncoding == "")
 		return (true);
 	return (false);
 }
 
-
-// Response
 
 bool   Request::sendResponse()
 {

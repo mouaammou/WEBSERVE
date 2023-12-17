@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 06:35:47 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 14:41:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ class Request
 		// Function to parse the raw HTTP request
 		bool  	parseRequestFirstLine(const std::string& line);
 		bool   		parseRequestHeaders(const std::string& line);
-		void    		storeRequestBody(std::string body_string);
+		bool    		storeRequestBody();
+		bool			storeChunkedRequestBody();
 
 
 		bool		checkMethod();

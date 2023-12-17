@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/14 21:39:59 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/17 17:59:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int main(int ac, char **av)
 			std::cout << "Usage: ./webserv [port]" << std::endl;
 			return (1);
 		}
-		
 		Config config_file(av[1]);
 		config_file.summarize();
 		PollServers pollServers(config_file);
