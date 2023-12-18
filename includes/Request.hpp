@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 14:41:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/18 18:59:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,24 @@ class Request
 
 		int fd;
 		
-		std::string requestString;
+		std::string request_string;
 		std::string method;
 		std::string path;
 		std::string version;
-		std::string requestBody;
-		std::map<std::string, std::string> requestHeaders;
-		size_t contentLength;
-		std::string transferEncoding;
-		bool _hasHeaders;
-		bool _hasBody;
+		std::string request_body;
+		std::map<std::string, std::string> request_headers;
+
+		size_t content_length;
+		std::string transfer_encoding;
+		std::string content_type;
+		
+		bool _has_headers;
+		bool _has_body;
 		int read_bytes;
 		char *buffer;
-
-		std::string 	 statusCode;
-		std::string 	responseString;
+		
+		std::string 	 status_code;
+		std::string 	response_string;
 		t_config 		server_config;
 		//Method, response
 		Method* request_method;
@@ -54,7 +57,8 @@ class Request
 		std::string 	   getRequestBody() const;
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
-		int				     getFd() const;
+		int				      getFd() const;
+		Method*				   getRequestedMethod() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 		bool			  hasHeaders() const;
@@ -82,7 +86,7 @@ class Request
 
 
 		
-		bool parseRequest(std::string bufferString);
+		bool handleRequestHeader(std::string bufferString);
 		bool   receiveRequest();
 		bool   sendResponse();
 		int get_file_size(int fd);

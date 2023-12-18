@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 15:49:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/18 21:41:40 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ void	PollServers::bindServers()
 
 void 				PollServers::initPoll()
 {
-	int timeout = 5000;
+	// int timeout = 1000 * 60;
 	int pollStatu;
 	Server *server = NULL;
 	puts("init poll");
 	this->bindServers();
 	while (true)
 	{
-		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), timeout);
+		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), -1);
 		if (pollStatu == -1)
 		{
 			perror ("poll");
@@ -73,16 +73,16 @@ void 				PollServers::initPoll()
 						this->acceptConnections(this->poll_Fds[i].fd);
 					else
 					{
+						
 						server = this->witchServer(this->poll_Fds[i].fd);
-						if (server == NULL)
+						if (!server)
 							continue;
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
-							puts("GET, POST, DELETE");
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
-							std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-							this->poll_Fds[i].events = POLLOUT;
+							std::cout << COLOR_GREEN "request RECIEVED from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+							this->poll_Fds[i].events =  POLLIN | POLLOUT;
 						}
 						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
 						{
@@ -92,10 +92,11 @@ void 				PollServers::initPoll()
 					}
 				}
 				else if (this->poll_Fds[i].revents & POLLOUT)
-				{					
+				{				
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server && server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 					{
+						server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 						std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 						this->poll_Fds[i].events = POLLIN;
 					}

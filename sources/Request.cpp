@@ -17,16 +17,17 @@ Request::Request(int fd, t_config config_file)
 {
 	this->fd = fd;
 	this->server_config = config_file;
-	this->requestString = "";
+	this->request_string = "";
 	this->method = "";
 	this->path = "";
 	this->version = "";
-	this->requestBody = "";
-	this->contentLength = 0;
-	this->_hasHeaders = false;
-	this->_hasBody = false;
-	this->transferEncoding = "";
+	this->request_body = "";
+	this->content_length = 0;
+	this->_has_headers = false;
+	this->_has_body = false;
+	this->transfer_encoding = "";
 	this->read_bytes = 0;
+	this->content_type = "";
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 }
 
@@ -49,12 +50,12 @@ std::string Request::getVersion() const
 
 std::map<std::string, std::string> Request::getRequestHeaders() const
 {
-	return (this->requestHeaders);
+	return (this->request_headers);
 }
 
 std::string Request::getRequestBody() const
 {
-	return (this->requestBody);
+	return (this->request_body);
 }
 
 int				Request::getReadBytes() const
@@ -64,17 +65,22 @@ int				Request::getReadBytes() const
 
 size_t Request::getContentLength() const
 {
-	return (this->contentLength);
+	return (this->content_length);
 }
 
 std::string 		Request::getTransferEncoding() const
 {
-	return (this->transferEncoding);
+	return (this->transfer_encoding);
+}
+
+Method* 		Request::getRequestedMethod() const
+{
+	return (this->request_method);
 }
 
 bool			Request::hasBody() const
 {
-	return (this->_hasBody);
+	return (this->_has_body);
 }
 
 int				Request::getFd() const
@@ -84,29 +90,32 @@ int				Request::getFd() const
 
 void   Request::resetRequestState()
 {
-	this->requestString = "";
+	this->request_string = "";
+	this->request_body = "";
 	this->method = "";
 	this->path = "";
 	this->version = "";
-	this->requestBody = "";
-	this->contentLength = 0;
-	this->_hasHeaders = false;
-	this->_hasBody = false;
+	this->content_length = 0;
+	this->_has_headers = false;
+	this->_has_body = false;
 	this->read_bytes = 0;
+	this->content_type = "";
+	this->transfer_encoding = "";
+	this->buffer[0] = '\0';
 }
 
 //display request headers
 void Request::displayRequest()
 {
-	if (!this->requestString.empty())
+	if (!this->request_string.empty())
 	{
 		std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
 		std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
 		std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
 		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-		for (std::map<std::string, std::string>::const_iterator it = this->requestHeaders.begin(); it != this->requestHeaders.end(); ++it)
+		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 			std::cout << it->first << "=>" << it->second;
-		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->requestBody << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->request_body << std::endl;
 	}
 }
 
@@ -150,13 +159,17 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		if (key.compare("Content-Length:") == 0)//if the key is Content-Length
 		{
 			std::stringstream ss(value);
-			ss >> this->contentLength;
+			ss >> this->content_length;
 		}
 		if (key.compare("Transfer-Encoding:") == 0)//if the key is Transfer-Encoding
 		{
-			this->transferEncoding = value;
+			this->transfer_encoding = value;
 		}
-		this->requestHeaders[key] = value;
+		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
+		{
+			this->content_type = value;
+		}
+		this->request_headers[key] = value;
 	}
 	return (true);
 }
@@ -188,8 +201,6 @@ bool Request::checkPath()
 
 bool	Request::requestFormatError()
 {
-	if (this->transferEncoding == "" && this->contentLength == 0 && this->method == "POST")
-		return( false);
 	if (this->path.length() > 2048)
 		return( false);
 	return (true);
@@ -204,11 +215,13 @@ bool	Request::checkVersion()
 
 bool		Request::hasHeaders() const
 {
-	return (this->_hasHeaders);
+	return (this->_has_headers);
 }
 
-bool Request::parseRequest(std::string bufferString)
+bool Request::handleRequestHeader(std::string bufferString)
 {
+	if (this->_has_headers)
+		return (true);
 	std::stringstream requestStream;
 	requestStream << bufferString;
 
@@ -229,9 +242,9 @@ bool Request::parseRequest(std::string bufferString)
 		line += "\n";
 		if (line.compare("\r\n") == 0)
 		{
-			std::cout << COLOR_CYAN "End of request headers" COLOR_RESET << std::endl;
-			this->_hasHeaders = true;
-			break;
+			std::cout << COLOR_YELLOW "THE END OF HEADERS" COLOR_RESET << std::endl;
+			this->_has_headers = true;
+			return (true);
 		}
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
@@ -242,7 +255,7 @@ bool Request::parseRequest(std::string bufferString)
 	}
 	if (!requestFormatError())//check if the request format is valid
 		return (false);
-	if (this->requestString.find("\r\n\r\n") == std::string::npos)
+	if (this->request_string.find("\r\n\r\n") == std::string::npos)
 		return (false);
 	return (true);
 }
@@ -250,15 +263,21 @@ bool Request::parseRequest(std::string bufferString)
 
 bool	Request::storeRequestBody()//hasbody, requestbody
 {
-	if (this->hasHeaders() && this->contentLength > 0)
+	if (this->hasHeaders() && this->content_length > 0)
 	{
-		if (this->requestBody == "")
-			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + this->buffer;
-		else
-			this->requestBody += this->buffer;
-		if (this->requestBody.length() >= (this->contentLength))
+		if (this->request_body == "")
 		{
-			this->_hasBody = true;
+			std::string tmp = this->buffer;
+			this->request_body += this->request_string.substr(tmp.find("\r\n\r\n") + 4);
+		}
+		else
+			this->request_body += this->buffer;
+		if (this->request_body.length() >= (this->content_length))
+		{
+			printf("content length: %zu\n", this->content_length);
+			printf("request body length: %zu\n", this->request_body.length());
+			std::cout << COLOR_YELLOW "THE END OF BODY" COLOR_RESET << std::endl;
+			this->_has_body = true;
 			return (true);
 		}
 	}
@@ -267,16 +286,18 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 
 bool			Request::storeChunkedRequestBody()
 {
-	if (this->hasHeaders() && this->transferEncoding == "chunked")
+	std::cout << COLOR_MAGENTA "CHUNKED BODY" COLOR_RESET << std::endl;
+	if (this->hasHeaders() && this->transfer_encoding == "chunked")
 	{
-		if (this->requestBody == "")
-			this->requestBody += this->requestString.substr(this->requestString.find("\r\n\r\n") + 4) + this->buffer;
+		if (this->request_body == "")
+			this->request_body += this->request_string.substr(this->request_string.find("\r\n\r\n") + 4) + this->buffer;
 		else
-			this->requestBody += this->buffer;
+			this->request_body += this->buffer;
 		//check if EOF of chunked body
-		if (this->requestBody.find("0\r\n\r\n") != std::string::npos)
+		if (this->request_body.find("0\r\n\r\n") != std::string::npos)
 		{
-			this->_hasBody = true;
+			std::cout << COLOR_YELLOW "THE END OF BODY" COLOR_RESET << std::endl;
+			this->_has_body = true;
 			return (true);
 		}
 	}
@@ -291,17 +312,17 @@ bool	Request::receiveRequest()//must read the request
 		return (perror("read"), this->read_bytes = 0, false);
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
-	if (this->requestString.find("\r\n\r\n") == std::string::npos)
+	if (this->request_string.find("\r\n\r\n") == std::string::npos)
 	{
-		this->requestString += this->buffer;
-		if (!this->parseRequest(this->requestString))
+		this->request_string += this->buffer;
+		if (!this->handleRequestHeader(this->request_string))
 			return (false);
 	}
-	else if (this->transferEncoding == "chunked" || this->contentLength > 0)
+	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{
-		return (this->storeChunkedRequestBody() || this->storeRequestBody());
+		return (this->storeRequestBody() || this->storeChunkedRequestBody());
 	}
-	if (this->hasHeaders() && this->contentLength == 0 && this->transferEncoding == "")
+	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
 		return (true);
 	return (false);
 }
