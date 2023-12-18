@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/18 18:59:38 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/18 22:05:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ class Request
 		
 		bool _has_headers;
 		bool _has_body;
+		bool request_received;
 		int read_bytes;
 		char *buffer;
 		
@@ -63,6 +64,8 @@ class Request
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;
+		bool				hasRequest() const;
+		void				 setRequestReceived(bool request_received);
 
 
 		//display request headers

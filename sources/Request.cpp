@@ -29,6 +29,7 @@ Request::Request(int fd, t_config config_file)
 	this->read_bytes = 0;
 	this->content_type = "";
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
+	this->request_received = false;
 }
 
 Request::~Request(){}//Default destructor
@@ -88,6 +89,16 @@ int				Request::getFd() const
 	return (this->fd);
 }
 
+bool		 Request::hasRequest() const
+{
+	return (this->request_received);
+}
+
+void		 Request::setRequestReceived(bool request_received)
+{
+	this->request_received = request_received;
+}
+
 void   Request::resetRequestState()
 {
 	this->request_string = "";
@@ -102,6 +113,7 @@ void   Request::resetRequestState()
 	this->content_type = "";
 	this->transfer_encoding = "";
 	this->buffer[0] = '\0';
+	this->request_received = false;
 }
 
 //display request headers
@@ -286,17 +298,14 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 
 bool			Request::storeChunkedRequestBody()
 {
-	std::cout << COLOR_MAGENTA "CHUNKED BODY" COLOR_RESET << std::endl;
 	if (this->hasHeaders() && this->transfer_encoding == "chunked")
 	{
 		if (this->request_body == "")
 			this->request_body += this->request_string.substr(this->request_string.find("\r\n\r\n") + 4) + this->buffer;
 		else
 			this->request_body += this->buffer;
-		//check if EOF of chunked body
 		if (this->request_body.find("0\r\n\r\n") != std::string::npos)
 		{
-			std::cout << COLOR_YELLOW "THE END OF BODY" COLOR_RESET << std::endl;
 			this->_has_body = true;
 			return (true);
 		}
@@ -322,6 +331,7 @@ bool	Request::receiveRequest()//must read the request
 	{
 		return (this->storeRequestBody() || this->storeChunkedRequestBody());
 	}
+
 	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
 		return (true);
 	return (false);
