@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/18 22:13:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 01:37:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ void				PollServers::setServerConfigurations(int i)
 	ss >> this->servers_config[i].port;
 	this->servers_config[i].server_locations = this->config_file.get_directives()[i].getLocations();
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
+	this->servers_config[i].host_name = this->config_file.get_directives()[i].getHostName();
+	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 }
 
 void	PollServers::bindServers()
@@ -50,7 +52,7 @@ void 				PollServers::initPoll()
 {
 	int timeout = 1000 * 60;
 	int pollStatu;
-	Server *server = NULL;
+	Server *server;
 	this->bindServers();
 	while (true)
 	{
@@ -72,15 +74,12 @@ void 				PollServers::initPoll()
 						this->acceptConnections(this->poll_Fds[i].fd);
 					else
 					{
-						
 						server = this->witchServer(this->poll_Fds[i].fd);
-						if (!server)
-							continue;
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
+							std::cout << "STATUS CODE:: " << server->httpClients[this->poll_Fds[i].fd]->getStatusCode() << std::endl;
 							server->httpClients[this->poll_Fds[i].fd]->setRequestReceived(true);
-							// server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							std::cout << COLOR_GREEN "request RECIEVED from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 							this->poll_Fds[i].events =  POLLIN | POLLOUT;
 						}
@@ -91,20 +90,21 @@ void 				PollServers::initPoll()
 						}
 					}
 				}
-				else if ((this->poll_Fds[i].revents & POLLOUT) && server && server->httpClients[this->poll_Fds[i].fd]->hasRequest())
+				else
 				{
-					if (server && server->httpClients[this->poll_Fds[i].fd]->sendResponse())
+					server = this->witchServer(this->poll_Fds[i].fd);
+					if (server && (this->poll_Fds[i].revents & POLLOUT) && server->httpClients[this->poll_Fds[i].fd]->hasRequest())
 					{
-						server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
-						std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-						this->poll_Fds[i].events = POLLIN | POLLOUT;
+						if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
+						{
+							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+							std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+							this->poll_Fds[i].events = POLLIN | POLLOUT;
+						}
 					}
 				}
 				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-				{
-					server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 					removeFromPoll(server, this->poll_Fds[i].fd);
-				}
 			}
 		}
 	}
@@ -134,7 +134,7 @@ Server*				PollServers::witchServer(int clientFd)
 {
 	for (size_t i = 0; i < this->num_servers; i++)
 	{
-		if (this->http_servers[i]->isClient(clientFd))
+		if (this->http_servers[i] && this->http_servers[i]->isClient(clientFd))
 			return (this->http_servers[i]);
 	}
 	return (NULL);

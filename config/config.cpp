@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/14 21:12:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 01:21:06 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,7 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 {
 	Location locat;
 	int root = 0;
-	locat.setRoot(ftokens[*indice]);
+	locat.setName(ftokens[*indice]);
 	locat.setReturnInt(0);
 	(*indice)++;
 	while (ftokens[*indice].compare("}") && *indice < (int)ftokens.size())

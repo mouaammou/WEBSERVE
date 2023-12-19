@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 11:04:49 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/18 23:20:19 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,7 @@ typedef struct config
 	std::string port;
 	Location *location;
 	std::string translated_path;
+	std::string host_name;
 	int	server_fd;
+	int body_size;
 }		t_config;

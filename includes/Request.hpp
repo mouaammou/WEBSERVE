@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/18 22:05:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 00:31:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../includes/Server.hpp"
 #include "../includes/Method.hpp"
 #include <_types/_intmax_t.h>
+#include <string>
 class Method;
 
 class Request
@@ -39,12 +40,13 @@ class Request
 		bool request_received;
 		int read_bytes;
 		char *buffer;
+		int   _body_size;
 		
-		std::string 	 status_code;
+		std::string 	 _status_code;
 		std::string 	response_string;
 		t_config 		server_config;
 		//Method, response
-		Method* request_method;
+		Method* _requested_method;
 
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -59,14 +61,16 @@ class Request
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
 		int				      getFd() const;
-		Method*				   getRequestedMethod() const;
+		std::string 		   getStatusCode() const;
+		Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;
 		bool				hasRequest() const;
 		void				 setRequestReceived(bool request_received);
-
+		bool			      handleBadRequest();
+		bool 				   checkRequestLocation();
 
 		//display request headers
 		void	displayRequest();
@@ -74,18 +78,16 @@ class Request
 		bool  	parseRequestFirstLine(const std::string& line);
 		bool   		parseRequestHeaders(const std::string& line);
 		bool    		storeRequestBody();
-		bool			storeChunkedRequestBody();
+		bool			 storeChunkedRequestBody();
 
 
 		bool		checkMethod();
 		bool		 checkVersion();
 		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
-		void		    checkRequestHeaders();
 		
-		
-		bool requestFormatError();
 		void    resetRequestState();
+	
 
 
 		
