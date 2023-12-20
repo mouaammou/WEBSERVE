@@ -6,17 +6,17 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/16 21:08:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:50:47 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
 
-Method::Method(std::string location, t_config config_file)
+Method::Method(t_config config_file)
 {
 	this->cgi = false;
 	this->file_type = "";
-	this->location = location;
+	this->location = "";
 	this->config_file = config_file;
 }
 
@@ -86,19 +86,19 @@ std::string		Method::get_status_code()
 	if (this->file_type == "dir")
 	{
 		if (this->has_indexfile())
-			this->statusCode = "200";
+			this->_status_code = "200";
 		else if (this->has_autoindex())
-			this->statusCode = "200";
+			this->_status_code = "200";
 		else
-			this->statusCode = "403";//forbidden
+			this->_status_code = "403";//forbidden
 	}
 	else if (this->file_type == "file")
 	{
-		this->statusCode = "200";
+		this->_status_code = "200";
 	}
 	else
 	{
-		this->statusCode = "404";//not found
+		this->_status_code = "404";//not found
 	}
-	return (this->statusCode);
+	return (this->_status_code);
 }

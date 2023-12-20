@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
-#include <sys/fcntl.h>
 
 Request::Request(int fd, t_config config_file)
 {
@@ -31,8 +30,8 @@ Request::Request(int fd, t_config config_file)
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
 	this->_requested_method = NULL;
-	this->_status_code = "";
-	this->_body_size  = this->server_config.body_size;
+	this->_status_code = "200 OK";
+	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 }
 
 Request::~Request(){}//Default destructor
@@ -135,7 +134,8 @@ bool			      Request::handleBadRequest()
 		|| this->_status_code.find("413") != std::string::npos
 		|| this->_status_code.find("414") != std::string::npos
 		|| this->_status_code.find("501") != std::string::npos
-		|| this->_status_code.find("405") != std::string::npos)
+		|| this->_status_code.find("405") != std::string::npos
+		|| this->_status_code.find("505") != std::string::npos)
 		return (false);
 	return (true);
 }
@@ -181,7 +181,7 @@ bool	Request::allowedURIchars(std::string& str)
 
 bool	Request::parseRequestFirstLine(const std::string& line)
 {
-	std::istringstream lineStream(line);
+	std::stringstream lineStream(line);
 
 	lineStream >> this->method >> this->path >> this->version;
 	if (this->method.empty() || this->path.empty() || this->version.empty())
@@ -263,7 +263,7 @@ bool Request::checkPath()
 bool	Request::checkVersion()
 {
 	if (this->version.compare("HTTP/1.1") != 0)
-		return (false);
+		this->_status_code = "505 HTTP Version Not Supported";
 	return (true);
 }
 
@@ -371,7 +371,7 @@ bool	Request::receiveRequest()//must read the request
 	}
 	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{
-		if ((int)this->request_body.length() > this->_body_size)
+		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
 		{
 			this->_status_code = "413 Request Entity Too Large";
 			return (true);

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 01:37:17 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 23:50:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].host_name = this->config_file.get_directives()[i].getHostName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
+	this->servers_config[i].Server = this->config_file.get_directives()[i];
 }
 
 void	PollServers::bindServers()
@@ -42,7 +43,8 @@ void	PollServers::bindServers()
 	{
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
-		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();
+		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
+		printf("server fd: %d\n", this->servers_config[i].server_fd);
 		addFileDescriptor(this->servers_config[i].server_fd);
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
@@ -75,13 +77,14 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
+						// printf("server hostname: %s\n", server->serverConfigFile.server_name.c_str());
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
 							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
 							std::cout << "STATUS CODE:: " << server->httpClients[this->poll_Fds[i].fd]->getStatusCode() << std::endl;
+							//200 => method: get
 							server->httpClients[this->poll_Fds[i].fd]->setRequestReceived(true);
 							std::cout << COLOR_GREEN "request RECIEVED from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-							this->poll_Fds[i].events =  POLLIN | POLLOUT;
 						}
 						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
 						{
@@ -99,7 +102,6 @@ void 				PollServers::initPoll()
 						{
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
 							std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-							this->poll_Fds[i].events = POLLIN | POLLOUT;
 						}
 					}
 				}

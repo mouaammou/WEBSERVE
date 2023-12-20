@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/17 15:49:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 23:48:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ class Server
 		int serverSocket;//server socket: socket() function
 		std::string severPort;//server port
 		//map for clients
-		t_config serverConfigFile;
 	
 	public:
+		t_config serverConfigFile;
 		std::map<int, Request*> httpClients;
 		Server(t_config serverConfigFile);
 		~Server();

@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/19 00:37:10 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/19 21:28:07 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,14 +19,14 @@ RM 			= 	rm -fr
 FILES 		= $(addprefix sources/, Server.cpp Request.cpp PollServers.cpp ) main.cpp $(addprefix config/, config.cpp directives.cpp location.cpp)
 HEADER_FILES 	= $(addprefix includes/, Server.hpp Request.hpp PollServers.hpp webserv.hpp) $(addprefix config/, config.hpp directives.hpp location.hpp) Makefile
 
-PORT = 5555
+CONFIG = ./config/configfile.conf
 
 OBJECT_FILES = $(FILES:.cpp=.o)
 
-all: $(NAME)
+all: $(NAME) run
 
 run:
-	./$(NAME) $(PORT)
+	./$(NAME) $(CONFIG)
 $(NAME): $(OBJECT_FILES)
 	$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
 

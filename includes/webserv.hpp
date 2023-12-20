@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/18 23:20:19 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 23:03:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,14 @@
 #define MAX_REQUEST_SIZE 1024
 class Config;
 class Location;
+class Server;
 
 typedef struct config
 {
 	std::vector<Location> server_locations;
 	std::string server_name;
 	std::string port;
-	Location *location;
+	Directives 	Server;
 	std::string translated_path;
 	std::string host_name;
 	int	server_fd;

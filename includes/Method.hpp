@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/12 20:31:05 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:50:31 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class Method
 {
 	private:
-		std::string		statusCode;
+		std::string		_status_code;
 		std::string		location;
 		std::string		file_type;
 		bool			autoindex;
@@ -25,7 +25,7 @@ class Method
 		t_config		 config_file;
 
 	public:
-		Method(std::string location, t_config config_file);
+		Method(t_config config_file);
 		~Method();
 
 		bool			get_method_location(std::string location);
