@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 22:02:22 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 01:04:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 20:19:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ class Basic
 	Basic( t_args &args )
 	{
 		this->args = args;
+		file();
 	}
 
 	void file( void )
@@ -126,21 +127,19 @@ class Basic
 		SendResponse(oss.str(), -1, args.sfd);
 	}
 
-	void error( void )//5xx 4xx
+	void error( void ) // 5xx 4xx
 	{
+		args.translated_path = args.server->getErrorPage(args.code);
 		ffd = open(args.translated_path.c_str(), O_RDONLY);
 		int64_t file_size = get_file_size();
-		if (file_size == -1)
-		{
-			statusLine("500");
-			oss << "\r\n";
-			SendResponse(oss.str(), -1, args.sfd);
-			return ;
-		}
 		statusLine(args.code);
-		oss << "Content-Length: " << file_size << "\r\n";
-		oss << "Content-Type: " << args.location.getType() << "\r\n";
-		oss << "Cache-Control: no-store\r\n";
+		if (args.code == "405")
+			oss << "Allow: " << args.location->getMethod() << "\r\n";
+		if (file_size != -1)
+		{
+			oss << "Content-Length: " << file_size << "\r\n";
+			oss << "Content-Type: " << args.location.getType() << "\r\n";
+		}
 		oss << "\r\n";
 		SendResponse(oss.str(), ffd, args.sfd);
 	}
