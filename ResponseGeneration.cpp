@@ -1,3 +1,11 @@
+/**
+ * @ Author: Your name
+ * @ Create Time: 2023-12-17 19:15:33
+ * @ Modified by: Your name
+ * @ Modified time: 2023-12-21 01:02:41
+ * @ Description:
+ */
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,7 +14,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/18 00:28:39 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 00:20:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +25,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
-
+#include <map>
+#include "StatusCodes.cpp"
+#include "SendResponse.cpp"
 
 class AutoIndex
 {
@@ -26,6 +36,7 @@ class AutoIndex
 	std::ostringstream		fin;
 	std::string				root;//physical path
 	std::string				uri;//uri path
+	int						sfd;
 	bool					error;
 
 	void generate(void)
@@ -76,12 +87,26 @@ class AutoIndex
 		fin << "\r\n";
 		fin << oss.str();
 	}
+
+	bool isValid( std::string path )
+	{
+		struct stat fileStat;
+		if (stat((path).c_str(), &fileStat) == 0)
+		{
+			if (S_ISDIR(fileStat.st_mode))
+				return true;
+			else if (S_ISREG(fileStat.st_mode))
+				return true;
+		}
+		return false;
+	}
 	
 	void files( std::ostringstream &oss )
 	{
 		DIR *dp = opendir((root + uri).c_str());
 		if ( ! dp)
 		{
+			//Response::Error() instr
 			error = true;
 			return ;
 		}
@@ -91,6 +116,9 @@ class AutoIndex
 			if (entry->d_name[0] != '.')
 			{
 				std::string filepath = root + uri + entry->d_name;
+				if ( isValid(filepath) == false )//allow only files and directories
+					continue;
+
 				std::string uri_name(entry->d_name);
 				uri_name += dirUriFilter(filepath);
 				std::string name = nameFilter(filepath, entry->d_name);
@@ -181,12 +209,13 @@ class AutoIndex
 
 	public:
 
-	AutoIndex( std::string const &root, std::string const &uri )
+	AutoIndex( int sfd, std::string const &root, std::string const &uri )
 	{
 		this->root = root;
 		this->uri = uri;
 		error = false;
-		generate();	
+		generate();
+		SendResponse(fin.str(), -1, sfd);
 	}
 	
 	bool fail( void ) const
@@ -198,28 +227,4 @@ class AutoIndex
 	{
 		return fin.str();
 	}
-};
-
-class ResponseGeneration
-{
-	private:
-	std::ostringstream		headers;
-	int		ffd;
-
-	bool openFile( std::string const &path )
-	{
-		ffd = open(path.c_str(), O_RDONLY);
-		if (ffd == -1)
-			return false;
-		return true;
-	}
-
-	int64_t getFileSize( void )
-	{
-		struct stat stat_buf;
-		fstat(ffd, &stat_buf);
-		return stat_buf.st_size;
-	}
-
-	public:
 };

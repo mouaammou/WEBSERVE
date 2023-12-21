@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   StatusCodes.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo < samjaabo@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/14 18:04:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/18 00:46:54 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,13 @@ class StatusCodes
 
 	const std::string getStatusLine( std::string const &code ) const
 	{
-		try
-		{
-			return std::string("HTTP/1.1 ") + code + std::string(" ") + codes.at(code) + "\r\n";
-		}
-		catch ( const std::out_of_range &e )
-		{
-			return "INVALID STATUS CODE getStatusCode()";
-		}
+		return std::string("HTTP/1.1 ") + code + std::string(" ") + codes.at(code) + "\r\n";
+	}
+	const std::string getStatusLine( int code ) const
+	{
+		std::ostringstream ss;
+		ss << code;
+		std::string code_str = ss.str();
+		return std::string("HTTP/1.1 ") + code_str + std::string(" ") + codes.at(code_str) + "\r\n";
 	}
 };

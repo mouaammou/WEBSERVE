@@ -19,8 +19,11 @@
 # include <stdexcept>
 # include <sstream>
 # include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 # include <ctime>
 # include "StatusCodes.cpp"
+# include "SendResponse.cpp"
 
 typedef struct config
 {
@@ -186,3 +189,95 @@ std::map<int, std::string>	Response::ready_responses;
 const StatusCodes Response::status_codes = StatusCodes();
 
 
+
+class ErrorCodeResponse
+{
+	private:
+	std::ostringstream		oss;
+	int		ffd;
+	int		sfd;
+	int64_t	file_size;
+
+	bool openFile( std::string const &path )
+	{
+		ffd = open(path.c_str(), O_RDONLY);
+		if (ffd == -1)
+			return false;
+		return true;
+	}
+
+	bool getFileSize( void )
+	{
+		struct stat stat_buf;
+		if (fstat(ffd, &stat_buf) != 0)
+		{
+			close(ffd);
+			file_size = -1;
+			return false;
+		}
+		file_size = stat_buf.st_size;
+		return true;
+	}
+
+	void errorNoPage( int code )
+	{
+		oss << StatusCodes().getStatusLine(code);
+		oss << "\r\n";
+		SendResponse(oss.str(), -1, sfd);
+	}
+
+	void errorPage( int code )
+	{
+		oss << StatusCodes().getStatusLine(code);
+		if (ffd != -1)
+		{
+			oss << "Content-Length: " << getFileSize() << "\r\n";
+			oss << "Content-Type: text/html\r\n";
+			oss << "Cache-Control: no-store\r\n";
+		}
+		oss << "\r\n";
+		SendResponse(oss.str(), ffd, sfd);
+	}
+
+	public:
+
+	ErrorCodeResponse( int sfd, int code, std::map<int, std::string> &error_pages)//5xx, 4xx
+	{
+		this->sfd = sfd;
+		std::map<int, std::string>::iterator it = error_pages.find(code);
+		if (it == error_pages.end())
+		{
+			errorNoPage(code);
+			return ;
+		}
+		if ( ! openFile(it->second))
+		{
+			errorNoPage(code);
+			return ;
+		}
+		if ( ! getFileSize())
+		{
+			errorNoPage(code);
+			return ;
+		}
+		errorPage(code);
+	}
+};
+
+class Res
+{
+	private:
+	
+	std::ostringstream		oss;
+
+	void errorNoPage( int code )
+	{
+		oss << StatusCodes().getStatusLine(code);
+		oss << "\r\n";
+	}
+};
+
+void test( void )
+{
+	asm("nop");
+}

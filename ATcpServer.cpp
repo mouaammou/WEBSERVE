@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 10:52:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/18 00:25:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 00:28:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,9 +127,17 @@ bool ATcpServer::onPollIn( int fd )
 		removeFd(fd);
 		return false;
 	}
-
+	// if (uri.compare(uri.rfind('.'), 3, ".py") == 0)
+	// {
+	// 	std::cout << "cgi uri->: " << uri << std::endl;
+	// 	CGI::build(config, fd);
+	// 	std::string output = Response::getClientResponse(fd);
+	// 	if 
+	// 	SendResponse(output, -1, fd); 
+	// 	return true;
+	// }
 	std::cout << "uri->: " << uri << std::endl;
-	AutoIndex ai("/Users/samjaabo", uri);
+	AutoIndex ai(fd, "/", uri);
 	std::string output = ai.getOutput();
 	// CGI::build(config, fd);
 	// int ffd = open("templates/index.html", O_RDONLY);
@@ -141,7 +149,7 @@ bool ATcpServer::onPollIn( int fd )
 	// response << "Content-Length: " << output.length() << "\r\n";
 	// response  << "Content-Type: text/html\r\n\r\n";
 	// response << output;
-	SendResponse(output, -1, fd);
+	SendResponse(output, -1, fd); 
 	return true;
 }
 

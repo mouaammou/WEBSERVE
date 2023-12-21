@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/20 23:08:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/20 23:50:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,19 @@
 #include "PipeStream.cpp"
 #include "ParseCGIOutput.cpp"
 
+
+class Server;
+class Location;
+class Request;
+typedef struct args
+{
+	std::string		code;
+	Server			*server;
+	Location		*location;
+	Request			*request;
+	std::string		translated_path;
+	int				sfd;
+} t_args;
 
 class CGI
 {
@@ -62,7 +75,7 @@ class CGI
 			delete it->second;
 			runing_processes.erase(it);
 			pids.erase(pids.begin() + i);
-			// std::cout << Response::getClientResponse(0) << std::endl	; //error replace 0 with client_fd
+			// std::cout << Response::getClientResponse(0) << std::endl	; //error replace 0 with args.sfd
 			// exit(0);// error remove this
 		}
 	}
@@ -79,10 +92,10 @@ class CGI
 
 	public:
 
-	static void build( t_config &config, int client_fd )//call this for new cgi
+	static void build( t_args &args )//call this for new cgi
 	{
-		CGI *cgi = new CGI(config, client_fd);
-		runing_processes[client_fd] = cgi;
+		CGI *cgi = new CGI(args);
+		runing_processes[args.sfd] = cgi;
 		cgi->run();
 		// std::cout << "build cgi " << runing_processes.size() << std::endl;
 	}
@@ -103,11 +116,10 @@ class CGI
 	bool					one_time_kill;
 
 	const std::string		INTERPRETER;
-	t_config				&config;
+	t_args					&args;
 	PipeStream				*input_pipe;
 	PipeStream				*output_pipe;
 	pid_t					pid;
-	int						client_fd;
 
 	bool runProcess( void )
 	{
@@ -116,14 +128,14 @@ class CGI
 			return false;
 		else if (pid == 0)
 		{
-			if (chdir(config.root.c_str()) != 0)
+			if (chdir(args.location->getRoot().c_str()) != 0)
 				std::exit(EXIT_FAILURE);
 			input_pipe->inChild();
 			output_pipe->inChild();
 			// execle();
-			// std::cout << "TEST PIPE BEFORE RUNING: " << config.translated_path << std::endl;
-			execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), config.translated_path.c_str(), NULL);
-			std::cerr << "Error: execlp() failed to exec " << config.translated_path << std::endl;
+			// std::cout << "TEST PIPE BEFORE RUNING: " << args.translated_path << std::endl;
+			execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
+			std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 			std::exit(EXIT_FAILURE);
 			return false;
 		}
@@ -138,8 +150,9 @@ class CGI
 		struct timeval tv;
 		if (gettimeofday(&tv, NULL))
 		{
-			std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
-			exit(0);
+			kill(pid, SIGKILL);
+			one_time_kill = true;
+			std::cerr << "Error: gettimeofday() failed" << std::endl;
 			return 0;
 		}
 		return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
@@ -147,9 +160,8 @@ class CGI
 
 	public:
 
-	CGI( t_config &config, int fd ) : config(config), INTERPRETER("python3")
+	CGI( t_args &args ) : args(args), INTERPRETER("python3")
 	{
-		client_fd = fd;
 		input_pipe = new PipeStream(PipeStream::PARENT_WRITE_CHILD_READ);
 		output_pipe = new PipeStream(PipeStream::PARENT_READ_CHILD_WRITE);
 		pid = -1;
@@ -194,13 +206,13 @@ class CGI
 		if (status == -1)
 		{
 			// pipe or fork error
-			Response(config, client_fd, "500");
+			Response(args, args.sfd, "500");
 			return ;
 		}
 		output_pipe->parentRead();
 		std::string output = output_pipe->getSavedOutput();
 		// std::cout << "---> "<<output << std::endl;
-		ParseCGIOutput().response(status, output, client_fd, config);
+		ParseCGIOutput().response(status, output, args.sfd, args);
 	}
 
 	pid_t getPid( void ) const

@@ -4,14 +4,14 @@
 #include <cstdio>
 //
 # include "ATcpServer.hpp"
-# include "ResponseGeneration.cpp"
+// # include "ResponseGeneration.cpp"
 
 int main()
 {
 	ATcpServer	server;
 	server.pollEventLoop();
-	AutoIndex ai("/Users/samjaabo/Desktop/WEBSERVE", "/");
-	std::cout << ai.getOutput() << std::endl;
+	// AutoIndex ai("/Users/samjaabo/Desktop/WEBSERVE", "/");
+	// std::cout << ai.getOutput() << std::endl;
 	return (0);
 }
 
