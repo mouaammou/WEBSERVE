@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 01:29:12 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 21:44:00 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <map>
-#include "StatusCodes.cpp"
+#include "Codes.hpp"
 #include "SendResponse.hpp"
 
 class AutoIndex

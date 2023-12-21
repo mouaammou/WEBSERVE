@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 01:33:07 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 21:45:33 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 #include <ctime>
 #include <sys/time.h>
 // #include "Response.cpp"
-#include "PipeStream.cpp"
-#include "ParseCGIOutput.cpp"
+#include "PipeStream.hpp"
+#include "ParseCGIOutput.hpp"
 
 
 class CGI
