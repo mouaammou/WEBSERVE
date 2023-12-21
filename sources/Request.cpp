@@ -29,7 +29,7 @@ Request::Request(int fd, t_config config_file)
 	this->content_type = "";
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
-	this->_requested_method = NULL;
+	// this->_requested_method = NULL;
 	this->_status_code = "200 OK";
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 }
@@ -76,10 +76,10 @@ std::string 		Request::getTransferEncoding() const
 	return (this->transfer_encoding);
 }
 
-Method* 		Request::getRequestedMethod() const
-{
-	return (this->_requested_method);
-}
+// Method* 		Request::getRequestedMethod() const
+// {
+// 	return (this->_requested_method);
+// }
 
 bool			Request::hasBody() const
 {
@@ -121,6 +121,7 @@ void   Request::resetRequestState()
 	this->transfer_encoding = "";
 	this->buffer[0] = '\0';
 	this->request_received = false;
+	this->_status_code = "200 OK";
 }
 
 bool			      Request::handleBadRequest()

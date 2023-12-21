@@ -6,13 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/15 20:07:17 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/21 05:47:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include "../includes/webserv.hpp"
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 class Server;
 
 class PollServers

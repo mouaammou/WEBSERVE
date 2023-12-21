@@ -6,15 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 20:10:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/21 05:48:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../includes/Server.hpp"
-#include "../includes/Method.hpp"
-class Method;
 
 class Request
 {
@@ -44,7 +42,6 @@ class Request
 		std::string 	response_string;
 		t_config 		server_config;
 		//Method, response
-		Method* _requested_method;
 
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -60,7 +57,7 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		int				      getFd() const;
 		std::string 		   getStatusCode() const;
-		Method*				    getRequestedMethod() const;
+		// Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
 		bool			  hasHeaders() const;

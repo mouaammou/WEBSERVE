@@ -6,16 +6,19 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 23:48:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/21 07:17:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../includes/webserv.hpp"
+#include "../includes/Request.hpp"
+#include "../includes/Method.hpp"
+#include <string>
 
 class Request;
-#include "../includes/Request.hpp"
+class Method;
 
 class Server
 {
@@ -24,13 +27,17 @@ class Server
 		int serverSocket;//server socket: socket() function
 		std::string severPort;//server port
 		//map for clients
-	
+		std::string requested_location;
 	public:
+		std::string request_statuCode;
+		Method* pointedMethod;//private, and set a setter
+		
 		t_config serverConfigFile;
 		std::map<int, Request*> httpClients;
 		Server(t_config serverConfigFile);
 		~Server();
 
+		Method* getPointedMethod() const;
 		int		getServerSocket() const;
 		void    bindServerSocket();//set server socket: create socket, set socket options
 		void	setServerSocket();//get server socket: getaddrinfo() function
@@ -42,7 +49,9 @@ class Server
 
 		void	addClient(int fd);//add new client to the map
 		void	removeClient(int fd);//remove client from the map
-
+		
+		std::string getRequestedLocation(std::string path);//get the requested location
+		std::string getTranslatedPath(std::string location);//get the translated path
 		bool	isClient(int fd);//check if the fd is a client
 		void    closefds();//close client sockets: close() function
 };

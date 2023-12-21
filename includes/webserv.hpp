@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 23:03:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:29:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@
 
 #define PERMISSION_CHECK 0644
 #define MAX_REQUEST_SIZE 1024
+
 class Config;
 class Location;
 class Server;

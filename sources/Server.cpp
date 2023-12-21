@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 23:45:43 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/21 06:10:57 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <cstddef>
 #include <sys/socket.h>
 
 Server::Server(t_config serverConfigFile)//constructor
@@ -18,6 +19,9 @@ Server::Server(t_config serverConfigFile)//constructor
 	this->serverConfigFile = serverConfigFile;
 	this->serverSocket = -1;
 	this->severPort = serverConfigFile.port;
+	this->pointedMethod = NULL;
+	this->requested_location = "";
+	this->request_statuCode = "";
 }
 
 Server::~Server()//close server socket
@@ -103,3 +107,27 @@ int		Server::getServerSocket() const
 	return (this->serverSocket);
 }
 
+std::string			Server::getRequestedLocation(std::string path)
+{
+	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
+	{
+		if (this->serverConfigFile.server_locations[i].getName() == path)
+			break;
+	}
+	return (path);
+}
+
+std::string		Server::getTranslatedPath(std::string location)
+{
+	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
+	{
+		if (this->serverConfigFile.server_locations[i].getName() == location)
+			return (this->serverConfigFile.server_locations[i].getRoot() + location);
+	}
+	return ("");
+}
+
+Method* 	Server::getPointedMethod() const
+{
+	return (this->pointedMethod);
+}

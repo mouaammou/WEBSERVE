@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/19 23:50:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/21 21:34:51 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/PollServers.hpp"
-#include <sys/poll.h>
 
 PollServers::PollServers(Config config_file)
 {
@@ -44,7 +43,6 @@ void	PollServers::bindServers()
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
-		printf("server fd: %d\n", this->servers_config[i].server_fd);
 		addFileDescriptor(this->servers_config[i].server_fd);
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
@@ -77,15 +75,29 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
-						// printf("server hostname: %s\n", server->serverConfigFile.server_name.c_str());
+						printf("server root: %s\n", server->serverConfigFile.Server.getLocations()[0].getRoot().c_str());
+						// server->serverConfigFile.Server.getLocations()[0].getRoot();
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
-							server->httpClients[this->poll_Fds[i].fd]->displayRequest();
-							std::cout << "STATUS CODE:: " << server->httpClients[this->poll_Fds[i].fd]->getStatusCode() << std::endl;
-							//200 => method: get
+							server->request_statuCode 	= server->httpClients[this->poll_Fds[i].fd]->getStatusCode();
+							std::string method 			= server->httpClients[this->poll_Fds[i].fd]->getMethod();
 							server->httpClients[this->poll_Fds[i].fd]->setRequestReceived(true);
-							std::cout << COLOR_GREEN "request RECIEVED from client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-						}
+							// server->httpClients[this->poll_Fds[i].fd]->displayRequest();
+
+							std::cout << "STATUS CODE:: " << server->request_statuCode << std::endl;
+							
+							if (server->request_statuCode == "200")
+							{
+								std::string path = server->httpClients[this->poll_Fds[i].fd]->getPath();
+								std::string re_location = server->getRequestedLocation(path);
+								server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
+								if (method == "GET")
+								{
+									server->pointedMethod = new Method(server->serverConfigFile);
+									server->request_statuCode = server->getPointedMethod()->get_status_code();
+								}
+							}
+						}//false request
 						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
 						{
 							removeFromPoll(server, this->poll_Fds[i].fd);
@@ -93,7 +105,7 @@ void 				PollServers::initPoll()
 						}
 					}
 				}
-				else
+				else 							// server->httpClients[this->poll_Fds[i].fd]->displayRequest();
 				{
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server && (this->poll_Fds[i].revents & POLLOUT) && server->httpClients[this->poll_Fds[i].fd]->hasRequest())
@@ -159,7 +171,7 @@ void	PollServers::addFileDescriptor(int fd)
 	this->poll_Fds.push_back(newFd);
 }
 
-void	PollServers::removeFileDescriptor(int fd)
+void		PollServers::removeFileDescriptor(int fd)
 {
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
@@ -173,7 +185,7 @@ void	PollServers::removeFileDescriptor(int fd)
 	}
 }
 
-void   PollServers::acceptConnections(int serverfd)
+void		PollServers::acceptConnections(int serverfd)
 {
     struct sockaddr clientAddr;
     int clientSocket;
