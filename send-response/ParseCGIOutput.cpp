@@ -6,14 +6,14 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/17 18:02:32 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/21 20:41:41 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-#include <string>
-#include "StatusCodes.cpp"
-#include "Response.cpp"
+# pragma once
+# include <string>
+# include "StatusCodes.cpp"
+# include "Response.cpp"
 
 class ParseCGIOutput
 {

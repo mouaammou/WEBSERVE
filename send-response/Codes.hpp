@@ -1,30 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   CommonGateWayInterface.cpp                         :+:      :+:    :+:   */
+/*   Codes.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/07 20:14:24 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/07 20:14:47 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
+/*   Updated: 2023/12/21 21:38:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <map>
+#include <vector>
 #include <stdexcept>
 #include <sstream>
 #include <unistd.h>
 #include <ctime>
 
-class CommonGateWayInterface
+class StatusCodes
 {
+	private:
+	
+	std::map<std::string, std::string>	codes;
+
 	public:
 
-	static const std::string python3;
-	static void buildNewCGI( const Client &clt )
-	{
+	StatusCodes(void);
 
-	}
+	const std::string getStatusLine( std::string const &code ) const;
+	const std::string getStatusLine( int code ) const;
 };
