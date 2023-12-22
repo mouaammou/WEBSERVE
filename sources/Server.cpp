@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/21 06:10:57 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/22 20:40:48 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,19 @@ std::string		Server::getTranslatedPath(std::string location)
 			return (this->serverConfigFile.server_locations[i].getRoot() + location);
 	}
 	return ("");
+}
+
+void	Server::printf_t_config(t_config config_file)
+{
+	printf("server_name: %s\n", config_file.server_name.c_str());
+	printf("port: %s\n", config_file.port.c_str());
+	printf("translated_path: %s\n", config_file.translated_path.c_str());
+	printf("host_name: %s\n", config_file.host_name.c_str());
+	printf("response_code: %s\n", config_file.response_code.c_str());
+	printf("req_location: %s\n", config_file.req_location.c_str());
+	printf("autoindex: %s\n", config_file.autoindex.c_str());
+	printf("server_fd: %d\n", config_file.server_fd);
+	printf("body_size: %d\n", config_file.body_size);
 }
 
 Method* 	Server::getPointedMethod() const

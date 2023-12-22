@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/19 21:28:07 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/22 20:36:23 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ NAME 		= 	webserver
 CCPP 		= 	c++
 RM 			= 	rm -fr
 
-FILES 		= $(addprefix sources/, Server.cpp Request.cpp PollServers.cpp ) main.cpp $(addprefix config/, config.cpp directives.cpp location.cpp)
-HEADER_FILES 	= $(addprefix includes/, Server.hpp Request.hpp PollServers.hpp webserv.hpp) $(addprefix config/, config.hpp directives.hpp location.hpp) Makefile
+FILES 		= $(addprefix sources/, Server.cpp Request.cpp PollServers.cpp Method.cpp) main.cpp $(addprefix config/, config.cpp directives.cpp location.cpp)
+HEADER_FILES 	= $(addprefix includes/, Server.hpp Request.hpp PollServers.hpp webserv.hpp Method.hpp) $(addprefix config/, config.hpp directives.hpp location.hpp) Makefile
 
 CONFIG = ./config/configfile.conf
 

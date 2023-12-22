@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:34:51 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/22 20:39:52 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
-						printf("server root: %s\n", server->serverConfigFile.Server.getLocations()[0].getRoot().c_str());
+						// printf("server root: %s\n", server->serverConfigFile.Server.getLocations()[0].getRoot().c_str());
 						// server->serverConfigFile.Server.getLocations()[0].getRoot();
 						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
 						{
@@ -86,15 +86,24 @@ void 				PollServers::initPoll()
 
 							std::cout << "STATUS CODE:: " << server->request_statuCode << std::endl;
 							
-							if (server->request_statuCode == "200")
+							if (server->request_statuCode.find("200") != std::string::npos)
 							{
 								std::string path = server->httpClients[this->poll_Fds[i].fd]->getPath();
 								std::string re_location = server->getRequestedLocation(path);
+								printf("relocation: %s\n", re_location.c_str());
+								printf("path: %s\n", path.c_str());
+								
+								server->serverConfigFile.req_location = re_location;
 								server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
+								printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
+								
 								if (method == "GET")
 								{
 									server->pointedMethod = new Method(server->serverConfigFile);
 									server->request_statuCode = server->getPointedMethod()->get_status_code();
+									printf("status code: %s\n", server->request_statuCode.c_str());
+									server->serverConfigFile = server->getPointedMethod()->getTconfig();
+									server->printf_t_config(server->serverConfigFile);
 								}
 							}
 						}//false request
@@ -105,7 +114,7 @@ void 				PollServers::initPoll()
 						}
 					}
 				}
-				else 							// server->httpClients[this->poll_Fds[i].fd]->displayRequest();
+				else
 				{
 					server = this->witchServer(this->poll_Fds[i].fd);
 					if (server && (this->poll_Fds[i].revents & POLLOUT) && server->httpClients[this->poll_Fds[i].fd]->hasRequest())

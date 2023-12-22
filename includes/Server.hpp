@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/21 07:17:17 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/22 20:40:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,7 @@ class Server
 		std::string getTranslatedPath(std::string location);//get the translated path
 		bool	isClient(int fd);//check if the fd is a client
 		void    closefds();//close client sockets: close() function
+
+
+		void	printf_t_config(t_config config_file);
 };

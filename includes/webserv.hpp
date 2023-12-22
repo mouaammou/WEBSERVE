@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/20 17:29:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/22 20:26:56 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 
 #include "../config/config.hpp"
 
+// #include "Request.hpp"
+
 #define COLOR_RED     "\033[0;31m"
 #define COLOR_GREEN   "\033[0;32m"
 #define COLOR_BLUE    "\033[0;34m"
@@ -57,6 +59,10 @@ typedef struct config
 	Directives 	Server;
 	std::string translated_path;
 	std::string host_name;
+	std::string response_code;
+	std::string req_location;
+	std::string autoindex;
+	// Request request;
 	int	server_fd;
 	int body_size;
 }		t_config;
