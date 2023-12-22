@@ -12,6 +12,7 @@
 
 #include "includes/PollServers.hpp"
 #include "includes/Server.hpp"
+#include "includes/webserv.hpp"
 #include <exception>
 #include <iostream>
 

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:39:52 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/22 20:51:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,8 @@ void				PollServers::setServerConfigurations(int i)
 	ss >> this->servers_config[i].port;
 	this->servers_config[i].server_locations = this->config_file.get_directives()[i].getLocations();
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
-	this->servers_config[i].host_name = this->config_file.get_directives()[i].getHostName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
-	this->servers_config[i].Server = this->config_file.get_directives()[i];
+	this->servers_config[i].Server = &this->config_file.get_directives()[i];
 }
 
 void	PollServers::bindServers()
@@ -43,6 +42,7 @@ void	PollServers::bindServers()
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
+		this->http_servers[i]->setConfiguration(servers_config[i]);
 		addFileDescriptor(this->servers_config[i].server_fd);
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
@@ -94,19 +94,20 @@ void 				PollServers::initPoll()
 								printf("path: %s\n", path.c_str());
 								
 								server->serverConfigFile.req_location = re_location;
+			
 								server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
 								printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
-								
+								server->serverConfigFile.request = server->httpClients[this->poll_Fds[i].fd];
 								if (method == "GET")
 								{
 									server->pointedMethod = new Method(server->serverConfigFile);
-									server->request_statuCode = server->getPointedMethod()->get_status_code();
-									printf("status code: %s\n", server->request_statuCode.c_str());
-									server->serverConfigFile = server->getPointedMethod()->getTconfig();
+									// server->request_statuCode = server->getPointedMethod()->get_status_code();
+									// printf("status code: %s\n", server->request_statuCode.c_str());
+									// server->serverConfigFile = server->getPointedMethod()->getTconfig();
 									server->printf_t_config(server->serverConfigFile);
 								}
 							}
-						}//false request
+						}
 						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
 						{
 							removeFromPoll(server, this->poll_Fds[i].fd);
@@ -117,8 +118,13 @@ void 				PollServers::initPoll()
 				else
 				{
 					server = this->witchServer(this->poll_Fds[i].fd);
+
 					if (server && (this->poll_Fds[i].revents & POLLOUT) && server->httpClients[this->poll_Fds[i].fd]->hasRequest())
 					{
+						//response(server.configfile);
+						// send()
+
+
 						if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
 						{
 							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();

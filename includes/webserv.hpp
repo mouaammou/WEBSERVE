@@ -50,19 +50,20 @@
 class Config;
 class Location;
 class Server;
+class Request;
 
 typedef struct config
 {
 	std::vector<Location> server_locations;
 	std::string server_name;
 	std::string port;
-	Directives 	Server;
+	Directives 	*Server;
+	Location 	location;
 	std::string translated_path;
-	std::string host_name;
 	std::string response_code;
 	std::string req_location;
-	std::string autoindex;
-	// Request request;
+	std::string autoindex;//on or off
+	Request *request;
 	int	server_fd;
 	int body_size;
 }		t_config;

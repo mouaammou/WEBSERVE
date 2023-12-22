@@ -55,6 +55,6 @@ class Server
 		bool	isClient(int fd);//check if the fd is a client
 		void    closefds();//close client sockets: close() function
 
-
+		void	setConfiguration(t_config configfile);
 		void	printf_t_config(t_config config_file);
 };

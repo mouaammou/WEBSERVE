@@ -29,6 +29,11 @@ Server::~Server()//close server socket
     close(this->serverSocket);
 }
 
+void	Server::setConfiguration(t_config configfile)
+{
+	this->serverConfigFile = configfile;
+}
+
 void	Server::setServerSocket()
 {
 	//GETADDRINFO
@@ -112,7 +117,10 @@ std::string			Server::getRequestedLocation(std::string path)
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
 		if (this->serverConfigFile.server_locations[i].getName() == path)
+		{
+			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
 			break;
+		}
 	}
 	return (path);
 }
@@ -129,15 +137,16 @@ std::string		Server::getTranslatedPath(std::string location)
 
 void	Server::printf_t_config(t_config config_file)
 {
-	printf("server_name: %s\n", config_file.server_name.c_str());
-	printf("port: %s\n", config_file.port.c_str());
-	printf("translated_path: %s\n", config_file.translated_path.c_str());
-	printf("host_name: %s\n", config_file.host_name.c_str());
-	printf("response_code: %s\n", config_file.response_code.c_str());
-	printf("req_location: %s\n", config_file.req_location.c_str());
-	printf("autoindex: %s\n", config_file.autoindex.c_str());
-	printf("server_fd: %d\n", config_file.server_fd);
-	printf("body_size: %d\n", config_file.body_size);
+	std::cout << "configuration : \n";
+	printf("		server_name: %s\n", config_file.server_name.c_str());
+	printf("		port: %s\n", config_file.port.c_str());
+	printf("		translated_path: %s\n", config_file.translated_path.c_str());
+	printf("		response_code: %s\n", config_file.response_code.c_str());
+	printf("		req_location: %s\n", config_file.req_location.c_str());
+	printf("		autoindex: %s\n", config_file.autoindex.c_str());
+	printf("		server_fd: %d\n", config_file.server_fd);
+	printf("		body_size: %d\n", config_file.body_size);
+	printf("       Location: %s\n", config_file.location.getName().c_str());
 }
 
 Method* 	Server::getPointedMethod() const
