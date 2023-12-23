@@ -40,4 +40,8 @@ class PollServers
 		Server  			*getTheServer(int fd);
 		void				setServerConfigurations(int index);
 		void   				acceptConnections(int serverfd);
+
+		bool				clientPollIn(Server *server, int fd);
 };
+
+Request				*TheClient(Server *server, int fd);

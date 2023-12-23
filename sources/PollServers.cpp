@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/PollServers.hpp"
+#include <sys/poll.h>
 
 PollServers::PollServers(Config config_file)
 {
@@ -75,59 +76,23 @@ void 				PollServers::initPoll()
 					else
 					{
 						server = this->witchServer(this->poll_Fds[i].fd);
-						// printf("server root: %s\n", server->serverConfigFile.Server.getLocations()[0].getRoot().c_str());
-						// server->serverConfigFile.Server.getLocations()[0].getRoot();
-						if (server->httpClients[this->poll_Fds[i].fd]->receiveRequest())//parse request
+						if (server && !clientPollIn(server, this->poll_Fds[i].fd))
 						{
-							server->request_statuCode 	= server->httpClients[this->poll_Fds[i].fd]->getStatusCode();
-							std::string method 			= server->httpClients[this->poll_Fds[i].fd]->getMethod();
-							server->httpClients[this->poll_Fds[i].fd]->setRequestReceived(true);
-							// server->httpClients[this->poll_Fds[i].fd]->displayRequest();
-
-							std::cout << "STATUS CODE:: " << server->request_statuCode << std::endl;
-							
-							if (server->request_statuCode.find("200") != std::string::npos)
-							{
-								std::string path = server->httpClients[this->poll_Fds[i].fd]->getPath();
-								std::string re_location = server->getRequestedLocation(path);
-								printf("relocation: %s\n", re_location.c_str());
-								printf("path: %s\n", path.c_str());
-								
-								server->serverConfigFile.req_location = re_location;
-			
-								server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
-								printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
-								server->serverConfigFile.request = server->httpClients[this->poll_Fds[i].fd];
-								if (method == "GET")
-								{
-									server->pointedMethod = new Method(server->serverConfigFile);
-									// server->request_statuCode = server->getPointedMethod()->get_status_code();
-									// printf("status code: %s\n", server->request_statuCode.c_str());
-									// server->serverConfigFile = server->getPointedMethod()->getTconfig();
-									server->printf_t_config(server->serverConfigFile);
-								}
-							}
+							server->serverConfigFile.response_code = "400 Bad Request";
+							std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
 						}
-						else if (server->httpClients[this->poll_Fds[i].fd]->getReadBytes() <= 0)
-						{
-							removeFromPoll(server, this->poll_Fds[i].fd);
 							continue;
-						}
 					}
 				}
 				else
 				{
 					server = this->witchServer(this->poll_Fds[i].fd);
 
-					if (server && (this->poll_Fds[i].revents & POLLOUT) && server->httpClients[this->poll_Fds[i].fd]->hasRequest())
+					if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, this->poll_Fds[i].fd)->hasRequest())
 					{
-						//response(server.configfile);
-						// send()
-
-
-						if (server->httpClients[this->poll_Fds[i].fd]->sendResponse())
+						if (TheClient(server, this->poll_Fds[i].fd)->sendResponse())
 						{
-							server->httpClients[this->poll_Fds[i].fd]->resetRequestState();
+							TheClient(server, this->poll_Fds[i].fd)->resetRequestState();
 							std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
 						}
 					}
@@ -219,4 +184,48 @@ void		PollServers::acceptConnections(int serverfd)
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
+}
+
+Request				*TheClient(Server *server, int fd)
+{
+	if (server && server->httpClients.find(fd) != server->httpClients.end())
+		return (server->httpClients[fd]);
+	return (NULL);
+}
+
+bool				PollServers::clientPollIn(Server *server, int fd)
+{
+	if (TheClient(server, fd)->receiveRequest())
+	{
+		server->setStatusCode(TheClient(server, fd)->getStatusCode());
+		std::string method 			= TheClient(server, fd)->getMethod();
+		TheClient(server, fd)->setRequestReceived(true);
+		printf("status code: %s\n", server->serverConfigFile.response_code.c_str());
+		if (server->getStatusCode().find("200") != std::string::npos)
+		{
+			std::string path = TheClient(server, fd)->getPath();
+			std::string re_location = server->getRequestedLocation(path);
+			printf("relocation: %s\n", re_location.c_str());
+			printf("path: %s\n", path.c_str());
+			
+			server->serverConfigFile.req_location = re_location;
+
+			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
+			printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
+			server->serverConfigFile.request = TheClient(server, fd);
+			if (method == "GET")
+			{
+				server->pointedMethod = new Method(server->serverConfigFile);
+				server->printf_t_config(server->serverConfigFile);
+			}
+		}
+	}
+	else if (TheClient(server, fd)->getReadBytes() <= 0)
+	{
+		removeFromPoll(server, fd);
+		return false;
+	}
+	else
+		return (false);
+	return true;
 }

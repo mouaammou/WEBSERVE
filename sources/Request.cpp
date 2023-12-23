@@ -126,6 +126,8 @@ void   Request::resetRequestState()
 
 bool			      Request::handleBadRequest()
 {
+	if (this->isLocationHasRedirection())
+		return (false);
 	if (this->checkRequestLocation() == false)
 	{
 		this->_status_code = "404 Not Found";
@@ -139,6 +141,26 @@ bool			      Request::handleBadRequest()
 		|| this->_status_code.find("505") != std::string::npos)
 		return (false);
 	return (true);
+}
+
+bool 				   Request::isLocationHasRedirection()
+{
+	std::vector <Location> locations = this->server_config.server_locations;
+	for (size_t i = 0; i < locations.size(); i++)
+	{
+		if (this->path == locations[i].getName())
+		{
+			if (locations[i].getReturnInt())
+			{
+				this->path = locations[i].getReturnString();
+				this->_status_code = "301 Moved Permanently";
+				printf("path redirect to => %s\n", this->path.c_str());
+				return (true);
+			}
+		}
+	}
+	return (false);
+
 }
 
 bool 				   Request::checkRequestLocation()
@@ -291,6 +313,7 @@ bool Request::handleRequestHeader(std::string bufferString)
 			return (false);
 		line = "";
 	}
+	printf("path => %s\n", this->path.c_str());
 	// Parse the headers
 	while (std::getline(requestStream, line))
 	{
@@ -370,6 +393,7 @@ bool	Request::receiveRequest()//must read the request
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
+	
 	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{
 		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)

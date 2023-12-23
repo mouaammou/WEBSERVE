@@ -66,6 +66,7 @@ class Request
 		void				 setRequestReceived(bool request_received);
 		bool			      handleBadRequest();
 		bool 				   checkRequestLocation();
+		bool 				   isLocationHasRedirection();
 
 		//display request headers
 		void	displayRequest();

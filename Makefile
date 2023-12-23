@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-FLAGS 		= 	-Wall -Wextra -Werror  -g3 -fsanitize=address
+FLAGS 		= 	-Wall -Wextra -Werror -g -fsanitize=address
 VERSION 	= 	-std=c++98
 NAME 		= 	webserver
 CCPP 		= 	c++

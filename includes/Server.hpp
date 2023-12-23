@@ -29,7 +29,6 @@ class Server
 		//map for clients
 		std::string requested_location;
 	public:
-		std::string request_statuCode;
 		Method* pointedMethod;//private, and set a setter
 		
 		t_config serverConfigFile;
@@ -46,6 +45,9 @@ class Server
 		int		listenForConnections();//fill pollfd structure for server socket: pollfd structure for server socket
 		void    pollEvents();//wait for events: poll() function
 		void    acceptConnections();//check for events on server socket: accept() function
+
+		void	setStatusCode(std::string status_code);//set status code
+		std::string	getStatusCode();//get status code
 
 		void	addClient(int fd);//add new client to the map
 		void	removeClient(int fd);//remove client from the map

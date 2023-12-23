@@ -21,7 +21,6 @@ Server::Server(t_config serverConfigFile)//constructor
 	this->severPort = serverConfigFile.port;
 	this->pointedMethod = NULL;
 	this->requested_location = "";
-	this->request_statuCode = "";
 }
 
 Server::~Server()//close server socket
@@ -152,4 +151,14 @@ void	Server::printf_t_config(t_config config_file)
 Method* 	Server::getPointedMethod() const
 {
 	return (this->pointedMethod);
+}
+
+void		Server::setStatusCode(std::string status_code)
+{
+	this->serverConfigFile.response_code = status_code;
+}
+
+std::string			Server::getStatusCode()//get status code
+{
+	return (this->serverConfigFile.response_code);
 }

@@ -33,8 +33,6 @@ class Method
 		bool			has_cgi();
 		bool			getCGI() const;
 		bool			hasIndexFiles();
-
-		t_config			getTconfig() const;
 		
 		bool	has_autoindex();
 };

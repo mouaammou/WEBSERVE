@@ -14,7 +14,7 @@
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
-	this->sys_location = config_file.translated_path;//root/location
+	this->sys_location = config_file.translated_path;
 	this->method_config.autoindex = "off";
 	if (this->get_method_file_type())
 	{
@@ -76,10 +76,10 @@ std::string			Method::get_method_location()
 	return (this->sys_location);
 }
 
-t_config			Method::getTconfig() const
-{
-	return (this->method_config);
-}
+// t_config			Method::getTconfig() const
+// {
+// 	return (this->method_config);
+// }
 
 bool		Method::get_method_file_type()
 {
