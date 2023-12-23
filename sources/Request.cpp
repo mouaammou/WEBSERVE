@@ -165,11 +165,29 @@ bool 				   Request::isLocationHasRedirection()
 
 bool 				   Request::checkRequestLocation()
 {
+	std::string tmp;
 	std::vector <Location> locations = this->server_config.server_locations;
+	if (this->path == "/")
+	{
+		return (true);
+	}
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		if (this->path == locations[i].getName())
+		tmp = this->path;
+		if (this->path[this->path.length() - 1] == '/')
+			tmp = this->path.substr(0, this->path.length() - 1);
+		if (locations[i].getName() == "/")
+			continue;
+		if (tmp == locations[i].getName())
 			return (true);
+	}
+	for (size_t i = 0; i < locations.size(); i++)
+	{
+		if (locations[i].getName() == "/")
+		{
+			this->path = locations[i].getRoot() + this->path;
+			return (true);
+		}
 	}
 	return (false);
 }

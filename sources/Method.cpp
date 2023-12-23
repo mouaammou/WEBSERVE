@@ -76,11 +76,6 @@ std::string			Method::get_method_location()
 	return (this->sys_location);
 }
 
-// t_config			Method::getTconfig() const
-// {
-// 	return (this->method_config);
-// }
-
 bool		Method::get_method_file_type()
 {
 	struct stat info;
