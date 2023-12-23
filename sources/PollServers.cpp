@@ -49,11 +49,49 @@ void	PollServers::bindServers()
 	}
 }
 
+void			  PollServers::trackALLClients(void)
+{
+	Server *server;
+
+	for (size_t i = 0; i < this->poll_Fds.size(); i++)
+	{
+		if (this->poll_Fds[i].revents & POLLIN)
+		{
+			if (this->isServer(this->poll_Fds[i].fd))
+				this->acceptConnections(this->poll_Fds[i].fd);
+			else
+			{
+				server = this->witchServer(this->poll_Fds[i].fd);
+				if (server && !clientPollIn(server, this->poll_Fds[i].fd))
+				{
+					std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
+					server->setStatusCode("400 Bad Request");
+					continue;
+				}
+			}
+		}
+		else
+		{
+			server = this->witchServer(this->poll_Fds[i].fd);
+			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, this->poll_Fds[i].fd)->hasRequest())
+			{
+				if (TheClient(server, this->poll_Fds[i].fd)->sendResponse())
+				{
+					TheClient(server, this->poll_Fds[i].fd)->resetRequestState();
+					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+				}
+			}
+		}
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+			removeFromPoll(server, this->poll_Fds[i].fd);
+	}
+}
+
 void 				PollServers::initPoll()
 {
 	int timeout = 1000 * 60;
 	int pollStatu;
-	Server *server;
+	
 	this->bindServers();
 	while (true)
 	{
@@ -67,39 +105,7 @@ void 				PollServers::initPoll()
 			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
 		else
 		{
-			for (size_t i = 0; i < this->poll_Fds.size(); i++)
-			{
-				if (this->poll_Fds[i].revents & POLLIN)
-				{
-					if (this->isServer(this->poll_Fds[i].fd))
-						this->acceptConnections(this->poll_Fds[i].fd);
-					else
-					{
-						server = this->witchServer(this->poll_Fds[i].fd);
-						if (server && !clientPollIn(server, this->poll_Fds[i].fd))
-						{
-							server->serverConfigFile.response_code = "400 Bad Request";
-							std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
-						}
-							continue;
-					}
-				}
-				else
-				{
-					server = this->witchServer(this->poll_Fds[i].fd);
-
-					if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, this->poll_Fds[i].fd)->hasRequest())
-					{
-						if (TheClient(server, this->poll_Fds[i].fd)->sendResponse())
-						{
-							TheClient(server, this->poll_Fds[i].fd)->resetRequestState();
-							std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-						}
-					}
-				}
-				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-					removeFromPoll(server, this->poll_Fds[i].fd);
-			}
+			this->trackALLClients();
 		}
 	}
 }
@@ -136,6 +142,7 @@ Server*				PollServers::witchServer(int clientFd)
 
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
+	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->removeFileDescriptor(fd);
 	if (server)
 		server->removeClient(fd);
@@ -157,7 +164,6 @@ void		PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
-			std::cout << COLOR_RED << "removed fd: "<< fd << COLOR_RESET << std::endl;
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
 			close(fd);
 			break;
@@ -176,11 +182,8 @@ void		PollServers::acceptConnections(int serverfd)
         perror("accept");
         return;
     }
-    //add the new client socket to the pollfd array
 	addFileDescriptor(clientSocket);
-	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
-	//add the new client to the map
-	
+	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;	
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
@@ -198,34 +201,27 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	if (TheClient(server, fd)->receiveRequest())
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
-		std::string method 			= TheClient(server, fd)->getMethod();
 		TheClient(server, fd)->setRequestReceived(true);
-		printf("status code: %s\n", server->serverConfigFile.response_code.c_str());
+		TheClient(server, fd)->displayRequest();
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			std::string path = TheClient(server, fd)->getPath();
 			std::string re_location = server->getRequestedLocation(path);
-			printf("relocation: %s\n", re_location.c_str());
-			printf("path: %s\n", path.c_str());
-			
 			server->serverConfigFile.req_location = re_location;
-
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
-			printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
 			server->serverConfigFile.request = TheClient(server, fd);
-			if (method == "GET")
+			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);
 			}
 		}
+		return (true);
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 	{
 		removeFromPoll(server, fd);
-		return false;
 	}
-	else
-		return (false);
-	return true;
+	return false;
 }
+

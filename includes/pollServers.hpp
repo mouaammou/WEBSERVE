@@ -42,6 +42,8 @@ class PollServers
 		void   				acceptConnections(int serverfd);
 
 		bool				clientPollIn(Server *server, int fd);
+
+		void			    trackALLClients(void);
 };
 
 Request				*TheClient(Server *server, int fd);

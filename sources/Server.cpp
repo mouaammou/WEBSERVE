@@ -102,7 +102,6 @@ void	Server::addClient(int fd)
 
 void	Server::removeClient(int fd)
 {
-	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->httpClients.erase(fd);
 }
 
