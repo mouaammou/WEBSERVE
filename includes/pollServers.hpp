@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/21 05:47:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/24 23:53:24 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,10 @@ class PollServers
 {
 	private:
 		std::vector<struct pollfd> poll_Fds;//servers and clients
-
 		std::vector<Server*> http_servers;//severs
-		std::vector <t_config> servers_config;
-
-		Config config_file;
-		size_t num_servers;
+		std::vector <t_config> servers_config;//tconfig for each server
+		Config config_file;//config file
+		size_t num_servers;//number of servers
 
 	public:
 		PollServers(Config config_file);

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:49:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/25 22:58:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ class Method
 	private:
 		std::string		sys_location;
 		std::string		file_type;
-		bool			cgi;
 		t_config		 &method_config;
 
 	public:
@@ -31,7 +30,6 @@ class Method
 		std::string			get_method_location();
 		bool			get_method_file_type();
 		bool			has_cgi();
-		bool			getCGI() const;
 		bool			hasIndexFiles();
 		
 		bool	has_autoindex();

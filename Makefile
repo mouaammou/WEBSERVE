@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/22 20:36:23 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/25 23:00:04 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ CONFIG = ./config/configfile.conf
 
 OBJECT_FILES = $(FILES:.cpp=.o)
 
-all: $(NAME) run
+all: $(NAME)
 
 run:
 	./$(NAME) $(CONFIG)

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:50:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/25 22:58:26 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
+	method_config.cgi = false;
 	this->sys_location = config_file.translated_path;
 	this->method_config.autoindex = "off";
 	if (this->get_method_file_type())
@@ -34,7 +35,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 			{
 				if (this->method_config.translated_path.find(".py") != std::string::npos
 					|| this->method_config.translated_path.find(".php") != std::string::npos)
-					this->cgi = true;
+					method_config.cgi = true;
 				return ;
 			}
 			else if (this->has_autoindex())
@@ -114,14 +115,9 @@ bool			Method::has_cgi()
 {
 	if (this->sys_location.find(".py") != std::string::npos || this->sys_location.find(".php") != std::string::npos)
 	{
-		this->cgi = true;
+		method_config.cgi = true;
 		return (true);
 	}
 	return (false);
-}
-
-bool			Method::getCGI() const
-{
-	return (this->cgi);
 }
 

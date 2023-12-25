@@ -6,12 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:51:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/25 23:49:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/PollServers.hpp"
-#include <sys/poll.h>
 
 PollServers::PollServers(Config config_file)
 {
@@ -41,28 +40,32 @@ void	PollServers::bindServers()
 	for(size_t i = 0; i < this->num_servers; i++)
 	{
 		setServerConfigurations(i);
-		this->http_servers[i] = new Server(this->servers_config[i]);
+		this->http_servers[i] = new Server(servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
-		this->http_servers[i]->setConfiguration(servers_config[i]);
+		
+		this->http_servers[i]->setConfiguration(servers_config[i]);///????
 		addFileDescriptor(this->servers_config[i].server_fd);
+		
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
 }
 
 void			  PollServers::trackALLClients(void)
 {
-	Server *server;
+	Server		*server;
+	int			fileDescriptor;
 
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
 		if (this->poll_Fds[i].revents & POLLIN)
 		{
-			if (this->isServer(this->poll_Fds[i].fd))
-				this->acceptConnections(this->poll_Fds[i].fd);
+			fileDescriptor = this->poll_Fds[i].fd;
+			if (this->isServer(fileDescriptor))
+				this->acceptConnections(fileDescriptor);
 			else
 			{
-				server = this->witchServer(this->poll_Fds[i].fd);
-				if (server && !clientPollIn(server, this->poll_Fds[i].fd))
+				server = this->witchServer(fileDescriptor);
+				if (server && !clientPollIn(server, fileDescriptor))
 				{
 					std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
 					server->setStatusCode("400 Bad Request");
@@ -70,15 +73,16 @@ void			  PollServers::trackALLClients(void)
 				}
 			}
 		}
-		else
+		else//send repsponse
 		{
-			server = this->witchServer(this->poll_Fds[i].fd);
-			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, this->poll_Fds[i].fd)->hasRequest())
+			fileDescriptor = this->poll_Fds[i].fd;
+			server = this->witchServer(fileDescriptor);
+			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
 			{
-				if (TheClient(server, this->poll_Fds[i].fd)->sendResponse())
-				{
-					TheClient(server, this->poll_Fds[i].fd)->resetRequestState();
-					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
+				if (TheClient(server, fileDescriptor)->sendResponse())
+				{					
+					TheClient(server, fileDescriptor)->resetRequestState();
+					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				}
 			}
 		}
@@ -153,7 +157,7 @@ void	PollServers::addFileDescriptor(int fd)
 	struct pollfd newFd;
 
 	newFd.fd = fd;
-	newFd.events = POLLIN | POLLOUT;
+	newFd.events = POLLIN | POLLOUT;//read and write allowed
 	fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
 	this->poll_Fds.push_back(newFd);
 }
@@ -173,10 +177,10 @@ void		PollServers::removeFileDescriptor(int fd)
 
 void		PollServers::acceptConnections(int serverfd)
 {
-    struct sockaddr clientAddr;
-    int clientSocket;
-    socklen_t clientAddrLen = sizeof(clientAddr);
+    struct sockaddr		clientAddr;
+    int					clientSocket;
 
+    socklen_t clientAddrLen = sizeof(clientAddr);
     if ((clientSocket = accept(serverfd, &clientAddr, &clientAddrLen)) == -1)
     {
         perror("accept");
@@ -202,7 +206,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-		TheClient(server, fd)->displayRequest();
+		// TheClient(server, fd)->displayRequest();
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			std::string path = TheClient(server, fd)->getPath();

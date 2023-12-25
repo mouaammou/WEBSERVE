@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/21 05:48:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/24 23:52:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,22 +69,22 @@ class Request
 		bool 				   isLocationHasRedirection();
 
 		//display request headers
-		void	displayRequest();
+		void		displayRequest();
 		// Function to parse the raw HTTP request
-		bool  	parseRequestFirstLine(const std::string& line);
-		bool   		parseRequestHeaders(const std::string& line);
-		bool    		storeRequestBody();
-		bool			 storeChunkedRequestBody();
+		bool  		parseRequestFirstLine(const std::string& line);
+		bool   			parseRequestHeaders(const std::string& line);
+		bool    		 storeRequestBody();
+		bool			   storeChunkedRequestBody();
 
 		bool		checkMethod();
 		bool		 checkVersion();
 		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
-		
-		void    resetRequestState();
-			
-		bool	handleRequestHeader(std::string buffe1rString);
-		bool	receiveRequest();
-		bool	sendResponse();
-		int get_file_size(int fd);
+
+		void    	resetRequestState();
+
+		bool		handleRequestHeader(std::string buffe1rString);
+		bool			receiveRequest();
+		bool				sendResponse();
+		int 					get_file_size(int fd);
 };

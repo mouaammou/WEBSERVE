@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:40:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/25 23:46:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "../includes/webserv.hpp"
 #include "../includes/Request.hpp"
 #include "../includes/Method.hpp"
-#include <string>
 
 class Request;
 class Method;
@@ -28,12 +27,15 @@ class Server
 		std::string severPort;//server port
 		//map for clients
 		std::string requested_location;
+
 	public:
+		Server(t_config config);
 		Method* pointedMethod;//private, and set a setter
+
+
 		
 		t_config serverConfigFile;
 		std::map<int, Request*> httpClients;
-		Server(t_config serverConfigFile);
 		~Server();
 
 		Method* getPointedMethod() const;

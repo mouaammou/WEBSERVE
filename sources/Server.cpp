@@ -6,19 +6,17 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:40:48 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/25 23:11:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cstddef>
-#include <sys/socket.h>
 
-Server::Server(t_config serverConfigFile)//constructor
+Server::Server(t_config config)//constructor
 {
-	this->serverConfigFile = serverConfigFile;
 	this->serverSocket = -1;
-	this->severPort = serverConfigFile.port;
+	this->serverConfigFile = config;
+	this->severPort = config.port;
 	this->pointedMethod = NULL;
 	this->requested_location = "";
 }
@@ -79,6 +77,7 @@ void    Server::bindServerSocket()
 int  Server::listenForConnections()
 {
 	//BIND
+	// this->setConfiguration(this->serverConfigFile);
 	this->bindServerSocket();
     //LISTEN
     if (listen(this->serverSocket, 1024) == -1)
