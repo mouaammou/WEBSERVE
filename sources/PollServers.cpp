@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/25 23:49:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/26 03:11:12 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ PollServers::PollServers(Config config_file)
 	this->servers_config.resize(this->num_servers);
 }
 
-PollServers::~PollServers()
-{
-}
+PollServers::~PollServers(){}
 
 void				PollServers::setServerConfigurations(int i)
 {
@@ -42,8 +40,8 @@ void	PollServers::bindServers()
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(servers_config[i]);
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
-		
 		this->http_servers[i]->setConfiguration(servers_config[i]);///????
+		
 		addFileDescriptor(this->servers_config[i].server_fd);
 		
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
@@ -64,7 +62,7 @@ void			  PollServers::trackALLClients(void)
 				this->acceptConnections(fileDescriptor);
 			else
 			{
-				server = this->witchServer(fileDescriptor);
+				server = this->whitchServer(fileDescriptor);
 				if (server && !clientPollIn(server, fileDescriptor))
 				{
 					std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
@@ -76,11 +74,11 @@ void			  PollServers::trackALLClients(void)
 		else//send repsponse
 		{
 			fileDescriptor = this->poll_Fds[i].fd;
-			server = this->witchServer(fileDescriptor);
+			server = this->whitchServer(fileDescriptor);
 			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
 			{
 				if (TheClient(server, fileDescriptor)->sendResponse())
-				{					
+				{			
 					TheClient(server, fileDescriptor)->resetRequestState();
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				}
@@ -134,7 +132,7 @@ Server*				PollServers::getTheServer(int fd)
 	return (NULL);
 }
 
-Server*				PollServers::witchServer(int clientFd)
+Server*				PollServers::whitchServer(int clientFd)
 {
 	for (size_t i = 0; i < this->num_servers; i++)
 	{
@@ -211,6 +209,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		{
 			std::string path = TheClient(server, fd)->getPath();
 			std::string re_location = server->getRequestedLocation(path);
+
 			server->serverConfigFile.req_location = re_location;
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
 			server->serverConfigFile.request = TheClient(server, fd);

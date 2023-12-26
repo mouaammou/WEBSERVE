@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/25 23:11:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/26 02:52:41 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <string>
 
 Server::Server(t_config config)//constructor
 {
@@ -126,8 +127,11 @@ std::string		Server::getTranslatedPath(std::string location)
 {
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
-		if (this->serverConfigFile.server_locations[i].getName() == location)
+		std::string tmp = location[location.length() - 1] == '/' ? location.substr(0, location.length() - 1) : location;
+		if (this->serverConfigFile.server_locations[i].getName() == tmp)
+		{
 			return (this->serverConfigFile.server_locations[i].getRoot() + location);
+		}
 	}
 	return ("");
 }

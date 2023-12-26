@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/25 22:58:26 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/26 03:07:50 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 				this->method_config.translated_path += "/";
 				return ;
 			}
-			if (this->hasIndexFiles())
+			else if (this->hasIndexFiles())
 			{
 				if (this->method_config.translated_path.find(".py") != std::string::npos
 					|| this->method_config.translated_path.find(".php") != std::string::npos)
@@ -80,7 +80,7 @@ std::string			Method::get_method_location()
 bool		Method::get_method_file_type()
 {
 	struct stat info;
-	if (stat(this->sys_location.c_str(), &info) == 0)//check permission
+	if (stat(this->sys_location.c_str(), &info) == 0)//need check permissions
 	{
 		if (S_ISDIR(info.st_mode))
 			this->file_type = "dir";
@@ -91,6 +91,7 @@ bool		Method::get_method_file_type()
 	}
 	else
 	{
+		
 		this->method_config.response_code = "404 Not Found";
 		return (false);
 	}
@@ -102,7 +103,11 @@ bool	Method::has_autoindex()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (this->method_config.req_location == this->method_config.server_locations[i].getName())
+		std::string tmp = 
+			this->method_config.req_location[this->method_config.req_location.length() - 1] == '/' ? 
+				this->method_config.req_location.substr(0, this->method_config.req_location.length() - 1) 
+				: this->method_config.req_location;
+		if (tmp == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getAutoindex())
 				return (true);

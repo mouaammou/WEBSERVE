@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/25 23:46:17 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/26 02:48:48 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ class Method;
 class Server
 {
 	private:
+		int serverSocket;//server socket: socket() function fd
 		struct addrinfo *result;//getaddrinfo() function
-		int serverSocket;//server socket: socket() function
 		std::string severPort;//server port
 		//map for clients
 		std::string requested_location;
@@ -32,8 +32,6 @@ class Server
 		Server(t_config config);
 		Method* pointedMethod;//private, and set a setter
 
-
-		
 		t_config serverConfigFile;
 		std::map<int, Request*> httpClients;
 		~Server();
