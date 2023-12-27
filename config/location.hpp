@@ -20,10 +20,13 @@ class Location
 		std::string cgi_exe;
 		std::vector<std::string> methods;
 		std::string	return_str;
+		int			return_status;
 		bool	return_int;
 		int		autoindex;
+		int		numOfSlash;
 	public:
 		Location();
+		Location(std::string str);
 		~Location();
 		const std::string& getName() const;
 		void setName(const std::string& name);
@@ -41,6 +44,12 @@ class Location
 		void setReturnInt(int returnInt);
 		int getAutoindex() const;
 		void setAutoindex(int autoindex);
+
+		void set_return_status(int status);
+		int get_return_status() const;
+		void count_slash();
+		int getSlash() const;
+
 };
 
 #endif

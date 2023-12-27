@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/19 jhjkgjg4:38:43 jhjkgjgy moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/09 jhjkgjg8:45:07 jhjkgjgy moouaamm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <iostream>
 #include <string>
 #include <map>
@@ -63,6 +51,9 @@ class Config
 		void summarize();
 		void handle_default_method(Directives& server, int *indice);
 		const Location& search_uri(int serverId, std::string uri);
+		std::vector<Location> sort_location(std::vector<Location> locat);
+		void check_dup_location(std::vector<Location> locat);
+		void handle_redirection(Location &location, int *indice);
 		~Config();
 };
 

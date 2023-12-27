@@ -15,8 +15,9 @@ class Directives
 		int body_size;
 	public:
 		Directives();
-		~Directives();      
-		std::vector<Location> my_lct;
+		~Directives();
+		std::vector<Location> server_locations;
+		std::vector<Location> getLocations();
 		int getServerId() const;
 		void setServerId(int serverId);
 		const std::string getErrorPage(int status) const;

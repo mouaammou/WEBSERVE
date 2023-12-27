@@ -1,12 +1,56 @@
 #include "location.hpp"
 
 Location::Location() {
+	numOfSlash = 0;
     setAutoindex(-1);
+}
+
+Location::Location(std::string str) {
+	numOfSlash = 0;
+    setAutoindex(-1);
+	this->setName(str);
+	if (this->getName().find("/") != std::string::npos)
+		this->count_slash();
 }
 
 Location::~Location() {
     // Destructor implementation
 }
+
+void Location::count_slash()
+{
+	std::string str;
+
+	str = this->getName();
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (str[i] == '/')
+			this->numOfSlash++;
+	}
+}
+
+int Location::get_return_status() const
+{
+	return (this->return_status);
+}
+
+
+void Location::set_return_status(int status)
+{
+	if (status < 300 || status > 307)
+	{
+		std::cerr << "redirect status must be between 300 and 307" << std::endl;
+		exit(1);
+	}
+	this->return_status = status;
+}
+
+
+int Location::getSlash() const
+{
+	return (this->numOfSlash);
+}
+
 
 const std::string& Location::getName() const {
 	return name;

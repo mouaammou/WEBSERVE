@@ -9,6 +9,12 @@ Directives::Directives()
 Directives::~Directives()
 {
 }
+// hahowa li kaynin fihom les directives li kayna fihom les locations made by med
+std::vector<Location> Directives::getLocations()
+{
+	return server_locations;
+}
+
 
 void Directives::setErrorPage(int key, std::string value)
 {

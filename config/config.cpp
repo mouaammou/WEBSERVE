@@ -1,16 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/13 22:39:15 by moouaamm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "config.hpp"
+
+int Config::count = 0;
 
 Config::Config(/* args */)
 {
@@ -38,7 +28,7 @@ void Config::check_coma(std::string line)
 	if (line[size - i] != ';')
 	{
 		std::cout << line << std::endl;
-		error_call("comma not in the end of the line!");
+		error_call("semi-colone ';' not in the end of the line!");
 	}
 }
 
@@ -102,19 +92,19 @@ void Config::print_file2(Config &conf)
 		std::cout << "body_size    "<< conf.directs[j].getBodySize() << std::endl;
 		std::cout << "host_name    "<< conf.directs[j].getHostName() << std::endl;
 		std::cout << "Locations for server "<< j << std::endl;
-		for (size_t i = 0; i < conf.directs[j].my_lct.size(); i++)
+		for (size_t i = 0; i < conf.directs[j].server_locations.size(); i++)
 		{
-			std::cout<<"name " << conf.directs[j].my_lct[i].getName() << std::endl;
-			std::cout<<"root " << conf.directs[j].my_lct[i].getRoot() << std::endl;
-			std::cout<<"auto index " << conf.directs[j].my_lct[i].getAutoindex() << std::endl;
-			std::cout<<"index " << conf.directs[j].my_lct[i].getIndex() << std::endl;
-			if (conf.directs[j].my_lct[i].getReturnInt())
-				std::cout<<"return " << conf.directs[j].my_lct[i].getReturnString() << std::endl;
-			if (!conf.directs[j].my_lct[i].getCgiExe().empty())
-			std::cout<<"exec " << conf.directs[j].my_lct[i].getCgiExe() << std::endl;
+			std::cout<<"name " << conf.directs[j].server_locations[i].getName() << std::endl;
+			std::cout<<"root " << conf.directs[j].server_locations[i].getRoot() << std::endl;
+			std::cout<<"auto index " << conf.directs[j].server_locations[i].getAutoindex() << std::endl;
+			std::cout<<"index " << conf.directs[j].server_locations[i].getIndex() << std::endl;
+			if (conf.directs[j].server_locations[i].getReturnInt())
+				std::cout<<"return " << conf.directs[j].server_locations[i].getReturnString() << std::endl;
+			if (!conf.directs[j].server_locations[i].getCgiExe().empty())
+			std::cout<<"exec " << conf.directs[j].server_locations[i].getCgiExe() << std::endl;
 			std::cout << "Methodes ";
 			std::vector<std::string> methods;
-			methods = conf.directs[j].my_lct[i].getMethods();
+			methods = conf.directs[j].server_locations[i].getMethods();
 			for (size_t k = 0; k < methods.size(); k++)
 			{
 				std::cout << methods[k] << "   ";
@@ -280,6 +270,21 @@ bool methode_duplicated(std::vector<std::string> methods)
 	return false;
 }
 
+void Config::handle_redirection(Location &location, int *indice)
+{
+	int tmp;
+	tmp = (*indice);
+	while (ftokens[tmp].compare(";"))
+		tmp++;
+	if (tmp - *indice != 3)
+		error_call("error in redirection of locatioin : " + location.getName());
+	(*indice)++;
+	location.set_return_status(std::stoi(ftokens[*indice]));
+	location.setReturnInt(1);
+	(*indice)++;
+	location.setReturnString(ftokens[*indice]);
+}
+
 void Config::handle_proxy_methode(Location &location, int *indice)
 {
 	int tmp;
@@ -337,9 +342,8 @@ void Config::handle_default_method(Directives& server, int *indice)
 
 void Config::handle_inside_locations(Directives& server, int *indice)
 {
-	Location locat;
+	Location locat(ftokens[*indice]);
 	int root = 0;
-	locat.setRoot(ftokens[*indice]);
 	locat.setReturnInt(0);
 	(*indice)++;
 	while (ftokens[*indice].compare("}") && *indice < (int)ftokens.size())
@@ -350,10 +354,7 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 			root = 1;
 		}
 		else if (ftokens[*indice] == "return")
-		{
-			locat.setReturnInt(1);
-			locat.setReturnString(next_str_arg(indice));
-		}
+			handle_redirection(locat, indice);
 		else if (ftokens[*indice] == "autoindex")
 			locat.setAutoindex(handle_autodx(indice));
 		else if (ftokens[*indice] == "exe")
@@ -367,8 +368,8 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 		(*indice)++;
 	}
 	if (!locat.getReturnInt() && !root)
-		error_call("root must be present in location section");
-	server.my_lct.push_back(locat);
+		error_call("root must be present in location section : " + locat.getName());
+	server.server_locations.push_back(locat);
 }
 
 void Config::handle_locations(int *indice)
@@ -401,7 +402,7 @@ bool containsElement(const std::vector<int>& vec, int element)
 
 void Config::handle_port(Directives& server,std::vector<int> &ports, int *indice)
 {
-	;
+	(void)server;
 	int size;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
@@ -564,8 +565,53 @@ void Config::handle_servers(int *indice)
 		ports = this->directs[0].getPorts();
 		server.setPorts(ports);
 	}
+	server.server_locations = sort_location(server.getLocations());
 	this->directs.push_back(server);
 }
+
+void Config::check_dup_location(std::vector<Location> locat)
+{
+	std::string str;
+	if (locat.empty())
+		return;
+	for (size_t i = 0; i < locat.size() - 1; i++)
+	{
+		str = locat[i].getName();
+		for (size_t j = i + 1; j < locat.size(); j++)
+		{
+			if (str == locat[j].getName())
+				error_call("Location must not be duplicated!");
+		}
+	}
+}
+
+std::vector<Location> Config::sort_location(std::vector<Location> locat)
+{
+	Location tmp;
+	check_dup_location(locat);
+	if (locat.empty())
+		return locat;
+	for (size_t i = 0; i < locat.size() - 1; i++)
+	{
+		if (locat[i].getName() == "/")
+		{
+			tmp = locat[locat.size() - 1];
+			locat[locat.size() - 1] = locat[i];
+			locat[i] = tmp;
+		}
+		for (size_t j = i + 1; j < locat.size(); j++)
+		{
+			if (locat[i].getSlash() < locat[j].getSlash())
+			{
+				tmp = locat[i];
+				locat[i] = locat[j];
+				locat[j] = tmp;
+			}
+		}
+	}
+	return locat;
+}
+
 
 bool Config::is_token(int *indice)
 {
@@ -609,6 +655,11 @@ void Config::summarize()
 	fill_directive();
 }
 
+
+Config::~Config()
+{
+	this->ftokens.clear();
+}
 // const server_data Config::search_uri(int serverId, std::string uri)
 // {
 // 	for (size_t i = 0; i < this->directs.size(); i++)
@@ -621,14 +672,6 @@ void Config::summarize()
 // 	}
 
 // }
-
-
-int Config::count = 0;
-
-Config::~Config()
-{
-	this->ftokens.clear();
-}
 
 int main(int argc, char *argv[])
 {
@@ -663,19 +706,20 @@ int main(int argc, char *argv[])
 		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
 		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
 		std::cout << "Locations for server "<< j << std::endl;
-		for (size_t i = 0; i < directs[j].my_lct.size(); i++)
+		for (size_t i = 0; i < directs[j].server_locations.size(); i++)
 		{
-			std::cout<<"name " << directs[j].my_lct[i].getName() << std::endl;
-			std::cout<<"root " << directs[j].my_lct[i].getRoot() << std::endl;
-			std::cout<<"auto index " << directs[j].my_lct[i].getAutoindex() << std::endl;
-			std::cout<<"index " << directs[j].my_lct[i].getIndex() << std::endl;
-			if (directs[j].my_lct[i].getReturnInt())
-				std::cout<<"return " << directs[j].my_lct[i].getReturnString() << std::endl;
-			if (!directs[j].my_lct[i].getCgiExe().empty())
-			std::cout<<"exec " << directs[j].my_lct[i].getCgiExe() << std::endl;
+			std::cout<<"Slashes " << directs[j].server_locations[i].getSlash() << std::endl;
+			std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
+			std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
+			std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
+			std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
+			if (directs[j].server_locations[i].getReturnInt())
+				std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
+			if (!directs[j].server_locations[i].getCgiExe().empty())
+			std::cout<<"exec " << directs[j].server_locations[i].getCgiExe() << std::endl;
 			std::cout << "Methodes ";
 			std::vector<std::string> methods;
-			methods = directs[j].my_lct[i].getMethods();
+			methods = directs[j].server_locations[i].getMethods();
 			for (size_t k = 0; k < methods.size(); k++)
 			{
 				std::cout << methods[k] << "   ";
