@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
+#include "../Response/include/Response.hpp"
 
 Request::Request(int fd, t_config config_file)
 {
@@ -412,31 +413,7 @@ bool	Request::receiveRequest()//must read the request
 
 bool   Request::sendResponse()
 {
-	int pageFd = open("/Users/mouaammo/Desktop/WEBSERVE/html/index.html", O_RDWR);
-	if (pageFd == -1)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	int fileSize = get_file_size(pageFd);
-	off_t len = fileSize;
-
-	std::string responseHeader = "HTTP/1.1 200 OK\r\n";
-		responseHeader += "Content-Type: text/html\r\n";
-		responseHeader += "Content-Length: " + std::to_string(fileSize) + "\r\n";
-		responseHeader += "\r\n";
-	if (send(this->fd, responseHeader.c_str(), responseHeader.length(), 0) == -1)
-	{
-		perror("send");
-		return false;
-	}
-	if (sendfile(pageFd, this->fd, 0, &len, NULL, 0) == -1)
-	{
-		perror("sendfile");
-		return false;
-	}
-	close(pageFd);
-	return (true);
+	return (Response::onPollout(this->fd));
 }
 
 int Request::get_file_size(int fd)

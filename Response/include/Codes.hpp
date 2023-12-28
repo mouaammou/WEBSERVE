@@ -1,31 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   StatusCodes.hpp                                    :+:      :+:    :+:   */
+/*   Codes.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/01 20:35:20 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/01 20:37:02 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
+/*   Updated: 2023/12/22 23:00:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# pragma once
-# include <string>
-# include <map>
-
-// https://datatracker.ietf.org/doc/html/rfc"261",6#section-6
-// HTTP/1.1
+#pragma once
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <map>
+#include <vector>
+#include <stdexcept>
+#include <sstream>
+#include <unistd.h>
+#include <ctime>
 
 class StatusCodes
 {
 	private:
-
-	static std::string					_scodes[40][2];
+	
 	std::map<std::string, std::string>	codes;
 
 	public:
 
-	StatusCodes( void );
-	std::string getStatusLine( std::string code );
+	StatusCodes(void);
+
+	const std::string getStatusLine( std::string const &code ) const;
+	const std::string getStatusLine( int code ) const;
 };

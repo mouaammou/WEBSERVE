@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:26:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/28 23:36:33 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct config
 	std::string req_location;
 	std::string autoindex;//on or off
 	Request *request;
+	bool cgi;
 	int	server_fd;
 	int body_size;
 }		t_config;
