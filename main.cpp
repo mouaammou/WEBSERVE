@@ -3,52 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/05 16:13:55 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/06 17:42:06 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
+/*   Updated: 2023/12/17 17:59:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "HttpCgi.hpp"
-# include <iostream>
-# include <map>
-# include <vector>
-# include <cstdlib>
-# include <cstring>
-# include <cctype>
-# include <unistd.h>
-# include <fcntl.h>
-#include <cstdlib>
-#include <csignal>
-#include <sstream>
-#include <poll.h>
+#include "includes/PollServers.hpp"
+#include "includes/Server.hpp"
+#include "includes/webserv.hpp"
+#include <exception>
+#include <iostream>
 
-size_t buffsize = 47;
-
-
-int main( void )
+int main(int ac, char **av)
 {
-	int fd = open("testcgi", O_RDWR|O_TRUNC);
-	HttpCgi hi;
-	// hi.inputfd = fd;
-	hi.request_body = "helo world";
-	// bool a = hi.readOutOfCgi();
-	// std::cout << "error: " << hi.error << std::endl;
-	// std::cout << "first: " << a << std::endl;
-	// bool b = hi.sendBodyToCgi();
-	// std::cout << "error: " << hi.error << std::endl;
-	// std::cout << "second: " << b << std::endl;
-	std::cout << "-----body-----" << std::endl;
-	std::cout << hi.buffer << std::endl;
-	// struct pollfd d;
-	// d.fd = fd;
-	// char s[45];
-	// poll(&d, 1, -1);
-	// std::cout << "revent:"<< d.revents << std::endl;
-	// std::cout << "read: " << read(fd, s, 45) << std::endl;
-	// poll(&d, 1, -1);
-	// std::cout << "revent:"<< d.revents << std::endl;
-	// std::cout << "read: " << read(fd, s, 45) << std::endl;
-	return (0);
+	signal(SIGPIPE, SIG_IGN);
+	try
+	{
+		if (ac != 2)
+		{
+			std::cout << "Usage: ./webserv [port]" << std::endl;
+			return (1);
+		}
+		Config config_file(av[1]);
+		config_file.summarize();
+		PollServers pollServers(config_file);
+		pollServers.initPoll();
+	}
+	catch (std::exception &e)
+	{
+		std::cout << COLOR_RED "ERROR: " << e.what() << std::endl;
+	}
+    return (0);
 }
