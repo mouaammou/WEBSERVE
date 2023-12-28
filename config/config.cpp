@@ -699,10 +699,15 @@ int main(int argc, char *argv[])
 		std::cout << "server name    "<< directs[j].getServerName() << std::endl;
 		std::cout << "Error pages:" << std::endl;
 		std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
+		std::cout << "101 " << directs[j].getErrorPage(101)<< std::endl;
 		std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
-		std::cout << "201 " << directs[j].getErrorPage(201)<< std::endl;
-		std::cout << "500 " << directs[j].getErrorPage(500)<< std::endl;
+		std::cout << "404 " << directs[j].getErrorPage(404)<< std::endl;
+		std::cout << "413 " << directs[j].getErrorPage(413)<< std::endl;
+		std::cout << "202 " << directs[j].getErrorPage(202)<< std::endl;
+		std::cout << "205 " << directs[j].getErrorPage(205)<< std::endl;
 		std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
+		std::cout << "502 " << directs[j].getErrorPage(502)<< std::endl;
+		std::cout << "503 " << directs[j].getErrorPage(503)<< std::endl;
 		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
 		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
 		std::cout << "Locations for server "<< j << std::endl;
