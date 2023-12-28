@@ -6,11 +6,11 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 20:38:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/23 01:14:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "PipeStream.hpp"
+#include "../include/PipeStream.hpp"
 
 
 
@@ -91,7 +91,7 @@ void PipeStream::inChild( void )
 	}
 }
 
-PipeStream::PipeStream( int mode=0 )
+PipeStream::PipeStream( int mode )
 {
 	this->mode = mode;
 	readfd = -1;

@@ -1,36 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParseCGIOutput.hpp                                 :+:      :+:    :+:   */
+/*   Codes.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:46:30 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
+/*   Updated: 2023/12/22 23:00:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+#include <iostream>
 #include <string>
-#include "Codes.hpp"
-#include "Response.hpp"
+#include <fstream>
+#include <map>
+#include <vector>
+#include <stdexcept>
+#include <sstream>
+#include <unistd.h>
+#include <ctime>
 
-class ParseCGIOutput
+class StatusCodes
 {
 	private:
-
-	std::string new_headers;
-	std::string headers;
-	std::string body;
-
-	std::string getFiled( std::string field );
-	void translateHeaders( void );
-	size_t getContentLength( void );
-	bool thereIsContentLength( void );
-	void generateStatusLine( void );
-	void additionalHeaders( void );
+	
+	std::map<std::string, std::string>	codes;
 
 	public:
 
-	void response( int status, std::string output, int client_fd, t_config &config );
+	StatusCodes(void);
+
+	const std::string getStatusLine( std::string const &code ) const;
+	const std::string getStatusLine( int code ) const;
 };

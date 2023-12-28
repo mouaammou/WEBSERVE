@@ -6,12 +6,11 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 01:35:33 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/28 01:34:12 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#include "CGI.hpp"
+#include "../include/CGI.hpp"
 
 std::map<int, CGI*>			CGI::runing_processes;
 std::vector<pid_t>			CGI::pids;
@@ -61,10 +60,10 @@ std::map<int, CGI*>::iterator CGI::getProcess( pid_t pid )
 	return runing_processes.end();
 }
 
-void CGI::build( t_config &config, int client_fd )//call this for new cgi
+void CGI::build( config &args )//call this for new cgi
 {
-	CGI *cgi = new CGI(config, client_fd);
-	runing_processes[client_fd] = cgi;
+	CGI *cgi = new CGI(args);
+	runing_processes[args.request->getFd()] = cgi;
 	cgi->run();
 	// std::cout << "build cgi " << runing_processes.size() << std::endl;
 }
@@ -85,14 +84,12 @@ bool CGI::runProcess( void )
 		return false;
 	else if (pid == 0)
 	{
-		if (chdir(config.root.c_str()) != 0)
-			std::exit(EXIT_FAILURE);
 		input_pipe->inChild();
 		output_pipe->inChild();
 		// execle();
-		// std::cout << "TEST PIPE BEFORE RUNING: " << config.translated_path << std::endl;
-		execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), config.translated_path.c_str(), NULL);
-		std::cerr << "Error: execlp() failed to exec " << config.translated_path << std::endl;
+		std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
+		execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
+		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;
 	}
@@ -107,21 +104,23 @@ int64_t CGI::getTime( void )
 	struct timeval tv;
 	if (gettimeofday(&tv, NULL))
 	{
+		//timeout will happen
 		std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
-		exit(0);
-		return 0;
+		// exit(0);//error dont exit
+		//internal server error when it fails because the timeout will kill it
+		return (0);
 	}
 	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-CGI::CGI( t_config &config, int fd ) : config(config), INTERPRETER("python3")
+CGI::CGI( config &args) : args(args), INTERPRETER("python3")
 {
-	client_fd = fd;
 	input_pipe = new PipeStream(PipeStream::PARENT_WRITE_CHILD_READ);
 	output_pipe = new PipeStream(PipeStream::PARENT_READ_CHILD_WRITE);
 	pid = -1;
 	timeout_start = getTime();
 	one_time_kill = false;
+	args.cgi = false;
 }
 
 CGI::~CGI( void )
@@ -156,18 +155,21 @@ void CGI::timeout( void )
 	}
 }
 
-void CGI::onProcessExit( int status = -1 )
+void CGI::onProcessExit( int status )
 {
+	// std::cout << "onProcessExit is called=>" <<  args.request->getFd() << std::endl;
 	if (status == -1)
 	{
 		// pipe or fork error
-		Response(config, client_fd, "500");
+		// Response(args, client_fd, "500");
+		args.response_code = "500";
+		Response resp(args);
 		return ;
 	}
 	output_pipe->parentRead();
 	std::string output = output_pipe->getSavedOutput();
 	// std::cout << "---> "<<output << std::endl;
-	ParseCGIOutput().response(status, output, client_fd, config);
+	ParseCGIOutput().response(status, output, args);
 }
 
 pid_t CGI::getPid( void ) const

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:44:00 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/22 23:09:08 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ class AutoIndex
 	std::ostringstream		fin;
 	std::string				dir_path;//physical path
 	std::string				uri;//uri path
-	int						sfd;
 	bool					error;
 
 	void generate(void);

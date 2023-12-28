@@ -6,12 +6,11 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/18 12:11:27 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/28 02:35:07 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "SendResponse.hpp"
-
+#include "../include/SendResponse.hpp"
 
 std::map<int, SendFile*>	SendFile::files;
 
@@ -65,6 +64,7 @@ SendString::SendString( std::string const &data, int sfd )
 bool SendString::sendString( void )
 {
 	ssize_t d = write(sfd, data.c_str(), data.length());
+	std::cerr << "SendString::sendString: " << d << std::endl;
 	if (d == 0 && data.empty())
 		return true;
 	data.erase(0, d);
@@ -78,8 +78,19 @@ void SendString::build( std::string const &data, int sfd )
 
 bool SendString::send( int sfd )
 {
+	// means cgi is running and we should wait for it
+	if (CGI::runing_processes.find(sfd) != CGI::runing_processes.end())
+	{
+		// std::cerr << "Wait CGI RESPONSE    " <<  sfd << std::endl;
+		return false;
+	}
+	// in case of cgi is running, we need to wait for it
 	if (save.find(sfd) == save.end())
+	{
+		std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
+	}
+	std::cout << "------------------>: " << sfd << std::endl;
 	if (save[sfd]->sendString())
 	{
 		delete save[sfd];
@@ -107,16 +118,9 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
+	std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
 }
 
-int main()
-{
-	std::string s = "hello\n";
-	int fd = open("test.txt", O_RDONLY);
-	SendResponse(s, fd, 1);
-	SendResponse::send(1);
-	return 0;
-}

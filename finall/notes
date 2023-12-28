@@ -1,0 +1,8 @@
+add this to t_config or request
+
+path_info
+path_info_translated
+query_string
+
+in server add
+	getFd() // of the server

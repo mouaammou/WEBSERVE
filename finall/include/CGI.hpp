@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:45:33 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/28 05:07:44 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 // #include "Response.cpp"
 #include "PipeStream.hpp"
 #include "ParseCGIOutput.hpp"
+#include "Config.hpp"
+#include "../../includes/Request.hpp"
 
 
 class CGI
@@ -40,17 +42,17 @@ class CGI
 
 	public:
 
-	static void build( t_config &config, int client_fd );
+	static void build( config &args );
 	static void checkTimeoutAndExitedProcesses( void );
 
 	private:
 
-	static const int64_t	MAX_MSEC_TO_TIMEOUT = 5000;
+	static const int64_t	MAX_MSEC_TO_TIMEOUT = 800;
 	int64_t					timeout_start;
 	bool					one_time_kill;
 
 	const std::string		INTERPRETER;
-	t_config				&config;
+	config					&args;
 	PipeStream				*input_pipe;
 	PipeStream				*output_pipe;
 	pid_t					pid;
@@ -61,7 +63,7 @@ class CGI
 
 	public:
 
-	CGI( t_config &config, int fd );
+	CGI( config &args);
 	~CGI( void );
 
 	void run(void );

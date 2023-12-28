@@ -6,11 +6,11 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:43:58 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/23 00:57:22 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "AutoIndex.hpp"
+#include "../include/AutoIndex.hpp"
 
 void AutoIndex::generate(void)
 {

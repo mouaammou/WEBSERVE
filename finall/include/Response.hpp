@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/21 21:44:53 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/26 00:39:30 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,44 +22,32 @@
 #include "SendResponse.hpp"
 #include "AutoIndex.hpp"
 #include "CGI.hpp"
+#include "Codes.hpp"
+#include "MediaTypes.hpp"
 
-class Server;
-class Location;
-class Request;
+#include "Config.hpp"
 
-typedef struct args
-{
-	std::string		code;
-	Server			*server;
-	Location		*location;
-	Request			*request;
-	std::string		translated_path;
-	int				sfd;
-} t_args;
-
-class Basic
+class Response
 {
 	public:
 
-	static void CGI( t_args *args );
-	static void Autoindex( t_args *args );
-	static void File( t_args *args );
-	static void Redirect( t_args *args );
-	static void Error( t_args *args );
+	static bool onPollout( int sfd );
 
 	private:
 
 	std::ostringstream	oss;
 	int					ffd;
-	t_args				args;
+	config				&args;
 
 	void statusLine( std::string code );
 	int64_t get_file_size( void );
 
 	public:
 
-	Basic( t_args &args );
+	Response( config &args );
 
+	void runCGI( void );
+	void autoIndex( void );
 	void file( void );
 	void redirect( void );
 	void error( void );
