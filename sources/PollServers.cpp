@@ -6,12 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/22 20:51:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/28 23:36:59 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/PollServers.hpp"
-#include <sys/poll.h>
+#include "../includes/pollServers.hpp"
+#include "../Response/include/Response.hpp"
 
 PollServers::PollServers(Config config_file)
 {
@@ -218,7 +218,9 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);
 			}
+			Response response(server->serverConfigFile);
 		}
+		
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 	{
