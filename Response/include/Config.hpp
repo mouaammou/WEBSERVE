@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 20:28:24 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:23:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/29 06:34:12 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 // # include "includes/Server.hpp"
 // # include "includes/Request.hpp"
 
-#include "/Users/mouaammo/Desktop/HTTP_server/includes/webserv.hpp"
+#include "../../includes/webserv.hpp"
 // #ifndef CONFIGU_HPP
 // # define CONFIGU_HPP
 // typedef struct config

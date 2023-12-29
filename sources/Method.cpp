@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/29 05:59:16 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/29 06:08:48 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 			if (!this->has_cgi())
 			{
 				if (remove(this->sys_location.c_str()))
-					perror("Error deleting file");
+					std::cerr << "remove fails" << std::endl;
 				this->method_config.response_code = "204 No Content";
 			}
 			return ;

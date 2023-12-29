@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:36:59 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/29 06:37:09 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ void		PollServers::acceptConnections(int serverfd)
 	addFileDescriptor(clientSocket);
 	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 	//add the new client to the map
-	
+
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
@@ -207,7 +207,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			std::string re_location = server->getRequestedLocation(path);
 			printf("relocation: %s\n", re_location.c_str());
 			printf("path: %s\n", path.c_str());
-			
+
 			server->serverConfigFile.req_location = re_location;
 
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
@@ -218,9 +218,14 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);
 			}
+			else if (method == "DELETE")
+			{
+				server->pointedMethod = new Method(server->serverConfigFile, 3556);
+				server->printf_t_config(server->serverConfigFile);
+			}
 			Response response(server->serverConfigFile);
 		}
-		
+
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 	{
