@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:21:26 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 23:36:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,8 @@ void 				PollServers::initPoll()
 						{
 							server->serverConfigFile.response_code = "400 Bad Request";
 							std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
-						}
 							continue;
+						}
 					}
 				}
 				else
@@ -232,7 +232,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		removeFromPoll(server, fd);
 		return (false);
 	}
-	else
+	else {
 		return (false);
+	}
 	return true;
 }
