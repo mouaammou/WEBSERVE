@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:14:29 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:21:26 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ void		PollServers::acceptConnections(int serverfd)
 	addFileDescriptor(clientSocket);
 	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 	//add the new client to the map
-	
+
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
@@ -209,6 +209,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				re_location = path;
 
 			server->serverConfigFile.requested_path = re_location;
+
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
 			printf("TRANSLTED PATH : %s\n", server->serverConfigFile.translated_path.c_str());
 			server->serverConfigFile.request = TheClient(server, fd);
@@ -217,8 +218,14 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);
 			}
+			else if (TheClient(server, fd)->getMethod() == "DELETE")
+			{
+				server->pointedMethod = new Method(server->serverConfigFile, 3556);
+				server->printf_t_config(server->serverConfigFile);
+			}
 			Response response(server->serverConfigFile);
 		}
+
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 	{

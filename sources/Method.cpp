@@ -6,12 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:03:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:22:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
-#include <string>
+#include <dirent.h>
+#include <sys/stat.h>
 #include <string>
 
 bool Method::hasValidCGI(const std::string& filename)
@@ -29,6 +30,51 @@ bool Method::hasValidCGI(const std::string& filename)
 }
 
 
+
+bool Method::DeleteFolderContents(const std::string& directoryPath)
+{
+	DIR* dir = opendir(directoryPath.c_str());
+	if (dir == NULL)
+		return false;
+	struct dirent* entry;
+	while ((entry = readdir(dir)) != NULL)
+	{
+		std::string fileName = entry->d_name;
+		if (fileName != "." && fileName != "..")
+		{
+			std::string fullPath = directoryPath + "/" + fileName;
+			struct stat fileStat;
+			if (stat(fullPath.c_str(), &fileStat) == 0)
+			{
+				if (S_ISDIR(fileStat.st_mode))
+				{
+					if (!DeleteFolderContents(fullPath))
+					{
+						closedir(dir);
+						return false;
+					}
+				}
+				else
+				{
+					if (remove(fullPath.c_str()) != 0)
+					{
+						closedir(dir);
+						return false;
+					}
+				}
+			}
+			else
+			{
+				closedir(dir);
+				return false;
+			}
+		}
+	}
+	closedir(dir);
+	return true;
+}
+
+
 Method::Method(t_config &config_file, int for_delete): method_config(config_file)
 {
 	(void)for_delete;
@@ -42,7 +88,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 			if (!this->has_cgi())
 			{
 				if (remove(this->sys_location.c_str()))
-					perror("Error deleting file");
+					std::cerr << "remove fails" << std::endl;
 				this->method_config.response_code = "204 No Content";
 			}
 			return ;
@@ -64,13 +110,24 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 				}
 				else
 				{
-					//delete all folder content
-
+					if (DeleteFolderContents(this->sys_location))
+					{
+						if (remove(this->sys_location.c_str()) != 0)
+							std::cerr << "remove fails" << std::endl;
+						this->method_config.response_code = "204 No Content";
+					}
+					else
+					{
+						if (access(this->sys_location.c_str(), W_OK | R_OK) == 0)
+							this->method_config.response_code = "500 Internal Server Error";
+						this->method_config.response_code = "403 Forbidden";
+					}
 				}
 			}
 		}
 	}
 }
+
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
