@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:22:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 23:58:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 			}
 			else
 			{
-				this->method_config.response_code = "403 Forbidden 9999";
+				this->method_config.response_code = "403 Forbidden";
 				return ;
 			}
 		}
@@ -228,7 +228,11 @@ bool	Method::has_autoindex()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (this->method_config.requested_path == this->method_config.server_locations[i].getName())
+		std::string tmp = 
+			this->method_config.requested_path[this->method_config.requested_path.length() - 1] == '/' ? 
+				this->method_config.requested_path.substr(0, this->method_config.requested_path.length() - 1) 
+				: this->method_config.requested_path;
+		if (tmp == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getAutoindex())
 				return (true);

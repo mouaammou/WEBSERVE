@@ -166,12 +166,29 @@ bool 				   Request::isLocationHasRedirection()
 
 bool 				   Request::checkRequestLocation()
 {
+	std::string tmp;
 	std::vector <Location> locations = this->server_config.server_locations;
+	if (this->path == "/")
+	{
+		return (true);
+	}
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		std::string tmp = path[path.length() - 1] == '/' && path.length() > 1 ? path.substr(0, path.length() - 1) : path;
+		tmp = this->path;
+		if (this->path[this->path.length() - 1] == '/')
+			tmp = this->path.substr(0, this->path.length() - 1);
+		if (locations[i].getName() == "/")
+			continue;
 		if (tmp == locations[i].getName())
 			return (true);
+	}
+	for (size_t i = 0; i < locations.size(); i++)
+	{
+		if (locations[i].getName() == "/")
+		{
+			this->path = locations[i].getRoot() + this->path;
+			return (true);
+		}
 	}
 	return (false);
 }
@@ -207,9 +224,8 @@ bool	Request::allowedURIchars(std::string& str)
 bool	Request::parseRequestFirstLine(const std::string& line)
 {
 	std::stringstream lineStream(line);
-	printf("before path: %s\n", this->path.c_str());
+
 	lineStream >> this->method >> this->path >> this->version;
-	printf("after path: %s\n", this->path.c_str());
 	if (this->method.empty() || this->path.empty() || this->version.empty())
 	{
 		return (false);

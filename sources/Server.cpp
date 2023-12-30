@@ -6,17 +6,18 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:01:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 23:55:44 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <string>
 
-Server::Server(t_config serverConfigFile)//constructor
+Server::Server(t_config config)//constructor
 {
-	this->serverConfigFile = serverConfigFile;
 	this->serverSocket = -1;
-	this->severPort = serverConfigFile.port;
+	this->serverConfigFile = config;
+	this->severPort = config.port;
 	this->pointedMethod = NULL;
 	this->requested_location = "";
 }

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:33:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 23:46:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ class PollServers
 		void				addFileDescriptor(int fd);
 		void				removeFileDescriptor(int fd);
 		bool 				isServer(int fd);
-		Server  			*witchServer(int clientFd);
+		Server  			*whitchServer(int clientFd);
 		Server  			*getTheServer(int fd);
 		void				setServerConfigurations(int index);
 		void   				acceptConnections(int serverfd);
 
 		bool				clientPollIn(Server *server, int fd);
+
+		void			    trackALLClients(void);
 };
 
 Request				*TheClient(Server *server, int fd);

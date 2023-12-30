@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:36:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 23:52:54 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@ PollServers::PollServers(Config config_file)
 	this->servers_config.resize(this->num_servers);
 }
 
-PollServers::~PollServers()
-{
-}
+PollServers::~PollServers(){}
 
 void				PollServers::setServerConfigurations(int i)
 {
@@ -49,11 +47,51 @@ void	PollServers::bindServers()
 	}
 }
 
+void			  PollServers::trackALLClients(void)
+{
+	Server		*server;
+	int			fileDescriptor;
+
+	for (size_t i = 0; i < this->poll_Fds.size(); i++)
+	{
+		if (this->poll_Fds[i].revents & POLLIN)
+		{
+			fileDescriptor = this->poll_Fds[i].fd;
+			if (this->isServer(fileDescriptor))
+				this->acceptConnections(fileDescriptor);
+			else
+			{
+				server = this->whitchServer(fileDescriptor);
+				if (server && !clientPollIn(server, fileDescriptor))
+				{
+					std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
+					server->setStatusCode("400 Bad Request");
+					continue;
+				}
+			}
+		}
+		else//send repsponse
+		{
+			fileDescriptor = this->poll_Fds[i].fd;
+			server = this->whitchServer(fileDescriptor);
+			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
+			{
+				if (TheClient(server, fileDescriptor)->sendResponse())
+				{			
+					TheClient(server, fileDescriptor)->resetRequestState();
+					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
+				}
+			}
+		}
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+			removeFromPoll(server, this->poll_Fds[i].fd);
+	}
+}
+
 void 				PollServers::initPoll()
 {
 	int timeout = 1000 * 60;
 	int pollStatu;
-	Server *server;
 	this->bindServers();
 	while (true)
 	{
@@ -67,39 +105,7 @@ void 				PollServers::initPoll()
 			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
 		else
 		{
-			for (size_t i = 0; i < this->poll_Fds.size(); i++)
-			{
-				if (this->poll_Fds[i].revents & POLLIN)
-				{
-					if (this->isServer(this->poll_Fds[i].fd))
-						this->acceptConnections(this->poll_Fds[i].fd);
-					else
-					{
-						server = this->witchServer(this->poll_Fds[i].fd);
-						if (server && !clientPollIn(server, this->poll_Fds[i].fd))
-						{
-							server->serverConfigFile.response_code = "400 Bad Request";
-							std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
-							continue;
-						}
-					}
-				}
-				else
-				{
-					server = this->witchServer(this->poll_Fds[i].fd);
-
-					if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, this->poll_Fds[i].fd)->hasRequest())
-					{
-						if (TheClient(server, this->poll_Fds[i].fd)->sendResponse())
-						{
-							TheClient(server, this->poll_Fds[i].fd)->resetRequestState();
-							std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< this->poll_Fds[i].fd << std::endl;
-						}
-					}
-				}
-				if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-					removeFromPoll(server, this->poll_Fds[i].fd);
-			}
+			this->trackALLClients();
 		}
 	}
 }
@@ -124,7 +130,7 @@ Server*				PollServers::getTheServer(int fd)
 	return (NULL);
 }
 
-Server*				PollServers::witchServer(int clientFd)
+Server*				PollServers::whitchServer(int clientFd)
 {
 	for (size_t i = 0; i < this->num_servers; i++)
 	{
@@ -136,6 +142,7 @@ Server*				PollServers::witchServer(int clientFd)
 
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
+	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->removeFileDescriptor(fd);
 	if (server)
 		server->removeClient(fd);
@@ -146,7 +153,7 @@ void	PollServers::addFileDescriptor(int fd)
 	struct pollfd newFd;
 
 	newFd.fd = fd;
-	newFd.events = POLLIN | POLLOUT;
+	newFd.events = POLLIN | POLLOUT;//read and write allowed
 	fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);//set server socket to non-blocking mode
 	this->poll_Fds.push_back(newFd);
 }
@@ -157,7 +164,6 @@ void		PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
-			std::cout << COLOR_RED << "removed fd: "<< fd << COLOR_RESET << std::endl;
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
 			close(fd);
 			break;
@@ -167,20 +173,17 @@ void		PollServers::removeFileDescriptor(int fd)
 
 void		PollServers::acceptConnections(int serverfd)
 {
-    struct sockaddr clientAddr;
-    int clientSocket;
-    socklen_t clientAddrLen = sizeof(clientAddr);
+    struct sockaddr		clientAddr;
+    int					clientSocket;
 
+    socklen_t clientAddrLen = sizeof(clientAddr);
     if ((clientSocket = accept(serverfd, &clientAddr, &clientAddrLen)) == -1)
     {
         perror("accept");
         return;
     }
-    //add the new client socket to the pollfd array
 	addFileDescriptor(clientSocket);
-	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
-	//add the new client to the map
-
+	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;	
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
@@ -199,8 +202,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-
-		printf("status code: %s\n", server->serverConfigFile.response_code.c_str());
+		// TheClient(server, fd)->displayRequest();
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			std::string path = TheClient(server, fd)->getPath();
