@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:36:33 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 04:34:53 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,10 @@ typedef struct config
 	std::string server_name;
 	std::string port;
 	Directives 	*Server;
-	Location 	location;
+	Location 	location;	
 	std::string translated_path;
 	std::string response_code;
-	std::string req_location;
+	std::string requested_path;
 	std::string autoindex;//on or off
 	Request *request;
 	bool cgi;

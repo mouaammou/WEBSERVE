@@ -169,7 +169,8 @@ bool 				   Request::checkRequestLocation()
 	std::vector <Location> locations = this->server_config.server_locations;
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		if (this->path == locations[i].getName())
+		std::string tmp = path[path.length() - 1] == '/' && path.length() > 1 ? path.substr(0, path.length() - 1) : path;
+		if (tmp == locations[i].getName())
 			return (true);
 	}
 	return (false);
@@ -206,8 +207,9 @@ bool	Request::allowedURIchars(std::string& str)
 bool	Request::parseRequestFirstLine(const std::string& line)
 {
 	std::stringstream lineStream(line);
-
+	printf("before path: %s\n", this->path.c_str());
 	lineStream >> this->method >> this->path >> this->version;
+	printf("after path: %s\n", this->path.c_str());
 	if (this->method.empty() || this->path.empty() || this->version.empty())
 	{
 		return (false);
@@ -260,6 +262,7 @@ bool	Request::checkMethod()
 
 bool Request::checkPath()
 {
+	printf("PATH PATH => %s\n", this->path.c_str());
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 05:13:21 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:13:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void Response::file( void )
 	}
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
-	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
+	oss << "Content-Type: " << getMediaType(args.requested_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
 	oss << "\r\n";
 	std::cout << "RESPONSE::file->" << ffd << std::endl;
@@ -107,7 +107,7 @@ void Response::file( void )
 void Response::redirect( void )
 {
 	statusLine(args.response_code);
-	oss << "Location: " << args.translated_path << "\r\n";
+	oss << "Location: " << args.requested_path << "\r\n";
 	oss << "\r\n";
 	SendResponse(oss.str(), -1, args.request->getFd());
 }

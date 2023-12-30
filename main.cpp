@@ -6,15 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:07:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/29 06:06:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/pollServers.hpp"
-#include "includes/Server.hpp"
-#include "includes/webserv.hpp"
-#include <exception>
-#include <iostream>
+
 
 int main(int ac, char **av)
 {

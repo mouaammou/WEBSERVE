@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:36:59 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:14:29 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,34 +198,32 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	if (TheClient(server, fd)->receiveRequest())
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
-		std::string method 			= TheClient(server, fd)->getMethod();
 		TheClient(server, fd)->setRequestReceived(true);
+
 		printf("status code: %s\n", server->serverConfigFile.response_code.c_str());
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			std::string path = TheClient(server, fd)->getPath();
 			std::string re_location = server->getRequestedLocation(path);
-			printf("relocation: %s\n", re_location.c_str());
-			printf("path: %s\n", path.c_str());
-			
-			server->serverConfigFile.req_location = re_location;
+			if (re_location == "")
+				re_location = path;
 
+			server->serverConfigFile.requested_path = re_location;
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
-			printf("translated path: %s\n", server->serverConfigFile.translated_path.c_str());
+			printf("TRANSLTED PATH : %s\n", server->serverConfigFile.translated_path.c_str());
 			server->serverConfigFile.request = TheClient(server, fd);
-			if (method == "GET")
+			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);
 			}
 			Response response(server->serverConfigFile);
 		}
-		
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 	{
 		removeFromPoll(server, fd);
-		return false;
+		return (false);
 	}
 	else
 		return (false);

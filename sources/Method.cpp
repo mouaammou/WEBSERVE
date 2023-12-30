@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/28 05:56:30 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:03:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,10 @@ Method::Method(t_config &config_file): method_config(config_file)
 		}
 		else if (this->file_type == "dir")
 		{
-			if (this->sys_location[this->sys_location.length() - 1] != '/')
+			if (method_config.requested_path[method_config.requested_path.length() - 1] != '/')
 			{
 				this->method_config.response_code = "301 Moved Permanently";
-				this->method_config.translated_path += "/";
+				this->method_config.requested_path += "/";
 				return ;
 			}
 			if (this->hasIndexFiles())
@@ -97,8 +97,8 @@ Method::Method(t_config &config_file): method_config(config_file)
 				if (hasValidCGI(this->method_config.translated_path))
 				{
 					this->cgi = true;
-					return ;
 				}
+				return ;
 			}
 			else if (this->has_autoindex())
 			{
@@ -107,7 +107,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 			}
 			else
 			{
-				this->method_config.response_code = "403 Forbidden";
+				this->method_config.response_code = "403 Forbidden 9999";
 				return ;
 			}
 		}
@@ -122,7 +122,9 @@ bool			Method::hasIndexFiles()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (this->method_config.req_location == this->method_config.server_locations[i].getName())
+		std::string tmp = method_config.requested_path[method_config.requested_path.length() - 1] == '/' && method_config.requested_path.length() > 1 ? 
+						method_config.requested_path.substr(0, method_config.requested_path.length() - 1) : method_config.requested_path;
+		if (tmp == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getIndex() != "")
 			{
@@ -169,7 +171,7 @@ bool	Method::has_autoindex()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (this->method_config.req_location == this->method_config.server_locations[i].getName())
+		if (this->method_config.requested_path == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getAutoindex())
 				return (true);

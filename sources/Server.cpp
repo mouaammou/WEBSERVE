@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/23 18:55:33 by moouaamm         ###   ########.fr       */
+/*   Updated: 2023/12/30 11:01:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cstddef>
-#include <sys/socket.h>
 
 Server::Server(t_config serverConfigFile)//constructor
 {
@@ -89,18 +87,18 @@ int  Server::listenForConnections()
     return (this->serverSocket);
 }
 
-bool	Server::isClient(int fd)
+bool		Server::isClient(int fd)
 {
 	return (this->httpClients.find(fd) != this->httpClients.end());
 }
 
-void	Server::addClient(int fd)
+void		Server::addClient(int fd)
 {
 	std::cout << COLOR_CYAN "New client" COLOR_RESET << std::endl;
 	this->httpClients[fd] = new Request(fd, this->serverConfigFile);
 }
 
-void	Server::removeClient(int fd)
+void		Server::removeClient(int fd)
 {
 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->httpClients.erase(fd);
@@ -118,42 +116,48 @@ std::string			Server::getRequestedLocation(std::string path)
 		if (this->serverConfigFile.server_locations[i].getName() == path)
 		{
 			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
-			break;
+			return (path);
 		}
-	}
-	return (path);
-}
-
-std::string		Server::getTranslatedPath(std::string location)
-{
-	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
-	{
-		if (this->serverConfigFile.server_locations[i].getName() == location)
-			return (this->serverConfigFile.server_locations[i].getRoot() + location);
 	}
 	return ("");
 }
 
-void	Server::printf_t_config(t_config config_file)
+std::string		Server::getTranslatedPath(std::string location)
+{
+	// std::string index;
+	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
+	{
+		location =		location[location.length() - 1] == '/' && location.length() > 1 ? 
+						location.substr(0, location.length() - 1) : location;
+		if (this->serverConfigFile.server_locations[i].getName() == location)
+		{
+			// index = this->serverConfigFile.server_locations[i].getIndex();
+			return (this->serverConfigFile.server_locations[i].getRoot());
+		}
+	}
+	return ("");
+}
+
+void			Server::printf_t_config(t_config config_file)
 {
 	std::cout << "configuration : \n";
 	printf("		server_name: %s\n", config_file.server_name.c_str());
 	printf("		port: %s\n", config_file.port.c_str());
 	printf("		translated_path: %s\n", config_file.translated_path.c_str());
 	printf("		response_code: %s\n", config_file.response_code.c_str());
-	printf("		req_location: %s\n", config_file.req_location.c_str());
+	printf("		req_location: %s\n", config_file.requested_path.c_str());
 	printf("		autoindex: %s\n", config_file.autoindex.c_str());
 	printf("		server_fd: %d\n", config_file.server_fd);
 	printf("		body_size: %d\n", config_file.body_size);
-	printf("       Location: %s\n", config_file.location.getName().c_str());
+	printf("        Location: %s\n", config_file.location.getName().c_str());
 }
 
-Method* 	Server::getPointedMethod() const
+Method* 		Server::getPointedMethod() const
 {
 	return (this->pointedMethod);
 }
 
-void		Server::setStatusCode(std::string status_code)
+void			Server::setStatusCode(std::string status_code)
 {
 	this->serverConfigFile.response_code = status_code;
 }
