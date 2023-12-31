@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/30 23:56:10 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/31 05:10:24 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,17 +32,19 @@ all: $(NAME)
 
 $(NAME): $(OBJECT_FILES) Makefile
 	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
-	@echo "\033[34mWEBSEVER IS READY\033[0m"
+	@echo "\033[32mWEBSEVER IS READY\033[0m"
 
 
 %.o:%.cpp $(HEADER_FILES)
-	$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
+	$(CCPP) $(FLAGS) $(VERSION) -c $< -o $@
 
 clean:
-	$(RM) $(OBJECT_FILES)
+	@$(RM) $(OBJECT_FILES)
+	@echo "\033[31mOBJECT FILES DELETED\033[0m"
 
 fclean: clean
-	$(RM) $(NAME)
+	@$(RM) $(NAME)
+	@echo "\033[31mEXECUTABLE DELETED\033[0m"
 
 re: fclean all
 .PHONY: all fclean clean re

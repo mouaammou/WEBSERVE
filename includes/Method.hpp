@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:45:38 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 04:33:02 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 class Method
 {
 	private:
-		std::string		sys_location;
 		std::string		file_type;
 		bool			cgi;
 		t_config		 &method_config;

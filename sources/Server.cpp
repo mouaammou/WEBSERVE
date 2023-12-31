@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:55:44 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 05:23:53 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,29 +114,23 @@ std::string			Server::getRequestedLocation(std::string path)
 {
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
-		if (this->serverConfigFile.server_locations[i].getName() == path)
+		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
-			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
-			return (path);
+			return (this->serverConfigFile.server_locations[i].getName());
 		}
 	}
-	return ("");
+	return ("/");
 }
 
-std::string		Server::getTranslatedPath(std::string location)
+std::string		Server::getTranslatedPath(std::string location, std::string path)
 {
-	// std::string index;
-	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
+	size_t i;
+	for (i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
-		location =		location[location.length() - 1] == '/' && location.length() > 1 ? 
-						location.substr(0, location.length() - 1) : location;
 		if (this->serverConfigFile.server_locations[i].getName() == location)
-		{
-			// index = this->serverConfigFile.server_locations[i].getIndex();
-			return (this->serverConfigFile.server_locations[i].getRoot());
-		}
+			break;
 	}
-	return ("");
+	return (this->serverConfigFile.server_locations[i].getRoot()  + path);
 }
 
 void			Server::printf_t_config(t_config config_file)
