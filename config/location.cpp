@@ -57,6 +57,11 @@ const std::string& Location::getName() const {
 }
 
 void Location::setName(const std::string& name) {
+	if (name[name.length() - 1] != '/')
+	{
+		std::cerr << "the location name " + name + " must end with / " << std::endl;
+		exit(1);
+	}
     this->name = name;
 }
 
