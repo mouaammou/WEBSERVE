@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2023/12/31 08:05:49 by mouaammo         ###   ########.fr        #
+#    Updated: 2023/12/31 08:21:51 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,16 +25,15 @@ HEADER_FILES 	= $(RES_HEADERS) $(addprefix includes/, Server.hpp Request.hpp Pol
 					 $(addprefix config/, config.hpp directives.hpp location.hpp)
 
 OBJECT_FILES = $(FILES:%.cpp=%.o)
-	
 
 all: $(NAME)
 
 $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
-	$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
-	@echo "\033[32mWEBSEVER IS READY\033[0m";
+	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
+	@echo "\033[35mWEBSEVER IS READY\033[0m";
 
 %.o : %.cpp $(HEADER_FILES) 
-	$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
+	@$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
 	@echo "\033[32m$@ IS READY\033[0m"
 
 clean:
