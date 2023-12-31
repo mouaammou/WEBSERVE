@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 01:34:12 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/31 08:06:24 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int64_t CGI::getTime( void )
 	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-CGI::CGI( config &args) : args(args), INTERPRETER("python3")
+CGI::CGI( config &args) : INTERPRETER("python3"), args(args)
 {
 	input_pipe = new PipeStream(PipeStream::PARENT_WRITE_CHILD_READ);
 	output_pipe = new PipeStream(PipeStream::PARENT_READ_CHILD_WRITE);

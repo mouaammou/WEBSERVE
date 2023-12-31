@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 05:07:44 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/31 08:06:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ class CGI
 	PipeStream				*input_pipe;
 	PipeStream				*output_pipe;
 	pid_t					pid;
-	int						client_fd;
 
 	bool runProcess( void );
 	int64_t getTime( void );

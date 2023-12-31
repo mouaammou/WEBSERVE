@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:13:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 06:50:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void Response::file( void )
 	}
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
-	oss << "Content-Type: " << getMediaType(args.requested_path) << "\r\n";
+	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
 	oss << "\r\n";
 	std::cout << "RESPONSE::file->" << ffd << std::endl;
