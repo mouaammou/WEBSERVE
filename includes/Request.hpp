@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:47:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 02:29:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,5 +86,5 @@ class Request
 		bool	handleRequestHeader(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
-		int get_file_size(int fd);
+		int		get_file_size(int fd);
 };

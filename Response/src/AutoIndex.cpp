@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/23 00:57:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 06:13:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void AutoIndex::files( std::ostringstream &oss )
 	DIR *dp = opendir(dir_path.c_str());
 	if ( ! dp)
 	{
-		//Response::Error() instr
+		std::cout << "ERROR: opendir" << dir_path<<std::endl;
 		error = true;
 		return ;
 	}

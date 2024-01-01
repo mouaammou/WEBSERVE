@@ -77,11 +77,6 @@ std::string 		Request::getTransferEncoding() const
 	return (this->transfer_encoding);
 }
 
-// Method* 		Request::getRequestedMethod() const
-// {
-// 	return (this->_requested_method);
-// }
-
 bool			Request::hasBody() const
 {
 	return (this->_has_body);
@@ -127,13 +122,9 @@ void   Request::resetRequestState()
 
 bool			      Request::handleBadRequest()
 {
+	puts("handle bad request");
 	if (this->isLocationHasRedirection())
 		return (false);
-	if (this->checkRequestLocation() == false)
-	{
-		this->_status_code = "404 Not Found";
-		return (false);
-	}
 	if (this->_status_code.find("400") != std::string::npos
 		|| this->_status_code.find("413") != std::string::npos
 		|| this->_status_code.find("414") != std::string::npos
@@ -155,7 +146,6 @@ bool 				   Request::isLocationHasRedirection()
 			{
 				this->path = locations[i].getReturnString();
 				this->_status_code = "301 Moved Permanently";
-				printf("path redirect to => %s\n", this->path.c_str());
 				return (true);
 			}
 		}
@@ -164,34 +154,29 @@ bool 				   Request::isLocationHasRedirection()
 
 }
 
-bool 				   Request::checkRequestLocation()
-{
-	std::string tmp;
-	std::vector <Location> locations = this->server_config.server_locations;
-	if (this->path == "/")
-	{
-		return (true);
-	}
-	for (size_t i = 0; i < locations.size(); i++)
-	{
-		tmp = this->path;
-		if (this->path[this->path.length() - 1] == '/')
-			tmp = this->path.substr(0, this->path.length() - 1);
-		if (locations[i].getName() == "/")
-			continue;
-		if (tmp == locations[i].getName())
-			return (true);
-	}
-	for (size_t i = 0; i < locations.size(); i++)
-	{
-		if (locations[i].getName() == "/")
-		{
-			this->path = locations[i].getRoot() + this->path;
-			return (true);
-		}
-	}
-	return (false);
-}
+// bool 				   Request::checkRequestLocation()
+// {
+// 	std::vector <Location> locations = this->server_config.server_locations;
+// 	if (this->path == "/")
+// 	{
+// 		for (size_t i = 0; i < locations.size(); i++)
+// 		{
+// 			if (locations[i].getName() == "/")
+// 			{
+// 				this->path = locations[i].getRoot() + this->path;
+// 				return (true);
+// 			}
+// 		}
+// 	}
+// 	for (size_t i = 0; i < locations.size() && locations[i].getName() != "/"; i++)
+// 	{
+// 		if (this->path == locations[i].getName())
+// 			return (true);
+// 	}
+	
+// 	exit(0);
+// 	return (true);
+// }
 
 //display request headers
 void Request::displayRequest()
@@ -278,7 +263,6 @@ bool	Request::checkMethod()
 
 bool Request::checkPath()
 {
-	printf("PATH PATH => %s\n", this->path.c_str());
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";
@@ -296,7 +280,7 @@ bool Request::checkPath()
 		std::string tmp =  this->path.substr(this->path.find("%") + 1, 2);
 		std::stringstream ss(tmp);
 
-		ss >> std::hex >> decimal;//convert hex to decimal
+		ss >> std::hex >> decimal;
 		mychar = static_cast<char>(decimal);
 		this->path.replace(this->path.find("%"), 3, 1, mychar);
 	}

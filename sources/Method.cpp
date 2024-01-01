@@ -6,14 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:58:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 06:29:24 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
-#include <dirent.h>
-#include <sys/stat.h>
-#include <string>
+
 
 bool Method::hasValidCGI(const std::string& filename)
 {
@@ -78,7 +76,6 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 Method::Method(t_config &config_file, int for_delete): method_config(config_file)
 {
 	(void)for_delete;
-	this->sys_location = config_file.translated_path;
 	this->method_config.autoindex = "off";
 	this->cgi = false;
 	if (this->get_method_file_type())
@@ -87,7 +84,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 		{
 			if (!this->has_cgi())
 			{
-				if (remove(this->sys_location.c_str()))
+				if (remove(this->method_config.translated_path.c_str()))
 					std::cerr << "remove fails" << std::endl;
 				this->method_config.response_code = "204 No Content";
 			}
@@ -95,12 +92,12 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 		}
 		else if (this->file_type == "dir")
 		{
-			if (this->sys_location[this->sys_location.length() - 1] != '/')
+			if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] != '/')
 			{
 				this->method_config.response_code = "409 Conflict";
 				return ;
 			}
-			else if (this->sys_location[this->sys_location.length() - 1] == '/')
+			else if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] == '/')
 			{
 				if (this->has_cgi())
 				{
@@ -110,15 +107,15 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 				}
 				else
 				{
-					if (DeleteFolderContents(this->sys_location))
+					if (DeleteFolderContents(this->method_config.translated_path))
 					{
-						if (remove(this->sys_location.c_str()) != 0)
+						if (remove(this->method_config.translated_path.c_str()) != 0)
 							std::cerr << "remove fails" << std::endl;
 						this->method_config.response_code = "204 No Content";
 					}
 					else
 					{
-						if (access(this->sys_location.c_str(), W_OK | R_OK) == 0)
+						if (access(this->method_config.translated_path.c_str(), W_OK | R_OK) == 0)
 							this->method_config.response_code = "500 Internal Server Error";
 						this->method_config.response_code = "403 Forbidden";
 					}
@@ -131,7 +128,6 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
-	this->sys_location = config_file.translated_path;
 	this->method_config.autoindex = "off";
 	this->cgi = false;
 	if (this->get_method_file_type())
@@ -179,9 +175,7 @@ bool			Method::hasIndexFiles()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		std::string tmp = method_config.requested_path[method_config.requested_path.length() - 1] == '/' && method_config.requested_path.length() > 1 ? 
-						method_config.requested_path.substr(0, method_config.requested_path.length() - 1) : method_config.requested_path;
-		if (tmp == this->method_config.server_locations[i].getName())
+		if (method_config.requested_path == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getIndex() != "")
 			{
@@ -195,25 +189,18 @@ bool			Method::hasIndexFiles()
 
 std::string			Method::get_method_location()
 {
-	return (this->sys_location);
+	return (this->method_config.translated_path);
 }
-
-// t_config			Method::getTconfig() const
-// {
-// 	return (this->method_config);
-// }
 
 bool		Method::get_method_file_type()
 {
 	struct stat info;
-	if (stat(this->sys_location.c_str(), &info) == 0)//check permission
+	if (stat(this->method_config.translated_path.c_str(), &info) == 0)//check permission
 	{
 		if (S_ISDIR(info.st_mode))
 			this->file_type = "dir";
 		else if (S_ISREG(info.st_mode))
 			this->file_type = "file";
-		else
-			this->file_type = "none";
 	}
 	else
 	{
@@ -228,11 +215,7 @@ bool	Method::has_autoindex()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		std::string tmp = 
-			this->method_config.requested_path[this->method_config.requested_path.length() - 1] == '/' ? 
-				this->method_config.requested_path.substr(0, this->method_config.requested_path.length() - 1) 
-				: this->method_config.requested_path;
-		if (tmp == this->method_config.server_locations[i].getName())
+		if (this->method_config.requested_path == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getAutoindex())
 				return (true);
@@ -243,7 +226,7 @@ bool	Method::has_autoindex()
 
 bool			Method::has_cgi()
 {
-	if (hasValidCGI(sys_location))
+	if (hasValidCGI(method_config.translated_path))
 	{
 		this->cgi = true;
 		return (true);

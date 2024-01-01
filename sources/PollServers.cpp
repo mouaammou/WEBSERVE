@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 00:56:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 02:17:00 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,19 +202,22 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-		// TheClient(server, fd)->displayRequest();
+
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			std::string path = TheClient(server, fd)->getPath();
+
 			std::string re_location = server->getRequestedLocation(path);
-			if (re_location == "")
-				re_location = path;
 
-			server->serverConfigFile.requested_path = re_location;
+			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
 
-			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location);
-			printf("TRANSLTED PATH : %s\n", server->serverConfigFile.translated_path.c_str());
+
+			server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();
+
+
 			server->serverConfigFile.request = TheClient(server, fd);
+
+
 			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);

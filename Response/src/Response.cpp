@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/31 01:03:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 06:13:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@ void Response::runCGI( void )
 
 void Response::autoIndex( void )
 {
-	if ( ! args.autoindex.compare("off"))
-		return ;
 	std::string uri = args.request->getPath();
-	std::string root = args.location.getRoot() + uri;
+	std::string root = args.translated_path;
 	AutoIndex autoindex(args.request->getFd(), root, uri); // make sure to pass the right uri
 	if (autoindex.fail())
 	{
@@ -63,7 +61,15 @@ Response::Response( config &args ) : args(args)
 	}
 	else if (args.autoindex == "on")
 	{
+		std::cout << "autoindex called->>" << args.request->getFd() << std::endl;
 		autoIndex();
+		return ;
+	}
+	if (args.response_code.compare(0, 3, "204") == 0)
+	{
+		statusLine(args.response_code);
+		oss << "\r\n";
+		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
 	}
 	switch (args.response_code[0])
@@ -113,10 +119,10 @@ void Response::redirect( void )
 
 void Response::error( void )//5xx 4xx
 {
-	// int n;
-	// std::stringstream num(args.response_code);
-	// num >> n;
-	args.translated_path = "./html/error.html";// args.Server->getErrorPage(500);
+	int n;
+	std::stringstream num(args.response_code);
+	num >> n;
+	args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
 	std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
 	ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
 	int64_t file_size = get_file_size();
@@ -125,6 +131,7 @@ void Response::error( void )//5xx 4xx
 		statusLine("500");
 		oss << "Content-Length: " << 0 << "\r\n";
 		oss << "Content-Type: " << "text/html" << "\r\n";
+		oss << "Cache-Control: no-store\r\n";
 		oss << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;

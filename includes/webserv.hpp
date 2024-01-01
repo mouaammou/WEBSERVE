@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:48:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 04:31:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <sys/fcntl.h>
 #include <sys/signal.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #include <csignal>
 #include <sstream>
@@ -33,8 +34,6 @@
 #include <map>
 
 #include "../config/config.hpp"
-
-// #include "Request.hpp"
 
 #define COLOR_RED     "\033[0;31m"
 #define COLOR_GREEN   "\033[0;32m"

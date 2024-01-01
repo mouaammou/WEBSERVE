@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2023/12/31 00:00:07 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 06:53:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -521,6 +521,28 @@ void Config::check_server_name_dup(std::string serv_name)
 	}
 }
 
+void Config::set_default_pages(Directives &server)
+{
+	std::string tmp;
+	std::stringstream number;
+	for (int i = 400; i < 417; i++)
+	{
+		number << i;
+		tmp = server.getErrorPage(i);
+		if (tmp.empty())
+			server.setErrorPage(i, std::string("./www/error/") + number.str() + ".html");
+		number.str("");
+	}
+	for (int i = 500; i < 505; i++)
+	{
+		number << i;
+		tmp = server.getErrorPage(i);
+		if (tmp.empty())
+			server.setErrorPage(i, std::string("./www/error/") + number.str() + ".html");
+		number.str("");
+	}
+}
+
 void Config::handle_servers(int *indice)
 {
 	Directives server;
@@ -578,6 +600,7 @@ void Config::handle_servers(int *indice)
 		server.setPorts(ports);
 	}
 	server.server_locations = sort_location(server.getLocations());
+	set_default_pages(server);
 	this->directs.push_back(server);
 }
 

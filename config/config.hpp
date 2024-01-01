@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:57:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 02:25:46 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ class Config
 		std::vector<Location> sort_location(std::vector<Location> locat);
 		void check_dup_location(std::vector<Location> locat);
 		void handle_redirection(Location &location, int *indice);
+		void set_default_pages(Directives &server);
+
 		~Config();
 };
 
