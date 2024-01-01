@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 02:17:00 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 21:13:22 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,13 +208,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			std::string path = TheClient(server, fd)->getPath();
 
 			std::string re_location = server->getRequestedLocation(path);
-
 			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
-
-
-			server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();
-
-
+			server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
 			server->serverConfigFile.request = TheClient(server, fd);
 
 

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 06:16:28 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 21:14:34 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ int64_t CGI::getTime( void )
 	}
 	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
+
 
 CGI::CGI( config &args) : Execute(args) ,INTERPRETER("python3"), args(args)
 {

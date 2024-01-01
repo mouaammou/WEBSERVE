@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 06:26:45 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 06:29:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ std::string			Server::getRequestedLocation(std::string path)
 	{
 		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
-			std::cout << "location found: " <<this->serverConfigFile.server_locations[i].getName()<< std::endl;
 			return (this->serverConfigFile.server_locations[i].getName());
 		}
 	}
