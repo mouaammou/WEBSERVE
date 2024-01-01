@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 22:15:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/23 00:58:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2023/12/31 00:58:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ std::string getMediaType( std::string &file )
 {
 	static std::map<std::string, std::string> media_type;
 
+	std::cout << "getMediaType called-->" << file <<"<--" << std::endl;
 	if ( ! media_type.empty())
 	{
 		size_t pos = file.find_last_of(".");

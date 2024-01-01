@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/30 11:13:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2023/12/31 01:03:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ Response::Response( config &args ) : args(args)
 			break;
 		case '4':
 		case '5':
-			std::cerr << "default break " << args.response_code << std::endl;
 			error();
 			break;
 		default:
@@ -97,7 +96,7 @@ void Response::file( void )
 	}
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
-	oss << "Content-Type: " << getMediaType(args.requested_path) << "\r\n";
+	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
 	oss << "\r\n";
 	std::cout << "RESPONSE::file->" << ffd << std::endl;
