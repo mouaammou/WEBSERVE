@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/31 08:06:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 22:39:26 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void CGI::checkTimeoutAndExitedProcesses( void ) //use it in poll
 	checkExitedProcess();
 }
 
+
 bool CGI::runProcess( void )
 {
 	pid = fork();
@@ -88,7 +89,10 @@ bool CGI::runProcess( void )
 		output_pipe->inChild();
 		// execle();
 		std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
-		execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
+		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
+		// for 
+		std::cerr << "@@@@@args.cgi: " << getInterpreterPath() << std::endl;
+		execve("/usr/local/bin/python3", getArgs(), getEnv());
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;
@@ -113,7 +117,8 @@ int64_t CGI::getTime( void )
 	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-CGI::CGI( config &args) : INTERPRETER("python3"), args(args)
+
+CGI::CGI( config &args) : Execute(args) ,INTERPRETER("python3"), args(args)
 {
 	input_pipe = new PipeStream(PipeStream::PARENT_WRITE_CHILD_READ);
 	output_pipe = new PipeStream(PipeStream::PARENT_READ_CHILD_WRITE);

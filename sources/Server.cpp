@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 05:23:53 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 06:29:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,10 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)
 		if (this->serverConfigFile.server_locations[i].getName() == location)
 			break;
 	}
-	return (this->serverConfigFile.server_locations[i].getRoot()  + path);
+	std::string tmp = this->serverConfigFile.server_locations[i].getRoot() + path;
+	if (tmp[tmp.length() - 1] == '/')
+		tmp += this->serverConfigFile.server_locations[i].getIndex();
+	return (tmp);
 }
 
 void			Server::printf_t_config(t_config config_file)
@@ -144,7 +147,8 @@ void			Server::printf_t_config(t_config config_file)
 	printf("		autoindex: %s\n", config_file.autoindex.c_str());
 	printf("		server_fd: %d\n", config_file.server_fd);
 	printf("		body_size: %d\n", config_file.body_size);
-	printf("        Location: %s\n", config_file.location.getName().c_str());
+	printf("		Location: %s\n", config_file.location.getName().c_str());
+	printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
 }
 
 Method* 		Server::getPointedMethod() const

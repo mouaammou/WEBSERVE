@@ -410,8 +410,8 @@ bool	Request::receiveRequest()//must read the request
 
 bool   Request::sendResponse()
 {
-	bool ret = Response::onPollout(this->fd);
-	std::cout << "Request::sendResponse: " << (ret == true ? "tue" : "false") << std::endl;
+	// bool ret = Response::onPollout(this->fd);
+	// std::cout << "Request::sendResponse: " << (ret == true ? "tue" : "false") << std::endl;
 	return (Response::onPollout(this->fd));
 }
 

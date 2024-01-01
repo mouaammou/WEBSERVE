@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 04:33:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 22:18:17 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ class Method
 {
 	private:
 		std::string		file_type;
-		bool			cgi;
 		t_config		 &method_config;
 
 	public:

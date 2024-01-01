@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/31 08:06:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 21:13:41 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,10 @@
 #include "ParseCGIOutput.hpp"
 #include "Config.hpp"
 #include "../../includes/Request.hpp"
+#include "Execute.hpp"
 
 
-class CGI
+class CGI : private Execute
 {
 	public:
 
