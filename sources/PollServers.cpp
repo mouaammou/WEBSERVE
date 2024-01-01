@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 06:30:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 13:34:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,8 +202,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-
-		if (server->getStatusCode().find("200") != std::string::npos)
+		TheClient(server, fd)->displayRequest();
+		printf("status code: %s\n", server->getStatusCode().c_str());
+		// if (server->getStatusCode().find("200") != std::string::npos)
+		if (true)
 		{
 			std::string path = TheClient(server, fd)->getPath();
 			std::string re_location = server->getRequestedLocation(path);
@@ -225,12 +227,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
-	{
-		removeFromPoll(server, fd);
+		return (removeFromPoll(server, fd), false);
+	else
 		return (false);
-	}
-	else {
-		return (false);
-	}
 	return true;
 }
