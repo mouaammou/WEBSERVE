@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 02:29:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 12:20:14 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Request
 		size_t			content_length;
 		std::string 	transfer_encoding;
 		std::string 	content_type;
+		std::string     query_string;
 		
 		bool	_has_headers;
 		bool	_has_body;
@@ -57,6 +58,7 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		int				      getFd() const;
 		std::string 		   getStatusCode() const;
+		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>	getRequestHeaders() const;
 
@@ -65,7 +67,6 @@ class Request
 		bool				hasRequest() const;
 		void				 setRequestReceived(bool request_received);
 		bool			      handleBadRequest();
-		bool 				   checkRequestLocation();
 		bool 				   isLocationHasRedirection();
 
 		//display request headers
@@ -83,7 +84,7 @@ class Request
 		
 		void    resetRequestState();
 			
-		bool	handleRequestHeader(std::string buffe1rString);
+		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
 		int		get_file_size(int fd);

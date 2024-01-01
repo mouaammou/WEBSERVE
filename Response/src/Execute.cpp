@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 06:13:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 22:33:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ char* Execute::strdup( std::string str )
 
 std::string Execute::toUpperCaseVar( std::string str )
 {
+	std::cout << "------>toUpperCaseVar: " << str << std::endl;
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] == '-')
@@ -99,9 +100,10 @@ void Execute::requestHeaderstToCGIVariables( void )
 {
 	std::map<std::string, std::string> hdrs = conf.request->getRequestHeaders();
 	std::map<std::string, std::string>::iterator it = hdrs.begin();
-	for (; it != headers.end(); it++)
+	for (size_t i = 0; it != headers.end() && i < hdrs.size() ; it++, i++)
 	{
 		std::string key = toUpperCaseVar(it->first);
+		printf("key: %s\n", key.c_str());
 		if (key == "HTTP_CONTENT_LENGTH" || key == "HTTP_CONTENT_TYPE" || key == "HTTP_TRANSFER_ENCODING" || key == "HTTP_CONNECTION" || key == "HTTP_COOKIE")
 			continue;
 		headers[key] = it->second;

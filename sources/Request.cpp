@@ -30,7 +30,7 @@ Request::Request(int fd, t_config config_file)
 	this->content_type = "";
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
-	// this->_requested_method = NULL;
+	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 }
@@ -102,6 +102,11 @@ void		 Request::setRequestReceived(bool request_received)
 	this->request_received = request_received;
 }
 
+std::string 			 Request::getQueryString() const
+{
+	return (this->query_string);
+}
+
 void   Request::resetRequestState()
 {
 	this->request_string = "";
@@ -118,11 +123,11 @@ void   Request::resetRequestState()
 	this->buffer[0] = '\0';
 	this->request_received = false;
 	this->_status_code = "200 OK";
+	this->query_string = "";
 }
 
 bool			      Request::handleBadRequest()
 {
-	puts("handle bad request");
 	if (this->isLocationHasRedirection())
 		return (false);
 	if (this->_status_code.find("400") != std::string::npos
@@ -130,6 +135,7 @@ bool			      Request::handleBadRequest()
 		|| this->_status_code.find("414") != std::string::npos
 		|| this->_status_code.find("501") != std::string::npos
 		|| this->_status_code.find("405") != std::string::npos
+		|| this->_status_code.find("403") != std::string::npos
 		|| this->_status_code.find("505") != std::string::npos)
 		return (false);
 	return (true);
@@ -154,30 +160,6 @@ bool 				   Request::isLocationHasRedirection()
 
 }
 
-// bool 				   Request::checkRequestLocation()
-// {
-// 	std::vector <Location> locations = this->server_config.server_locations;
-// 	if (this->path == "/")
-// 	{
-// 		for (size_t i = 0; i < locations.size(); i++)
-// 		{
-// 			if (locations[i].getName() == "/")
-// 			{
-// 				this->path = locations[i].getRoot() + this->path;
-// 				return (true);
-// 			}
-// 		}
-// 	}
-// 	for (size_t i = 0; i < locations.size() && locations[i].getName() != "/"; i++)
-// 	{
-// 		if (this->path == locations[i].getName())
-// 			return (true);
-// 	}
-	
-// 	exit(0);
-// 	return (true);
-// }
-
 //display request headers
 void Request::displayRequest()
 {
@@ -189,7 +171,7 @@ void Request::displayRequest()
 		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 			std::cout << it->first << "=>" << it->second;
-		std::cout << COLOR_GREEN << "Request Body: " << COLOR_RESET << this->request_body << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: {{" << COLOR_RESET << this->request_body << "}}" << std::endl;
 	}
 }
 
@@ -237,12 +219,15 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		}
 		if (key.compare("Transfer-Encoding:") == 0)//if the key is Transfer-Encoding
 		{
-			if (value == "chunked")
+			if (value == " chunked\r\n")
+			{
 				this->transfer_encoding = value;
+			}
 			else
 			{
 				this->transfer_encoding = "error";
 				this->_status_code = "501 Not Implemented";
+				return (true);
 			}
 		}
 		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
@@ -263,6 +248,15 @@ bool	Request::checkMethod()
 
 bool Request::checkPath()
 {
+	if (this->path.find("..") != std::string::npos)
+		return (_status_code = "403 Forbidden", true);
+	if (this->path.find("#") != std::string::npos)
+		this->path = this->path.substr(0, this->path.find("#"));
+	if (this->path.find("?") != std::string::npos)
+	{
+		this->query_string = this->path.substr(this->path.find("?") + 1);
+		this->path = this->path.substr(0, this->path.find("?"));
+	}
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";
@@ -299,7 +293,7 @@ bool		Request::hasHeaders() const
 	return (this->_has_headers);
 }
 
-bool Request::handleRequestHeader(std::string bufferString)
+bool Request::handleRequestHeaders(std::string bufferString)
 {
 	if (this->_has_headers)
 		return (true);
@@ -317,14 +311,11 @@ bool Request::handleRequestHeader(std::string bufferString)
 			return (false);
 		line = "";
 	}
-	printf("path => %s\n", this->path.c_str());
-	// Parse the headers
 	while (std::getline(requestStream, line))
 	{
 		line += "\n";
 		if (line.compare("\r\n") == 0)
 		{
-			std::cout << COLOR_YELLOW "THE END OF HEADERS" COLOR_RESET << std::endl;
 			this->_has_headers = true;
 			return (true);
 		}
@@ -343,37 +334,35 @@ bool Request::handleRequestHeader(std::string bufferString)
 
 bool	Request::storeRequestBody()//hasbody, requestbody
 {
-	if (this->hasHeaders() && this->content_length > 0)
+	if (this->request_body == "")
 	{
-		if (this->request_body == "")
-		{
-			std::string tmp = this->buffer;
-			this->request_body += this->request_string.substr(tmp.find("\r\n\r\n") + 4);
-		}
-		else
-			this->request_body += this->buffer;
-		if (this->request_body.length() >= (this->content_length))
-		{
-			printf("content length: %zu\n", this->content_length);
-			printf("request body length: %zu\n", this->request_body.length());
-			std::cout << COLOR_YELLOW "THE END OF BODY" COLOR_RESET << std::endl;
-			this->_has_body = true;
-			return (true);
-		}
+		std::string tmp = this->buffer;
+		this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);
+	}
+	else
+		this->request_body += this->buffer;
+	if (this->request_body.length() >= (this->content_length))
+	{
+		this->_has_body = true;
+		return (true);
 	}
 	return (false);
 }
 
 bool			Request::storeChunkedRequestBody()
 {
-	if (this->hasHeaders() && this->transfer_encoding == "chunked")
+	if ( ! this->hasBody())
 	{
 		if (this->request_body == "")
-			this->request_body += this->request_string.substr(this->request_string.find("\r\n\r\n") + 4) + this->buffer;
+		{
+			std::string tmp = this->buffer;
+			this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);
+		}
 		else
 			this->request_body += this->buffer;
 		if (this->request_body.find("0\r\n\r\n") != std::string::npos)
 		{
+			this->request_body = this->request_body.substr(0, this->request_body.find("0\r\n\r\n"));
 			this->_has_body = true;
 			return (true);
 		}
@@ -384,28 +373,33 @@ bool			Request::storeChunkedRequestBody()
 bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
+	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
 		return (perror("read"), this->read_bytes = 0, false);
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
 	if (this->request_string.find("\r\n\r\n") == std::string::npos)
-	{
+	{	
 		this->request_string += this->buffer;
-		if (!this->handleRequestHeader(this->request_string))
+		if (!this->handleRequestHeaders(this->request_string))
 			return (false);
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
-	
-	if (this->content_length > 0 || this->transfer_encoding == "chunked")
+
+	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
 	{
 		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
 		{
 			this->_status_code = "413 Request Entity Too Large";
 			return (true);
 		}
-		return (this->storeRequestBody() || this->storeChunkedRequestBody());
+		
+		if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos)
+			return (this->storeChunkedRequestBody());
+		if (this->hasHeaders() && this->content_length > 0)
+			return (this->storeRequestBody());
 	}
 
 	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
@@ -416,6 +410,8 @@ bool	Request::receiveRequest()//must read the request
 
 bool   Request::sendResponse()
 {
+	// bool ret = Response::onPollout(this->fd);
+	// std::cout << "Request::sendResponse: " << (ret == true ? "tue" : "false") << std::endl;
 	return (Response::onPollout(this->fd));
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 02:35:07 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 02:50:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ bool SendString::send( int sfd )
 	// in case of cgi is running, we need to wait for it
 	if (save.find(sfd) == save.end())
 	{
-		std::cerr << "NOTHI9NG	: " << sfd << std::endl;
+		// std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
 	}
 	std::cout << "------------------>: " << sfd << std::endl;

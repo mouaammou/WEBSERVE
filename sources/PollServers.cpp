@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 21:13:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/01 22:42:51 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void			  PollServers::trackALLClients(void)
 			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
 			{
 				if (TheClient(server, fileDescriptor)->sendResponse())
-				{			
+				{		
 					TheClient(server, fileDescriptor)->resetRequestState();
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				}
@@ -107,6 +107,7 @@ void 				PollServers::initPoll()
 		{
 			this->trackALLClients();
 		}
+		CGI::checkTimeoutAndExitedProcesses();
 	}
 }
 
@@ -202,9 +203,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-
-		if (server->getStatusCode().find("200") != std::string::npos)
-		{
+		TheClient(server, fd)->displayRequest();
+		printf("status code: %s\n", server->getStatusCode().c_str());
 			std::string path = TheClient(server, fd)->getPath();
 
 			std::string re_location = server->getRequestedLocation(path);
@@ -213,6 +213,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			server->serverConfigFile.request = TheClient(server, fd);
 
 
+		if (server->getStatusCode().find("200") != std::string::npos)
+		{
 			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
@@ -223,17 +225,14 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, 3556);
 				server->printf_t_config(server->serverConfigFile);
 			}
-			Response response(server->serverConfigFile);
+			
 		}
+		Response response(server->serverConfigFile);
 
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
-	{
-		removeFromPoll(server, fd);
+		return (removeFromPoll(server, fd), false);
+	else
 		return (false);
-	}
-	else {
-		return (false);
-	}
 	return true;
 }

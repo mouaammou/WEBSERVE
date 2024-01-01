@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 06:29:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/01 22:18:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 {
 	(void)for_delete;
 	this->method_config.autoindex = "off";
-	this->cgi = false;
+	this->method_config.cgi = false;
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
@@ -129,7 +129,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 Method::Method(t_config &config_file): method_config(config_file)
 {
 	this->method_config.autoindex = "off";
-	this->cgi = false;
+	this->method_config.cgi = false;
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
@@ -149,7 +149,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 			{
 				if (hasValidCGI(this->method_config.translated_path))
 				{
-					this->cgi = true;
+					this->method_config.cgi = true;
 				}
 				return ;
 			}
@@ -228,7 +228,8 @@ bool			Method::has_cgi()
 {
 	if (hasValidCGI(method_config.translated_path))
 	{
-		this->cgi = true;
+		std::cout << "**** CGI FOUND" << std::endl;
+		this->method_config.cgi = true;
 		return (true);
 	}
 	return (false);
@@ -236,6 +237,6 @@ bool			Method::has_cgi()
 
 bool			Method::getCGI() const
 {
-	return (this->cgi);
+	return (this->method_config.cgi);
 }
 
