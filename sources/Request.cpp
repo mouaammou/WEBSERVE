@@ -356,21 +356,20 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 
 bool			Request::storeChunkedRequestBody()
 {
-	if ( ! this->hasBody())
+	if (this->request_body == "")
 	{
-		if (this->request_body == "")
-		{
-			std::string tmp = this->buffer;
-			this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);
-		}
-		else
-			this->request_body += this->buffer;
-		if (this->request_body.find("0\r\n\r\n") != std::string::npos)
-		{
-			this->request_body = this->request_body.substr(0, this->request_body.find("0\r\n\r\n"));
-			this->_has_body = true;
-			return (true);
-		}
+		std::string tmp = this->buffer;
+		this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);
+	}
+	else
+		this->request_body += this->buffer;
+	if (this->request_body.find("0\r\n\r\n") != std::string::npos)
+	{
+		//substr first line and last line
+		this->request_body = this->request_body.substr(this->request_body.find("\r\n") + 2);
+		this->request_body = this->request_body.substr(0, this->request_body.find("0\r\n\r\n"));
+		this->_has_body = true;
+		return (true);
 	}
 	return (false);
 }

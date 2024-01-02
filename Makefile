@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+         #
+#    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/01 22:09:30 by samjaabo         ###   ########.fr        #
+#    Updated: 2024/01/02 14:24:03 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
 
 %.o : %.cpp $(HEADER_FILES) 
 	@$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
-	@echo "\033[32m$@ IS READY\033[0m"
+	@printf "\033[1;36m Compiling \033[0m $< \033[1;36m√\033[0m\n";
 
 clean:
 	@$(RM) $(OBJECT_FILES)

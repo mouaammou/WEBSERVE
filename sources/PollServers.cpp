@@ -6,12 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 12:01:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 16:33:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pollServers.hpp"
 #include "../Response/include/Response.hpp"
+#include <cstddef>
 
 PollServers::PollServers(Config config_file)
 {
@@ -62,7 +63,6 @@ void			  PollServers::trackALLClients(void)
 			else
 			{
 				server = this->whitchServer(fileDescriptor);
-				std::cout << COLOR_YELLOW "SERVER NAME: " <<server->serverConfigFile.server_name << COLOR_RESET << std::endl;
 				if (server && !clientPollIn(server, fileDescriptor))
 				{
 					if (TheClient(server, fileDescriptor) && TheClient(server, fileDescriptor)->getStatusCode() == "400 Bad Request")
@@ -204,21 +204,78 @@ Request				*TheClient(Server *server, int fd)
 	return (NULL);
 }
 
+void				stringTrim(std::string &str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == '\r' || str[i] == '\n' || str[i] == '\t' || str[i] == ' ')
+		{
+			str.erase(i, 1);
+			i--;
+		}
+	}
+}
+
+bool				PollServers::getServerHost(std::string &host, t_config &server_config)
+{
+	for(size_t i = 0; i < this->num_servers; i++)
+	{
+		stringTrim(host);
+		if (this->http_servers[i]->serverConfigFile.server_name == host)
+		{
+			server_config = this->http_servers[i]->serverConfigFile;
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool 				PollServers::hasHostHeader(std::map<std::string, std::string> &headers, std::string &host_value)
+{
+	for(std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
+	{
+		if (it->first == "Host:")
+		{
+			host_value = it->second;
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool				PollServers::IsConfigHasMultiPorts(void)
+{
+	for(size_t i = 0; i < this->num_servers; i++)
+	{
+		for(size_t j = 0; j < this->num_servers; j++)
+		{
+			if (this->http_servers[i]->serverConfigFile.port == this->http_servers[j]->serverConfigFile.port && i != j)
+				return (true);
+		}
+	}
+	return (false);
+}
+
 bool				PollServers::clientPollIn(Server *server, int fd)
 {
 	if (TheClient(server, fd)->receiveRequest())
 	{
+		if (IsConfigHasMultiPorts())
+		{
+			std::string host_value;
+			if (hasHostHeader(TheClient(server, fd)->getRequestHeaders(), host_value))
+				getServerHost(host_value, server->serverConfigFile);
+		}
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
 		TheClient(server, fd)->displayRequest();
+		std::string path = TheClient(server, fd)->getPath();
+		std::string re_location = server->getRequestedLocation(path);
+		server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
+		server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
+		server->serverConfigFile.request = TheClient(server, fd);
+
 		printf("status code: %s\n", server->getStatusCode().c_str());
-			std::string path = TheClient(server, fd)->getPath();
-
-			std::string re_location = server->getRequestedLocation(path);
-			server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
-			server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
-			server->serverConfigFile.request = TheClient(server, fd);
-
 	
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
