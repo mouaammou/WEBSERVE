@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 12:20:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:09:52 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ class Request
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
-		std::map<std::string, std::string>	getRequestHeaders() const;
+		std::map<std::string, std::string>&	getRequestHeaders();
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;

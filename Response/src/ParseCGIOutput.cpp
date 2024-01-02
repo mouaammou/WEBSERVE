@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 01:27:17 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:28:23 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 	if (pos == std::string::npos)
 	{
 		//found no headers
-		std::cout << "no headers" << std::endl;
+		// std::cout << "no headers" << std::endl;
 		args.response_code = "500";
 		Response resp(args);
 		return;

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 21:14:45 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:29:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,16 @@ int64_t Response::get_file_size( void )
 Response::Response( config &args ) : args(args)
 {
 	// args.autoindex = args.location.getAutoindex()? "on" : "off";
-	std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
+	// std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
 	if (args.cgi)
 	{
-		std::cout << "cgi called->>" << args.request->getFd() << std::endl;
+		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
 		runCGI();
 		return ;
 	}
 	else if (args.autoindex == "on")
 	{
-		std::cout << "autoindex called->>" << args.request->getFd() << std::endl;
+		// std::cout << "autoindex called->>" << args.request->getFd() << std::endl;
 		autoIndex();
 		return ;
 	}
@@ -105,7 +105,7 @@ void Response::file( void )
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
 	oss << "\r\n";
-	std::cout << "RESPONSE::file->" << ffd << std::endl;
+	// std::cout << "RESPONSE::file->" << ffd << std::endl;
 	SendResponse(oss.str(), ffd, args.request->getFd());
 }
 
@@ -122,8 +122,10 @@ void Response::error( void )//5xx 4xx
 	int n;
 	std::stringstream num(args.response_code);
 	num >> n;
-	args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
-	std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
+	// args.Server->getHostName();
+	// args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
+	args.translated_path = args.Server->getErrorPage(n);
+	// std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
 	ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
 	int64_t file_size = get_file_size();
 	if (file_size == -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 02:50:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:31:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ SendString::SendString( std::string const &data, int sfd )
 bool SendString::sendString( void )
 {
 	ssize_t d = write(sfd, data.c_str(), data.length());
-	std::cerr << "SendString::sendString: " << d << std::endl;
+	// std::cerr << "SendString::sendString: " << d << std::endl;
 	if (d == 0 && data.empty())
 		return true;
 	data.erase(0, d);
@@ -118,7 +118,7 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
-	std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
+	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);

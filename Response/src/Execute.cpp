@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 22:33:29 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:35:27 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ std::string Execute::getServerName( void )
 
 void Execute::addAllArgs( void )
 {
+	std::cout << "conf.location.getCgiExe(): " << conf.location.getName() << std::endl;
+	std::cout << "conf.location.getCgiExe(): " << conf.location.getCgiExe() << std::endl;
 	args.push_back(const_cast<char*>(conf.location.getCgiExe().c_str()));
 	args.push_back(const_cast<char*>(conf.translated_path.c_str()));
 	args.push_back(NULL);
@@ -83,7 +85,6 @@ char* Execute::strdup( std::string str )
 
 std::string Execute::toUpperCaseVar( std::string str )
 {
-	std::cout << "------>toUpperCaseVar: " << str << std::endl;
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] == '-')
@@ -98,12 +99,12 @@ std::string Execute::toUpperCaseVar( std::string str )
 
 void Execute::requestHeaderstToCGIVariables( void )
 {
-	std::map<std::string, std::string> hdrs = conf.request->getRequestHeaders();
-	std::map<std::string, std::string>::iterator it = hdrs.begin();
-	for (size_t i = 0; it != headers.end() && i < hdrs.size() ; it++, i++)
+	std::map<std::string, std::string> &hdrs = conf.request->getRequestHeaders();
+	std::map<std::string, std::string>::iterator it;
+	for (it = hdrs.begin(); it != hdrs.end() ; it++)
 	{
 		std::string key = toUpperCaseVar(it->first);
-		printf("key: %s\n", key.c_str());
+		// printf("key: %s\n", key.c_str());
 		if (key == "HTTP_CONTENT_LENGTH" || key == "HTTP_CONTENT_TYPE" || key == "HTTP_TRANSFER_ENCODING" || key == "HTTP_CONNECTION" || key == "HTTP_COOKIE")
 			continue;
 		headers[key] = it->second;

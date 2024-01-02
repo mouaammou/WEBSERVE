@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 22:18:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:29:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ bool			Method::has_cgi()
 {
 	if (hasValidCGI(method_config.translated_path))
 	{
-		std::cout << "**** CGI FOUND" << std::endl;
+		// std::cout << "**** CGI FOUND" << std::endl;
 		this->method_config.cgi = true;
 		return (true);
 	}

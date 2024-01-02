@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 22:39:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 01:32:46 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ bool CGI::runProcess( void )
 		input_pipe->inChild();
 		output_pipe->inChild();
 		// execle();
-		std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
+		// std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
 		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
 		// for 
 		std::cerr << "@@@@@args.cgi: " << getInterpreterPath() << std::endl;
@@ -109,7 +109,7 @@ int64_t CGI::getTime( void )
 	if (gettimeofday(&tv, NULL))
 	{
 		//timeout will happen
-		std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
+		// std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
 		// exit(0);//error dont exit
 		//internal server error when it fails because the timeout will kill it
 		return (0);
