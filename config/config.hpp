@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 02:25:46 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/01 23:27:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Config
 		std::vector<Directives> directs;
 	public:
 		Config();
-		std::vector<Directives> get_directives() const;
+		std::vector<Directives>& get_directives();
 		Config(std::string file);
 		void tokenizer(std::string token);
 		bool str_digit(std::string str);

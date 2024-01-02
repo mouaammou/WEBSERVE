@@ -3,11 +3,14 @@
 Directives::Directives()
 {
 	//initialization:
+
+	std::cout << "+=============>\n\nDirectives constructor called" << std::endl;
 	body_size = 0;
 }
 
 Directives::~Directives()
 {
+	std::cout << "+=============>\n\nDirectives destructor called" << std::endl;
 }
 // hahowa li kaynin fihom les directives li kayna fihom les locations made by med
 std::vector<Location> Directives::getLocations()
@@ -23,7 +26,9 @@ void Directives::setErrorPage(int key, std::string value)
 
 const std::string Directives::getErrorPage(int status) const
 {
-	if (this->error_page.find(status) != this->error_page.end())
+	std::map<int, std::string>::const_iterator it;
+	it = this->error_page.find(status);
+	if (it != this->error_page.end())
 		return (this->error_page.at(status));
 	return ("");
 }
