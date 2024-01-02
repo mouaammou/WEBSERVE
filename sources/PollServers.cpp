@@ -6,13 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 16:33:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 19:35:41 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pollServers.hpp"
 #include "../Response/include/Response.hpp"
-#include <cstddef>
 
 PollServers::PollServers(Config config_file)
 {
@@ -67,7 +66,6 @@ void			  PollServers::trackALLClients(void)
 				{
 					if (TheClient(server, fileDescriptor) && TheClient(server, fileDescriptor)->getStatusCode() == "400 Bad Request")
 					{
-						std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
 						server->setStatusCode("400 Bad Request");
 						server->serverConfigFile.request = TheClient(server, fileDescriptor);
 						Response response(server->serverConfigFile);
@@ -216,7 +214,7 @@ void				stringTrim(std::string &str)
 	}
 }
 
-bool				PollServers::getServerHost(std::string &host, t_config &server_config)
+bool				PollServers::setNewConfig(std::string &host, t_config &server_config)
 {
 	for(size_t i = 0; i < this->num_servers; i++)
 	{
@@ -264,22 +262,24 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		{
 			std::string host_value;
 			if (hasHostHeader(TheClient(server, fd)->getRequestHeaders(), host_value))
-				getServerHost(host_value, server->serverConfigFile);
+				setNewConfig(host_value, server->serverConfigFile);
 		}
+
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
+		
 		TheClient(server, fd)->displayRequest();
+
 		std::string path = TheClient(server, fd)->getPath();
 		std::string re_location = server->getRequestedLocation(path);
+		
 		server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
 		server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
-		server->serverConfigFile.request = TheClient(server, fd);
+		server->serverConfigFile.request = TheClient(server, fd);	
 
-		printf("status code: %s\n", server->getStatusCode().c_str());
-	
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
-			if (TheClient(server, fd)->getMethod() == "GET")
+			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 				server->printf_t_config(server->serverConfigFile);

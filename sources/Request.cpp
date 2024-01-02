@@ -35,7 +35,10 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 }
 
-Request::~Request(){}//Default destructor
+Request::~Request()
+{
+	delete [] this->buffer;
+}
 
 std::string Request::getMethod() const
 {

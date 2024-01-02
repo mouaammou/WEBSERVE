@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 16:27:58 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 19:31:07 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class PollServers
 		void				setServerConfigurations(int index);
 		void   				acceptConnections(int serverfd);
 
-		bool				getServerHost(std::string &host, t_config &server_config);
+		bool				setNewConfig(std::string &host, t_config &server_config);
 		bool 				hasHostHeader(std::map<std::string, std::string> &headers, std::string &host_value);
 
 		bool				IsConfigHasMultiPorts(void);
