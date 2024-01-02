@@ -77,7 +77,7 @@ void			  PollServers::trackALLClients(void)
 			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
 			{
 				if (TheClient(server, fileDescriptor)->sendResponse())
-				{		
+				{
 					TheClient(server, fileDescriptor)->resetRequestState();
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				}
@@ -184,7 +184,7 @@ void		PollServers::acceptConnections(int serverfd)
         return;
     }
 	addFileDescriptor(clientSocket);
-	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;	
+	std::cout << COLOR_YELLOW "New client connected :=> " COLOR_RESET<< clientSocket << std::endl;
 	Server *server = this->getTheServer(serverfd);
 	if (server)
 		server->addClient(clientSocket);
@@ -222,10 +222,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			}
 			else if (TheClient(server, fd)->getMethod() == "DELETE")
 			{
-				server->pointedMethod = new Method(server->serverConfigFile, 3556);
+				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 				server->printf_t_config(server->serverConfigFile);
 			}
-			
+
 		}
 		Response response(server->serverConfigFile);
 
