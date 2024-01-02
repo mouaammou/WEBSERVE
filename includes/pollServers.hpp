@@ -6,13 +6,14 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/30 23:46:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/02 19:31:07 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include "../includes/webserv.hpp"
 #include "../includes/Server.hpp"
+
 class Server;
 
 class PollServers
@@ -41,9 +42,15 @@ class PollServers
 		void				setServerConfigurations(int index);
 		void   				acceptConnections(int serverfd);
 
+		bool				setNewConfig(std::string &host, t_config &server_config);
+		bool 				hasHostHeader(std::map<std::string, std::string> &headers, std::string &host_value);
+
+		bool				IsConfigHasMultiPorts(void);
+
 		bool				clientPollIn(Server *server, int fd);
 
 		void			    trackALLClients(void);
 };
 
+void				stringTrim(std::string &str);
 Request				*TheClient(Server *server, int fd);

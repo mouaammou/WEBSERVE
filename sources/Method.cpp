@@ -69,6 +69,8 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 		}
 	}
 	closedir(dir);
+	if (remove(directoryPath.c_str()) != 0)
+		std::cerr << "not removed" << std::endl;  /// in case of error what should we do			??????????????????????????
 	return true;
 }
 
@@ -109,8 +111,6 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 				{
 					if (DeleteFolderContents(this->method_config.translated_path))
 					{
-						if (remove(this->method_config.translated_path.c_str()) != 0)
-							std::cerr << "remove fails" << std::endl;
 						this->method_config.response_code = "204 No Content";
 					}
 					else

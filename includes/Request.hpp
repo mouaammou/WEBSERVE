@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:09:52 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 11:28:43 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Request
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
 		int				      getFd() const;
+		void					 setFd(int fd);
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
