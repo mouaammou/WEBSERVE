@@ -87,6 +87,11 @@ int				Request::getFd() const
 	return (this->fd);
 }
 
+void					 Request::setFd(int fd)
+{
+	this->fd = fd;
+}
+
 std::string 		  Request::getStatusCode() const
 {
 	return (this->_status_code);
@@ -383,7 +388,7 @@ bool	Request::receiveRequest()//must read the request
 	{	
 		this->request_string += this->buffer;
 		if (!this->handleRequestHeaders(this->request_string))
-			return (false);
+			return (this->_status_code = "400 Bad Request", false);
 		if (this->handleBadRequest() == false)
 			return (true);
 	}

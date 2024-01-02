@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 22:42:51 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/02 12:01:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,22 @@ void			  PollServers::trackALLClients(void)
 			else
 			{
 				server = this->whitchServer(fileDescriptor);
+				std::cout << COLOR_YELLOW "SERVER NAME: " <<server->serverConfigFile.server_name << COLOR_RESET << std::endl;
 				if (server && !clientPollIn(server, fileDescriptor))
 				{
-					std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
-					server->setStatusCode("400 Bad Request");
+					if (TheClient(server, fileDescriptor) && TheClient(server, fileDescriptor)->getStatusCode() == "400 Bad Request")
+					{
+						std::cout << COLOR_RED "400 Bad Request" COLOR_RESET<< std::endl;
+						server->setStatusCode("400 Bad Request");
+						server->serverConfigFile.request = TheClient(server, fileDescriptor);
+						Response response(server->serverConfigFile);
+						TheClient(server, fileDescriptor)->setRequestReceived(true);
+					}
 					continue;
 				}
 			}
 		}
-		else//send repsponse
+		else
 		{
 			fileDescriptor = this->poll_Fds[i].fd;
 			server = this->whitchServer(fileDescriptor);
@@ -212,7 +219,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
 			server->serverConfigFile.request = TheClient(server, fd);
 
-
+	
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			if (TheClient(server, fd)->getMethod() == "GET")
@@ -225,7 +232,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 				server->printf_t_config(server->serverConfigFile);
 			}
-
+		
 		}
 		Response response(server->serverConfigFile);
 

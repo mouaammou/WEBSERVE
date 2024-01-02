@@ -2,16 +2,10 @@
 
 Directives::Directives()
 {
-	//initialization:
-
-	std::cout << "+=============>\n\nDirectives constructor called" << std::endl;
 	body_size = 0;
 }
 
-Directives::~Directives()
-{
-	std::cout << "+=============>\n\nDirectives destructor called" << std::endl;
-}
+Directives::~Directives()	{}
 // hahowa li kaynin fihom les directives li kayna fihom les locations made by med
 std::vector<Location> Directives::getLocations()
 {
