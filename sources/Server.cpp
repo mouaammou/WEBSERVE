@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/03 16:04:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/03 20:41:54 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,6 @@ void		Server::removeClient(int fd)
 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	delete this->serverConfigFile.request;
 	this->serverConfigFile.request = NULL;
-	delete this->pointedMethod;
-	this->pointedMethod = NULL;
 	this->httpClients.erase(fd);
 }
 

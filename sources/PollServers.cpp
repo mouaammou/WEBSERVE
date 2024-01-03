@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/03 16:45:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/03 20:56:16 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,8 +277,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		server->serverConfigFile.requested_path 	= path;
 		server->serverConfigFile.request 			= TheClient(server, fd);
 
-
-		//check allowed methods in config file
+		//check allowed methods in config file here:
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
@@ -295,6 +294,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, "post");
 			}
 			server->printf_t_config(server->serverConfigFile);
+			delete server->pointedMethod;
+			server->pointedMethod = NULL;
 
 		}
 		Response response(server->serverConfigFile);
