@@ -6,12 +6,13 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/03 05:45:46 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 00:18:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pollServers.hpp"
 #include "../Response/include/Response.hpp"
+#include <cstddef>
 
 PollServers::PollServers(Config config_file)
 {
@@ -21,7 +22,14 @@ PollServers::PollServers(Config config_file)
 	this->servers_config.resize(this->num_servers);
 }
 
-PollServers::~PollServers(){}
+PollServers::~PollServers()
+{
+	for (size_t i = 0; i < this->num_servers; i++)
+	{
+		delete this->http_servers[i];
+		this->http_servers[i] = NULL;	
+	}
+}
 
 void				PollServers::setServerConfigurations(int i)
 {
@@ -62,17 +70,8 @@ void			  PollServers::trackALLClients(void)
 			else
 			{
 				server = this->whitchServer(fileDescriptor);
-				if (server && !clientPollIn(server, fileDescriptor))
-				{
-					if (TheClient(server, fileDescriptor) && TheClient(server, fileDescriptor)->getStatusCode() == "400 Bad Request")
-					{
-						server->setStatusCode("400 Bad Request");
-						server->serverConfigFile.request = TheClient(server, fileDescriptor);
-						Response response(server->serverConfigFile);
-						TheClient(server, fileDescriptor)->setRequestReceived(true);
-					}
+				if (server && !clientPollIn(server, fileDescriptor))//read <= 0, recieve request body
 					continue;
-				}
 			}
 		}
 		else
@@ -97,7 +96,8 @@ void 				PollServers::initPoll()
 {
 	int timeout = 1000 * 60;
 	int pollStatu;
-	this->bindServers();
+	this->bindServers();//linten, bind, socket, non-blocking mode
+	this->tmp_config = this->servers_config;
 	while (true)
 	{
 		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), timeout);
@@ -256,8 +256,10 @@ bool				PollServers::IsConfigHasMultiPorts(void)
 
 bool				PollServers::clientPollIn(Server *server, int fd)
 {
-	if (TheClient(server, fd)->receiveRequest())
+	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
+		TheClient(server, fd)->setRequestReceived(true);
+		
 		if (IsConfigHasMultiPorts())
 		{
 			std::string host_value;
@@ -265,33 +267,42 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				setNewConfig(host_value, server->serverConfigFile);
 		}
 
-		server->setStatusCode(TheClient(server, fd)->getStatusCode());
-		TheClient(server, fd)->setRequestReceived(true);
-		
 		TheClient(server, fd)->displayRequest();
 
+		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		std::string path = TheClient(server, fd)->getPath();
 		std::string re_location = server->getRequestedLocation(path);
-		
-		server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
-		server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
-		server->serverConfigFile.request = TheClient(server, fd);	
+
+		server->serverConfigFile.translated_path 	= server->getTranslatedPath(re_location, path);
+		server->serverConfigFile.requested_path 	= path;
+		server->serverConfigFile.request 			= TheClient(server, fd);
+
+		//check allowed methods in config file here:
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
-			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
+			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
-				server->printf_t_config(server->serverConfigFile);
 			}
 			else if (TheClient(server, fd)->getMethod() == "DELETE")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
-				server->printf_t_config(server->serverConfigFile);
 			}
+			else if (TheClient(server, fd)->getMethod() == "POST")
+			{
+				server->pointedMethod = new Method(server->serverConfigFile, "post");
+			}
+			server->printf_t_config(server->serverConfigFile);
+			delete server->pointedMethod;
+			server->pointedMethod = NULL;
+
 		}
 		Response response(server->serverConfigFile);
-
+		for (size_t i = 0; i < this->num_servers; i++)
+		{
+			this->http_servers[i]->setConfiguration(this->tmp_config[i]);
+		}
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 		return (removeFromPoll(server, fd), false);

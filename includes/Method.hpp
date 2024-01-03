@@ -24,6 +24,8 @@ class Method
 	public:
 		Method(t_config &config_file);
 		Method(t_config &config_file, int for_delete);
+		Method(t_config &config_file, std::string post);
+
 		~Method();
 
 		bool				DeleteFolderContents(const std::string& directoryPath);

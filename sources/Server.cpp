@@ -6,12 +6,11 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 00:11:20 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 00:18:05 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <string>
 
 Server::Server(t_config config)//constructor
 {
@@ -45,14 +44,14 @@ void	Server::setServerSocket()
     if (getaddrinfo(NULL, this->severPort.c_str(), &hints, &result) != 0)
     {
         perror("getaddrinfo");
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("getaddrinfo");
     }
     //SETSOCKOPT
     this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (this->serverSocket == -1)
     {
         perror("socket");
-        exit (EXIT_FAILURE);// exit not allowed after server launched
+        throw std::runtime_error("socket");// exit not allowed after server launched
     }
 	this->result = result;
 }
@@ -64,13 +63,13 @@ void    Server::bindServerSocket()
 	int sendBufferSize = 1;  // Adjust the buffer size as needed
 	if (setsockopt(this->serverSocket , SOL_SOCKET, SO_REUSEPORT , &sendBufferSize, sizeof(sendBufferSize)) == -1) {
 		perror("setsockopt");
-		exit (EXIT_FAILURE);
+		throw std::runtime_error("setsockopt");
 	}
     //BIND
     if (bind(this->serverSocket, this->result->ai_addr, this->result->ai_addrlen) == -1)
     {
         perror("bind");
-        exit (EXIT_FAILURE);
+        throw std::runtime_error("bind");
     }
     freeaddrinfo(this->result);//free the linked list
 }
@@ -83,7 +82,7 @@ int  Server::listenForConnections()
     if (listen(this->serverSocket, 1024) == -1)
     {
         perror("listen");
-        exit (EXIT_FAILURE);
+		throw std::runtime_error("listen");
     }
     return (this->serverSocket);
 }
@@ -101,12 +100,10 @@ void		Server::addClient(int fd)
 
 void		Server::removeClient(int fd)
 {
-	std::cout << COLOR_RED "Client removed -> " << fd << COLOR_RESET << std::endl;
-	// Request *client = this->httpClients[fd];
+	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
+	delete this->serverConfigFile.request;
+	this->serverConfigFile.request = NULL;
 	this->httpClients.erase(fd);
-	// delete client;
-	// delete this->serverConfigFile.request;
-	// delete this->pointedMethod;
 }
 
 int		Server::getServerSocket() const
@@ -116,7 +113,7 @@ int		Server::getServerSocket() const
 
 std::string			Server::getRequestedLocation(std::string path)
 {
-	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)
+	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
 	{
 		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
@@ -126,9 +123,9 @@ std::string			Server::getRequestedLocation(std::string path)
 	return ("/");
 }
 
-std::string		Server::getTranslatedPath(std::string location, std::string path)
+std::string		Server::getTranslatedPath(std::string location, std::string path)//localhost:8080/adsfadsf
 {
-	size_t i;
+	size_t i; 
 	for (i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
 		if (this->serverConfigFile.server_locations[i].getName() == location)

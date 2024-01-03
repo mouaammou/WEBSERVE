@@ -12,6 +12,7 @@
 
 #include "../includes/Request.hpp"
 #include "../Response/include/Response.hpp"
+#include <cctype>
 
 Request::Request(int fd, t_config config_file)
 {
@@ -138,13 +139,13 @@ bool			      Request::handleBadRequest()
 {
 	if (this->isLocationHasRedirection())
 		return (false);
-	if (this->_status_code.find("400") != std::string::npos
-		|| this->_status_code.find("413") != std::string::npos
-		|| this->_status_code.find("414") != std::string::npos
-		|| this->_status_code.find("501") != std::string::npos
-		|| this->_status_code.find("405") != std::string::npos
-		|| this->_status_code.find("403") != std::string::npos
-		|| this->_status_code.find("505") != std::string::npos)
+	if (this->_status_code.find("400") != std::string::npos			//bad request
+		|| this->_status_code.find("413") != std::string::npos		//request entity too large
+		|| this->_status_code.find("414") != std::string::npos		//request uri too long
+		|| this->_status_code.find("501") != std::string::npos		//not implemented
+		|| this->_status_code.find("405") != std::string::npos		//method not allowed
+		|| this->_status_code.find("403") != std::string::npos		//forbidden
+		|| this->_status_code.find("505") != std::string::npos)		//http version not supported
 		return (false);
 	return (true);
 }
@@ -205,8 +206,9 @@ bool	Request::parseRequestFirstLine(const std::string& line)
 	{
 		return (false);
 	}
-	if (!this->checkMethod() || !this->checkVersion() || !this->checkPath())
-		return (false);
+	this->checkMethod();
+	this->checkVersion();
+	this->checkPath();
 	return (true);
 }
 
@@ -215,11 +217,15 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 	std::size_t pos = line.find(':');
 	if (pos != std::string::npos)
 	{
+		//HOST: localhost:8080/r\n
 		std::string key = line.substr(0, pos + 1);
 		if (key.find(" ") != std::string::npos || key.find(":") == std::string::npos)
 			return (false);
+		if (isdigit(key[0]))
+			return (false);
 		std::string value = line.substr(pos + 1);
-
+		if (value.empty())
+			return (false);
 		if (key.compare("Content-Length:") == 0)//if the key is Content-Length
 		{
 			std::stringstream ss(value);
@@ -314,28 +320,28 @@ bool Request::handleRequestHeaders(std::string bufferString)
 		line += "\n";
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
-			return (false);
+			return (this->_status_code = "400 Bad Request", true);
 		if (!parseRequestFirstLine(line))
-			return (false);
+			return (this->_status_code = "400 Bad Request", true);
 		line = "";
 	}
 	while (std::getline(requestStream, line))
 	{
 		line += "\n";
-		if (line.compare("\r\n") == 0)
+		if (line.compare("\r\n") == 0)//end of headers
 		{
 			this->_has_headers = true;
 			return (true);
 		}
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
-			return (false);
+			return (this->_status_code = "400 Bad Request", true);
 		if (!parseRequestHeaders(line))
-			return (false);
+			return (this->_status_code = "400 Bad Request", true);
 		line = "";
 	}
-	if (this->request_string.find("\r\n\r\n") == std::string::npos)
-		return (false);
+	if (this->request_string.find("\r\n\r\n") == std::string::npos)//key: value\r\n\r\n
+		this->_has_headers = false;
 	return (true);
 }
 
@@ -345,7 +351,7 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 	if (this->request_body == "")
 	{
 		std::string tmp = this->buffer;
-		this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);
+		this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);//key: value\r\n\r\n
 	}
 	else
 		this->request_body += this->buffer;
@@ -392,8 +398,7 @@ bool	Request::receiveRequest()//must read the request
 	if (this->request_string.find("\r\n\r\n") == std::string::npos)
 	{	
 		this->request_string += this->buffer;
-		if (!this->handleRequestHeaders(this->request_string))
-			return (this->_status_code = "400 Bad Request", false);
+		this->handleRequestHeaders(this->request_string);
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
@@ -423,13 +428,4 @@ bool   Request::sendResponse()
 	// bool ret = Response::onPollout(this->fd);
 	// std::cout << "Request::sendResponse: " << (ret == true ? "tue" : "false") << std::endl;
 	return (Response::onPollout(this->fd));
-}
-
-int Request::get_file_size(int fd)
-{
-    int file_size;
-    int current_position = lseek(fd, 0, SEEK_CUR); // Get the current position
-    file_size = lseek(fd, 0, SEEK_END); // Seek to the end of the file
-    lseek(fd, current_position, SEEK_SET); // Return to the original position
-    return file_size;
 }

@@ -45,6 +45,7 @@ class Location
 		int getAutoindex() const;
 		void setAutoindex(int autoindex);
 
+		bool method_is_supported(std::string method);
 		void set_return_status(int status);
 		int get_return_status() const;
 		void count_slash();
