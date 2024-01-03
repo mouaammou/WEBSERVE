@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 19:31:07 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/03 16:09:54 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class PollServers
 
 		std::vector<Server*> http_servers;//severs
 		std::vector <t_config> servers_config;
+		std::vector <t_config> tmp_config;
 
 		Config config_file;
 		size_t num_servers;

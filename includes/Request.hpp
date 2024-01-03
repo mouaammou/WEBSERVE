@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 11:28:43 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/03 14:08:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,25 +24,23 @@ class Request
 		std::string 	method;
 		std::string 	path;
 		std::string 	version;
-		std::string 	request_body;
 		std::map<std::string, std::string> request_headers;
+		std::string 						request_body;
 
 		size_t			content_length;
 		std::string 	transfer_encoding;
 		std::string 	content_type;
-		std::string     query_string;
-		
+		std::string     query_string;//?name=ferret&color=purple
+
 		bool	_has_headers;
 		bool	_has_body;
 		bool	request_received;
 		int		read_bytes;
 		char	*buffer;
 		int		_body_size;
-		
+
 		std::string 	 _status_code;
-		std::string 	response_string;
 		t_config 		server_config;
-		//Method, response
 
 	public:
 		// Constructor to initialize the object with the raw HTTP request
@@ -88,5 +86,4 @@ class Request
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
-		int		get_file_size(int fd);
 };
