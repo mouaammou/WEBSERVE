@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
+#    By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/02 14:24:03 by mouaammo         ###   ########.fr        #
+#    Updated: 2024/01/03 04:13:15 by samjaabo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ HEADER_FILES 	= $(RES_HEADERS) $(addprefix includes/, Server.hpp Request.hpp Pol
 
 OBJECT_FILES = $(FILES:%.cpp=%.o)
 
-all: $(NAME)
+all: clean_screen $(NAME) run
 
 $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
 	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
@@ -45,4 +45,12 @@ fclean: clean
 	@echo "\033[31mEXECUTABLE DELETED\033[0m"
 
 re: fclean all
+
+
+run:
+	@./$(NAME) config/configfile.conf
+
+clean_screen:
+	@echo "\033c";
+
 .PHONY: all fclean clean re

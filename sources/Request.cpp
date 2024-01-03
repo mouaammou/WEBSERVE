@@ -37,7 +37,7 @@ Request::Request(int fd, t_config config_file)
 
 Request::~Request()
 {
-	delete [] this->buffer;
+	// delete [] this->buffer;
 }
 
 std::string Request::getMethod() const
@@ -173,12 +173,12 @@ void Request::displayRequest()
 {
 	if (!this->request_string.empty())
 	{
-		std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
-		std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
-		std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
-		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
-			std::cout << it->first << "=>" << it->second;
+		// std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
+		// std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
+		// std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
+		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
+		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
+		// 	std::cout << it->first << "=>" << it->second;
 		std::cout << COLOR_GREEN << "Request Body: {{" << COLOR_RESET << this->request_body << "}}" << std::endl;
 	}
 }
@@ -383,9 +383,12 @@ bool	Request::receiveRequest()//must read the request
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
+	{
 		return (perror("read"), this->read_bytes = 0, false);
+	}
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
+	std::cout << "#####>" << buffer << std::endl;
 	if (this->request_string.find("\r\n\r\n") == std::string::npos)
 	{	
 		this->request_string += this->buffer;

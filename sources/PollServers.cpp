@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 19:35:41 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/03 05:45:46 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,7 +289,6 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 				server->printf_t_config(server->serverConfigFile);
 			}
-		
 		}
 		Response response(server->serverConfigFile);
 
