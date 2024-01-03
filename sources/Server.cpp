@@ -103,8 +103,8 @@ void		Server::removeClient(int fd)
 {
 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 	this->httpClients.erase(fd);
-	delete this->httpClients[fd];
 	delete this->serverConfigFile.request;
+	this->serverConfigFile.request = NULL;
 	delete this->pointedMethod;
 }
 
@@ -127,7 +127,7 @@ std::string			Server::getRequestedLocation(std::string path)
 
 std::string		Server::getTranslatedPath(std::string location, std::string path)
 {
-	size_t i;
+	size_t i; 
 	for (i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
 		if (this->serverConfigFile.server_locations[i].getName() == location)

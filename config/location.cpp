@@ -121,3 +121,14 @@ void Location::setAutoindex(int autoindex) {
 	this->autoindex = autoindex;
 }
 
+
+
+bool Location::method_is_supported(std::string method)
+{
+	for (size_t i = 0; i < this->methods.size(); i++)
+	{
+		if (methods[i] == method)
+			return true;
+	}
+	return false;
+}

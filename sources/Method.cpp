@@ -75,6 +75,52 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 }
 
 
+Method::Method(t_config &config_file, std::string post): method_config(config_file)
+{
+	(void)post;
+	this->method_config.autoindex = "off";
+	this->method_config.cgi = false;
+	if (true)//upload file is supported.
+	{
+		this->method_config.response_code = "201 Created";
+	}
+	else
+	{
+		if (this->get_method_file_type())
+		{
+			if (this->file_type == "file")
+			{
+				if (!this->has_cgi())
+					this->method_config.response_code = "403 Forbidden";
+				return ;
+			}
+			else if (this->file_type == "dir")
+			{
+				if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] != '/')
+				{
+					this->method_config.response_code = "301 Moved Permanent";
+					return ;
+				}
+				else if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] == '/')
+				{
+					if (this->hasIndexFiles())
+					{
+						if (!this->has_cgi())
+							this->method_config.response_code = "403 Forbidden";
+						return ;
+					}
+					else
+					{
+						this->method_config.response_code = "403 Forbidden";
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+
 Method::Method(t_config &config_file, int for_delete): method_config(config_file)
 {
 	(void)for_delete;
@@ -110,9 +156,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 				else
 				{
 					if (DeleteFolderContents(this->method_config.translated_path))
-					{
 						this->method_config.response_code = "204 No Content";
-					}
 					else
 					{
 						if (access(this->method_config.translated_path.c_str(), W_OK | R_OK) == 0)

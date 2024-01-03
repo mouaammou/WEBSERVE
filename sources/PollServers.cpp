@@ -62,7 +62,7 @@ void			  PollServers::trackALLClients(void)
 			else
 			{
 				server = this->whitchServer(fileDescriptor);
-				if (server && !clientPollIn(server, fileDescriptor))
+				if (server && !clientPollIn(server, fileDescriptor))//read <= 0, recieve request body, 400 bad request
 				{
 					if (TheClient(server, fileDescriptor) && TheClient(server, fileDescriptor)->getStatusCode() == "400 Bad Request")
 					{
@@ -267,15 +267,15 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		TheClient(server, fd)->setRequestReceived(true);
-		
+
 		TheClient(server, fd)->displayRequest();
 
 		std::string path = TheClient(server, fd)->getPath();
 		std::string re_location = server->getRequestedLocation(path);
-		
+
 		server->serverConfigFile.translated_path = server->getTranslatedPath(re_location, path);
-		server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();;
-		server->serverConfigFile.request = TheClient(server, fd);	
+		server->serverConfigFile.requested_path = TheClient(server, fd)->getPath();
+		server->serverConfigFile.request = TheClient(server, fd);
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
@@ -289,10 +289,9 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 				server->printf_t_config(server->serverConfigFile);
 			}
-		
+
 		}
 		Response response(server->serverConfigFile);
-
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 		return (removeFromPoll(server, fd), false);
