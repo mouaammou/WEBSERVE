@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 04:31:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/05 15:43:17 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 #define COLOR_CYAN    "\033[0;36m"
 
 #define PERMISSION_CHECK 0644
-#define MAX_REQUEST_SIZE 1024
+#define MAX_REQUEST_SIZE 50000
 
 class Config;
 class Location;

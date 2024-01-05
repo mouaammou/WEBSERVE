@@ -351,10 +351,16 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 {
 	// if (this->request_body.empty())
 	// {
-	// 	// std::string tmp = this->buffer;
-	// 	this->request_string += this->buffer;
-	// 	size_t pos = this->request_string.find("\r\n\r\n");
-	// 	this->request_body = this->request_string.substr(pos + 4);
+	// 	std::string tmp = this->buffer;
+	// 	size_t pos = tmp.find("\r\n\r\n");
+	// 	if (pos != std::string::npos)
+	// 		this->request_body = tmp.substr(pos + 4);
+	// 	else
+	// 		printf("NOT FOUND\n");
+
+	// 	std::cout << COLOR_BLUE << this->request_body << std::endl;
+	// 	printf("body length : %lu\n", this->request_body.length());
+	// 	std::cout << COLOR_RESET << std::endl;
 	// }
 	// else
 	// 	this->request_body += this->buffer;
@@ -366,8 +372,8 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 
 	if (this->request_body.length() >= (this->content_length))
 	{
-		// printf("CONTENT LENGTH : %lu\n", this->content_length);
-		// printf("SUCESS ********\n");
+		printf("CONTENT LENGTH : %lu\n", this->content_length);
+		printf("SUCESS ********\n");
 		this->_has_body = true;
 		return (true);
 	}
@@ -409,16 +415,13 @@ bool	Request::receiveRequest()//must read the request
 	this->request_body += this->buffer;
 	if ( ! this->hasHeaders())
 	{
-		size_t pos = this->request_body.find("\r\n\r\n");//samjaabo
+		size_t pos = this->request_body.find("\r\n\r\n");
 		if (pos != std::string::npos)
 		{
-			// _has_headers = true;
 			this->request_string = this->request_body.substr(0, pos + 4);
-			this->request_body.erase(0, pos + 4);
-		}//end samjaabo
+			this->request_body = this->request_body.substr(pos + 4);
+		}
 		this->handleRequestHeaders(this->request_string);
-		if ( ! this->request_string.empty())//me
-			_has_headers = true;
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
