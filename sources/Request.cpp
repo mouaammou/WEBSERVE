@@ -180,6 +180,7 @@ void Request::displayRequest()
 		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 		// 	std::cout << it->first << "=>" << it->second;
+		std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
 		std::cout << COLOR_GREEN << "Request Body: {{" << COLOR_RESET << this->request_body << "}}" << std::endl;
 	}
 }
@@ -394,7 +395,7 @@ bool	Request::receiveRequest()//must read the request
 	}
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
-	std::cout << "#####>" << buffer << std::endl;
+	// std::cout << "#####>" << buffer << std::endl;
 	if (this->request_string.find("\r\n\r\n") == std::string::npos)
 	{	
 		this->request_string += this->buffer;

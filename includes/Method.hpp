@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 10:23:51 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/04 05:55:04 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ class Method
 	private:
 		std::string		file_type;
 		t_config		 &method_config;
+		std::string		p_path;
 
 	public:
 		Method(t_config &config_file);
@@ -28,6 +29,10 @@ class Method
 
 		~Method();
 
+		bool				uploadFiles( void );
+		bool				hasIndexFiles_2();
+
+		bool				get_method_file_type_post();
 		bool				DeleteFolderContents(const std::string& directoryPath);
 		std::string			get_status_code();
 		std::string			get_method_location();

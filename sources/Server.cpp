@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 00:18:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 04:55:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,9 @@ void		Server::addClient(int fd)
 void		Server::removeClient(int fd)
 {
 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
-	delete this->serverConfigFile.request;
-	this->serverConfigFile.request = NULL;
-	this->httpClients.erase(fd);
+	// delete this->serverConfigFile.request;
+	// this->serverConfigFile.request = NULL;
+	// this->httpClients.erase(fd);
 }
 
 int		Server::getServerSocket() const
@@ -117,7 +117,8 @@ std::string			Server::getRequestedLocation(std::string path)
 	{
 		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
-			return (this->serverConfigFile.server_locations[i].getName()); 
+			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
+			return (this->serverConfigFile.server_locations[i].getName());
 		}
 	}
 	return ("/");
@@ -139,17 +140,18 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)//
 
 void			Server::printf_t_config(t_config config_file)
 {
-	// std::cout << "configuration : \n";
-	// printf("		server_name: %s\n", config_file.server_name.c_str());
-	// printf("		port: %s\n", config_file.port.c_str());
-	// printf("		translated_path: %s\n", config_file.translated_path.c_str());
-	// printf("		response_code: %s\n", config_file.response_code.c_str());
-	// printf("		req_location: %s\n", config_file.requested_path.c_str());
-	// printf("		autoindex: %s\n", config_file.autoindex.c_str());
-	// printf("		server_fd: %d\n", config_file.server_fd);
-	// printf("		body_size: %d\n", config_file.body_size);
-	// printf("		Location: %s\n", config_file.location.getName().c_str());
-	// printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
+	
+	std::cout << "configuration : \n";
+	printf("		server_name: %s\n", config_file.server_name.c_str());
+	printf("		port: %s\n", config_file.port.c_str());
+	printf("		translated_path: %s\n", config_file.translated_path.c_str());
+	printf("		response_code: %s\n", config_file.response_code.c_str());
+	printf("		req_location: %s\n", config_file.requested_path.c_str());
+	printf("		autoindex: %s\n", config_file.autoindex.c_str());
+	printf("		server_fd: %d\n", config_file.server_fd);
+	printf("		body_size: %d\n", config_file.body_size);
+	printf("		Location: %s\n", config_file.location.getName().c_str());
+	printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
 	printf("		method: %s\n", config_file.request->getMethod().c_str());
 }
 

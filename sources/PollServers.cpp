@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 00:18:39 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 05:14:03 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	PollServers::bindServers()
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
 		this->http_servers[i]->setConfiguration(servers_config[i]);
 		addFileDescriptor(this->servers_config[i].server_fd);
+
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
 }
@@ -86,6 +87,10 @@ void			  PollServers::trackALLClients(void)
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				}
 			}
+			// for (size_t i = 0; i < this->num_servers; i++)
+			// {
+			// 	this->http_servers[i]->setConfiguration(this->tmp_config[i]);
+			// }
 		}
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			removeFromPoll(server, this->poll_Fds[i].fd);
@@ -260,14 +265,14 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	{
 		TheClient(server, fd)->setRequestReceived(true);
 		
+		std::string host_value;
 		if (IsConfigHasMultiPorts())
 		{
-			std::string host_value;
 			if (hasHostHeader(TheClient(server, fd)->getRequestHeaders(), host_value))
 				setNewConfig(host_value, server->serverConfigFile);
 		}
 
-		TheClient(server, fd)->displayRequest();
+		// TheClient(server, fd)->displayRequest();
 
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		std::string path = TheClient(server, fd)->getPath();
@@ -294,14 +299,17 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 				server->pointedMethod = new Method(server->serverConfigFile, "post");
 			}
 			server->printf_t_config(server->serverConfigFile);
-			delete server->pointedMethod;
-			server->pointedMethod = NULL;
+			// delete server->pointedMethod;
+			// server->pointedMethod = NULL;
 
 		}
+		// std::cout << "<<POST>>" << std::endl;
 		Response response(server->serverConfigFile);
 		for (size_t i = 0; i < this->num_servers; i++)
 		{
 			this->http_servers[i]->setConfiguration(this->tmp_config[i]);
+			if (host_value == this->http_servers[i]->serverConfigFile.server_name)
+				this->http_servers[i]->serverConfigFile.request = TheClient(server, fd);
 		}
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)

@@ -7,7 +7,8 @@
 </head>
 <body>
     <h1>File Upload</h1>
-    <form action="/upload" method="POST">
+    <form action="/upload/" method="POST" enctype="multipart/form-data">
+        <input type="text" name="MAX_FILE_SIZE" value="1000000">
         <label for="file">Choose a file:</label>
         <input type="file" name="file" id="file" required>
         <br>
@@ -17,3 +18,10 @@
 </html>
 
 
+------WebKitFormBoundaryPUsJAnznv9dvcUKX
+Content-Disposition: form-data; name="file"; filename="index.py"
+Content-Type: text/x-python-script
+
+import cgi
+cgi.test()
+------WebKitFormBoundaryPUsJAnznv9dvcUKX--

@@ -27,30 +27,57 @@
 // read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:
 // ------WebKitFormBoundaryQfKkHui0vxFv0FvE--
 
+// POST /upload HTTP/1.1
+// Host: example.com
+// Content-Type: multipart/form-data; boundary=---------------------------1234567890123456789012345678
+
+// -----------------------------1234567890123456789012345678
+// Content-Disposition: form-data; name="text"
+
+// some text
+// -----------------------------1234567890123456789012345678
+// Content-Disposition: form-data; name="file"; filename="example.txt"
+// Content-Type: text/plain
+
+// Contents of the file
+// -----------------------------1234567890123456789012345678--
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "../../includes/webserv.hpp"
+#include "../../includes/Request.hpp"
 
-
-
-void post(std::string buffer, int bytesRead) {
-    // Handle file upload
-    std::string boundary = "boundary=";
-    size_t pos = buffer.find(boundary);
-    if (pos != std::string::npos) {
-        pos += boundary.length();
-        std::string fileBoundary = "--" + buffer.substr(pos, buffer.find("\n", pos) - pos);
-
-        // Find the start of file data
-        pos = buffer.find(fileBoundary) + fileBoundary.length() + 2;
-        pos = buffer.find("\n\n", pos) + 4;
-
-        // Save the file data to a new file
-        // std::ofstream outputFile("uploaded_file.txt", std::ios::binary);
-        // outputFile.write(buffer.c_str() + pos, bytesRead - pos);
-        // outputFile.close();
-        std::cout << buffer.substr(pos, bytesRead - pos) << std::endl;
-    }
+bool uploadFiles(config &args) {
+	std::map<std::string, std::string> mp = args.request->getRequestHeaders();
+	std::map<std::string, std::string>::iterator it = mp.find("Content-Type:");
+	size_t pos = it->second.find("boundary=");
+	if (it == mp.end() || it->second.find("multipart/form-data") == std::string::npos
+		|| pos == std::string::npos)
+		return false;
+	std::string boundary = std::string("--") + it->second.substr(pos + 9) + "\r\n";
+	std::string end = boundary + "--\r\n";
+	std::string body = args.request->getRequestBody();
+	pos = body.find(end);
+	if (pos == std::string::npos)
+		return false;
+	body.erase(pos);
+	pos = body.find(boundary);
+	while (pos != std::string::npos)
+	{
+		body.erase(0, pos + boundary.length() - 2);//keep '\r\n'
+		size_t pos = body.find("\r\n\r\n", pos);
+		if (pos == std::string::npos)
+			return false;
+		std::string header(body.substr(0, pos));
+		pos = header.find("\r\nContent-Disposition:");
+		if (pos == std::string::npos)
+			return false;
+		std::string cd(header.substr(pos + 2, header.find("\r\n", pos + 2) - pos - 2));
+		std::cout << "Content-Disposition:" << cd << std::endl;
+		pos = body.find(boundary);
+	}
 }
 
 
@@ -62,6 +89,6 @@ read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:read:
 ------WebKitFormBoundaryQfKkHui0vxFv0FvE--";
 int main()
 {
-    post(buff, buff.length());
-    return 0;
+	post(buff, buff.length());
+	return 0;
 }
