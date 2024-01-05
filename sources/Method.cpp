@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 05:57:17 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 12:38:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,46 +74,12 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 	return true;
 }
 
-bool	Method::uploadFiles(void)
-{
-	std::map<std::string, std::string> mp = method_config.request->getRequestHeaders();
-	std::map<std::string, std::string>::iterator it = mp.find("Content-Type:");
-	size_t pos = it->second.find("boundary=");
-	if (it == mp.end() || it->second.find("multipart/form-data") == std::string::npos
-		|| pos == std::string::npos)
-		return false;
-	std::string boundary = std::string("--") + it->second.substr(pos + 9) + "\r\n";
-	std::string end = boundary + "--\r\n";
-	std::string body = method_config.request->getRequestBody();
-	pos = body.find(end);
-	if (pos == std::string::npos)
-		return false;
-	body.erase(pos);
-	pos = body.find(boundary);
-	std::cout << "*********************************"<< std::endl;
-	while (pos != std::string::npos)
-	{
-		body.erase(0, pos + boundary.length() - 2);//keep '\r\n'
-		pos = body.find("\r\n\r\n", pos);
-		if (pos == std::string::npos)
-			return false;
-		std::string header(body.substr(0, pos));
-		pos = header.find("\r\nContent-Disposition:");
-		if (pos == std::string::npos)
-			return false;
-		std::string cd(header.substr(pos + 2, header.find("\r\n", pos + 2) - pos - 2));
-		std::cout << "Content-Disposition:" << cd << std::endl;
-		pos = body.find(boundary);
-	}
-	return true;
-}
-
 Method::Method(t_config &config_file, std::string post): method_config(config_file)
 {
 	(void)post;
 	this->method_config.autoindex = "off";
 	this->method_config.cgi = false;
-	if (uploadFiles())//upload file is supported.
+	if (UploadFiles(config_file).isUploadRequest())//upload file is supported.
 	{
 		this->method_config.response_code = "201 Created";
 	}

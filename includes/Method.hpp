@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 05:55:04 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 12:37:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "Server.hpp"
 #include "webserv.hpp"
+#include "../Response/include/UploadFiles.hpp"
 
 class Method
 {
@@ -29,7 +30,6 @@ class Method
 
 		~Method();
 
-		bool				uploadFiles( void );
 		bool				hasIndexFiles_2();
 
 		bool				get_method_file_type_post();
