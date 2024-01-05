@@ -181,7 +181,7 @@ void Request::displayRequest()
 		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 		// 	std::cout << it->first << "=>" << it->second;
 		std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
-		std::cout << COLOR_GREEN << "Request Body: {{" << COLOR_RESET << this->request_body << "}}" << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
 }
 
@@ -349,15 +349,25 @@ bool Request::handleRequestHeaders(std::string bufferString)
 
 bool	Request::storeRequestBody()//hasbody, requestbody
 {
-	if (this->request_body == "")
-	{
-		std::string tmp = this->buffer;
-		this->request_body += tmp.substr(tmp.find("\r\n\r\n") + 4);//key: value\r\n\r\n
-	}
-	else
-		this->request_body += this->buffer;
+	// if (this->request_body.empty())
+	// {
+	// 	// std::string tmp = this->buffer;
+	// 	this->request_string += this->buffer;
+	// 	size_t pos = this->request_string.find("\r\n\r\n");
+	// 	this->request_body = this->request_string.substr(pos + 4);
+	// }
+	// else
+	// 	this->request_body += this->buffer;
+	
+	// std::cout << COLOR_YELLOW << this->request_body << std::endl;
+	// printf("body length : %lu\n", this->request_body.length());
+	// printf("content length : %lu\n", this->content_length);
+	// std::cout << COLOR_RESET << std::endl;
+
 	if (this->request_body.length() >= (this->content_length))
 	{
+		// printf("CONTENT LENGTH : %lu\n", this->content_length);
+		// printf("SUCESS ********\n");
 		this->_has_body = true;
 		return (true);
 	}
@@ -396,10 +406,19 @@ bool	Request::receiveRequest()//must read the request
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
 	// std::cout << "#####>" << buffer << std::endl;
-	if (this->request_string.find("\r\n\r\n") == std::string::npos)
-	{	
-		this->request_string += this->buffer;
+	this->request_body += this->buffer;
+	if ( ! this->hasHeaders())
+	{
+		size_t pos = this->request_body.find("\r\n\r\n");//samjaabo
+		if (pos != std::string::npos)
+		{
+			// _has_headers = true;
+			this->request_string = this->request_body.substr(0, pos + 4);
+			this->request_body.erase(0, pos + 4);
+		}//end samjaabo
 		this->handleRequestHeaders(this->request_string);
+		if ( ! this->request_string.empty())//me
+			_has_headers = true;
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
@@ -411,7 +430,7 @@ bool	Request::receiveRequest()//must read the request
 			this->_status_code = "413 Request Entity Too Large";
 			return (true);
 		}
-		
+		// printf("CONTENT LENGTH : %lu\n", this->content_length);
 		if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos)
 			return (this->storeChunkedRequestBody());
 		if (this->hasHeaders() && this->content_length > 0)

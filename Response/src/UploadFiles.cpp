@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/05 12:34:40 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 14:54:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,13 @@ bool UploadFiles::writeToFile( std::string &body )
 {
 	std::cout << "-----------writing to file---------" << std::endl;
 	std::ofstream *file = new std::ofstream();
-	file->open(filename.c_str(), std::ios::out | std::ios::binary);
+	size_t pos = args.translated_path.find_last_of("/");
+	args.translated_path.erase(pos + 1);
+	args.translated_path.append(filename);
+	file->open(args.translated_path.c_str(), std::ios::out | std::ios::binary);
 	if ( ! file->is_open())
 	{
-		std::cout << "failed to open file for uploaded file" << std::endl;
+		std::cout << "++++++++++++failed to open file for uploaded file++++++++++" << std::endl;
 		//code 500
 		return false;
 	}
@@ -149,6 +152,7 @@ bool UploadFiles::isMultipartAndValid( void )
 	std::map<std::string, std::string>::iterator it = mp.find("Content-Type:");
 	std::string content = it->second;
 	// std::string content = " multipart/form-data; boundary=----WebKitFormBoundaryQfKkHui0vxFv0FvE";
+	content.erase(content.length() - 2);//\r\n
 	size_t pos = content.find_first_not_of(" \t");
 	content.erase(0, pos);
 	pos = content.find(";");
@@ -178,8 +182,8 @@ bool UploadFiles::isMultipartAndValid( void )
 	boundary = std::string("--") + content;
 	end_boundary =  boundary + std::string("--\r\n");
 	boundary.append("\r\n");
-	// std::cout << "boundary=" << boundary << std::endl;
-	// std::cout << "end_boundary=" << end_boundary << std::endl;
+	std::cout << "boundary=" << boundary << std::endl;
+	std::cout << "end_boundary=" << end_boundary << std::endl;
 	return true;
 }
 

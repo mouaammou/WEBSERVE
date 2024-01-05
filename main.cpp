@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 06:54:58 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/05 13:59:05 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int ac, char **av)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << COLOR_RED "ERROR: " << e.what() << std::endl;
+		std::cout << COLOR_RED " " << e.what() << std::endl;
 	}
     return (0);
 }

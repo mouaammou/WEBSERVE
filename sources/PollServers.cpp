@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/04 05:14:03 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 14:50:37 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,6 +283,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		server->serverConfigFile.request 			= TheClient(server, fd);
 
 		//check allowed methods in config file here:
+		// TheClient(server, fd)->displayRequest();
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
