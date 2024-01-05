@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/03 14:08:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/05 16:13:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ class Request
 		std::string 	   getRequestBody() const;
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
+		std::string 			getContentType() const;
 		int				      getFd() const;
 		void					 setFd(int fd);
 		std::string 		   getStatusCode() const;

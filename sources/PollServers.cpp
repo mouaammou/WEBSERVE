@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 14:50:37 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 16:16:33 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,8 +271,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			if (hasHostHeader(TheClient(server, fd)->getRequestHeaders(), host_value))
 				setNewConfig(host_value, server->serverConfigFile);
 		}
-
-		// TheClient(server, fd)->displayRequest();
+		// printf("content type: %s\n", TheClient(server, fd)->getContentType().c_str());
+		TheClient(server, fd)->displayRequest();
 
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		std::string path = TheClient(server, fd)->getPath();
@@ -287,7 +287,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
-			if (TheClient(server, fd)->getMethod() == "GET")
+			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 			}
@@ -295,10 +295,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			{
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 			}
-			else if (TheClient(server, fd)->getMethod() == "POST")
-			{
-				server->pointedMethod = new Method(server->serverConfigFile, "post");
-			}
+			// else if (TheClient(server, fd)->getMethod() == "POST")
+			// {
+			// 	server->pointedMethod = new Method(server->serverConfigFile, "post");
+			// }
 			server->printf_t_config(server->serverConfigFile);
 			// delete server->pointedMethod;
 			// server->pointedMethod = NULL;
