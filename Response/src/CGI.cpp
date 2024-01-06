@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/04 01:45:13 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/06 13:57:54 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void CGI::build( config &args )//call this for new cgi
 	CGI *cgi = new CGI(args);
 	runing_processes[args.request->getFd()] = cgi;
 	cgi->run();
-	// std::cout << "build cgi " << runing_processes.size() << std::endl;
 }
 
 void CGI::checkTimeoutAndExitedProcesses( void ) //use it in poll
@@ -91,7 +90,7 @@ bool CGI::runProcess( void )
 		// std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
 		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
 		// for 
-		std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
+		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
 		execve(args.location.getCgiExe().c_str(), getArgs(), getEnv());
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
@@ -118,7 +117,7 @@ int64_t CGI::getTime( void )
 }
 
 
-CGI::CGI( config &args) : Execute(args) ,INTERPRETER("python3"), args(args)
+CGI::CGI( config &args) : Execute(args) , args(args)
 {
 	input_pipe = new PipeStream(PipeStream::PARENT_WRITE_CHILD_READ);
 	output_pipe = new PipeStream(PipeStream::PARENT_READ_CHILD_WRITE);
@@ -162,6 +161,9 @@ void CGI::timeout( void )
 
 void CGI::onProcessExit( int status )
 {
+	// std::cout << "build cgi >>>>>>>> " << args.request->getFd() << std::endl;
+	// std::cout << "build cgi >>>>>>>> " << args.request->getContentType() << std::endl;
+	std::cout << "build cgi >>>>>>>> " << args.cgi << std::endl;
 	// std::cout << "onProcessExit is called=>" <<  args.request->getFd() << std::endl;
 	if (status == -1)
 	{
