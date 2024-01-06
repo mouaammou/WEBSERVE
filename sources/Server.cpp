@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/03 20:41:54 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/04 04:55:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,9 @@ void		Server::addClient(int fd)
 void		Server::removeClient(int fd)
 {
 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
-	delete this->serverConfigFile.request;
-	this->serverConfigFile.request = NULL;
-	this->httpClients.erase(fd);
+	// delete this->serverConfigFile.request;
+	// this->serverConfigFile.request = NULL;
+	// this->httpClients.erase(fd);
 }
 
 int		Server::getServerSocket() const
@@ -117,6 +117,7 @@ std::string			Server::getRequestedLocation(std::string path)
 	{
 		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
+			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
 			return (this->serverConfigFile.server_locations[i].getName());
 		}
 	}
@@ -139,6 +140,7 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)//
 
 void			Server::printf_t_config(t_config config_file)
 {
+	
 	std::cout << "configuration : \n";
 	printf("		server_name: %s\n", config_file.server_name.c_str());
 	printf("		port: %s\n", config_file.port.c_str());
@@ -150,6 +152,7 @@ void			Server::printf_t_config(t_config config_file)
 	printf("		body_size: %d\n", config_file.body_size);
 	printf("		Location: %s\n", config_file.location.getName().c_str());
 	printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
+	printf("		method: %s\n", config_file.request->getMethod().c_str());
 }
 
 Method* 		Server::getPointedMethod() const

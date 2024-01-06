@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:24:06 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/04 01:33:14 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ class Response
 
 	std::ostringstream	oss;
 	int					ffd;
-	config				&args;
+	config				args;
 
 	void statusLine( std::string code );
 	int64_t get_file_size( void );
 
 	public:
 
-	Response( config &args );
+	Response( config args );
 
 	void runCGI( void );
 	void autoIndex( void );

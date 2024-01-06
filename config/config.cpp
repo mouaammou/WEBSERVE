@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/02 01:38:32 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 01:14:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -756,7 +756,7 @@ Config::~Config()
 // 			if (directs[j].server_locations[i].getReturnInt())
 // 				std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
 // 			if (!directs[j].server_locations[i].getCgiExe().empty())
-// 			std::cout<<"exec " << directs[j].server_locations[i].getCgiExe() << std::endl;
+// 			std::cout<<"------- CGIII -->:  " << directs[j].server_locations[i].getCgiExe() << std::endl;
 // 			std::cout << "Methodes ";
 // 			std::vector<std::string> methods;
 // 			methods = directs[j].server_locations[i].getMethods();

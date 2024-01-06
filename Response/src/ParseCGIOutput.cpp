@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:28:23 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 01:27:33 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,9 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 	additionalHeaders();
 	translateHeaders();
 	new_headers.append("\r\n");
+
+	printf("REQUST ADRS: %p\n", args.request);
+	printf("args ADRS: %p\n", &args);
 	SendResponse(new_headers + body, -1, args.request->getFd());
 	// std::cout << "new_headers: " << new_headers << std::endl;
 	// std::cout << "body: " << body << std::endl;

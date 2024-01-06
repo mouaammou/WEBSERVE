@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:29:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/05 12:38:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,12 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 	return true;
 }
 
-
 Method::Method(t_config &config_file, std::string post): method_config(config_file)
 {
 	(void)post;
 	this->method_config.autoindex = "off";
 	this->method_config.cgi = false;
-	if (true)//upload file is supported.
+	if (UploadFiles(config_file).isUploadRequest())//upload file is supported.
 	{
 		this->method_config.response_code = "201 Created";
 	}

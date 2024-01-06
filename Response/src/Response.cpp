@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:29:45 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/04 01:33:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int64_t Response::get_file_size( void )
 	return stat_buf.st_size;
 }
 
-Response::Response( config &args ) : args(args)
+Response::Response( config args ) : args(args)
 {
 	// args.autoindex = args.location.getAutoindex()? "on" : "off";
 	// std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
