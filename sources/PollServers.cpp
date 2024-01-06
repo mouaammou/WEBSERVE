@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/06 01:12:20 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/06 16:06:05 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,14 +303,16 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			// server->pointedMethod = NULL;
 
 		}
-		// std::cout << "<<POST>>" << std::endl;
+		std::cout << "<<POST>>" << server->serverConfigFile.request->getFd() << std::endl;
+		server->serverConfigFile.cgi = true;
 		Response response(server->serverConfigFile);
-		for (size_t i = 0; i < this->num_servers; i++)
-		{
-			this->http_servers[i]->setConfiguration(this->tmp_config[i]);
-			if (host_value == this->http_servers[i]->serverConfigFile.server_name)
-				this->http_servers[i]->serverConfigFile.request = TheClient(server, fd);
-		}
+		// for (size_t i = 0; i < this->num_servers; i++)
+		// {
+		// 	// this->http_servers[i]->setConfiguration(this->tmp_config[i]);
+		// 	// if (host_value == this->http_servers[i]->serverConfigFile.server_name)
+		// 	// 	this->http_servers[i]->serverConfigFile.request = TheClient(server, fd);
+		// }
+		std::cout << "<<POST>>" << server->serverConfigFile.request->getFd() << std::endl;
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 		return (removeFromPoll(server, fd), false);

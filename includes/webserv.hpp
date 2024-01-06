@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 15:43:17 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/06 16:18:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,6 @@ typedef struct config
 	bool cgi;
 	int	server_fd;
 	int body_size;
+	config( void );
+	config( const config &args );
 }		t_config;

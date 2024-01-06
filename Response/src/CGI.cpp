@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 13:57:54 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/06 15:58:58 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void CGI::onProcessExit( int status )
 {
 	// std::cout << "build cgi >>>>>>>> " << args.request->getFd() << std::endl;
 	// std::cout << "build cgi >>>>>>>> " << args.request->getContentType() << std::endl;
-	std::cout << "build cgi >>>>>>>> " << args.cgi << std::endl;
+	// std::cout << "build cgi >>>>>>>> " << args.Server->getHostName() << std::endl;
 	// std::cout << "onProcessExit is called=>" <<  args.request->getFd() << std::endl;
 	if (status == -1)
 	{
