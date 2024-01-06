@@ -1,7 +1,8 @@
 import cgi
-# cgi.test()
+cgi.test()
 # while True:
 # 	pass
-print("Content-type: text/html")
-print()
-print("<title>Test CGI</title>")
+# print("Content-type: text/html")
+# print()
+# print("<h1>Hello World!</h1>")
+# print("<title>Test CGI</title>")
