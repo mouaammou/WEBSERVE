@@ -294,25 +294,22 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			{
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 			}
-			// else if (TheClient(server, fd)->getMethod() == "POST")
-			// {
-			// 	server->pointedMethod = new Method(server->serverConfigFile, "post");
-			// }
+			else if (TheClient(server, fd)->getMethod() == "POST")
+			{
+				server->pointedMethod = new Method(server->serverConfigFile, "post");
+			}
 			server->printf_t_config(server->serverConfigFile);
 			// delete server->pointedMethod;
 			// server->pointedMethod = NULL;
 
 		}
-		std::cout << "<<POST>>" << server->serverConfigFile.request->getFd() << std::endl;
-		server->serverConfigFile.cgi = true;
 		Response response(server->serverConfigFile);
 		// for (size_t i = 0; i < this->num_servers; i++)
 		// {
-		// 	// this->http_servers[i]->setConfiguration(this->tmp_config[i]);
-		// 	// if (host_value == this->http_servers[i]->serverConfigFile.server_name)
-		// 	// 	this->http_servers[i]->serverConfigFile.request = TheClient(server, fd);
+		// 	this->http_servers[i]->setConfiguration(this->tmp_config[i]);
+		// 	if (host_value == this->http_servers[i]->serverConfigFile.server_name)
+		// 		this->http_servers[i]->serverConfigFile.request = TheClient(server, fd);
 		// }
-		std::cout << "<<POST>>" << server->serverConfigFile.request->getFd() << std::endl;
 	}
 	else if (TheClient(server, fd)->getReadBytes() <= 0)
 		return (removeFromPoll(server, fd), false);

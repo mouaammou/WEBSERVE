@@ -64,7 +64,6 @@ SendString::SendString( std::string const &data, int sfd )
 bool SendString::sendString( void )
 {
 	ssize_t d = write(sfd, data.c_str(), data.length());
-	std::cerr << "===write=nbytes====>: " << d << std::endl;
 	if (d == 0 && data.empty())
 		return true;
 	data.erase(0, d);
@@ -90,7 +89,6 @@ bool SendString::send( int sfd )
 		// std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
 	}
-	std::cout << "------------------>: " << sfd << std::endl;
 	if (save[sfd]->sendString())
 	{
 		delete save[sfd];
@@ -119,7 +117,6 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
 	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
-	std::cout << "SendResponse::SendResponse: " << sfd << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
