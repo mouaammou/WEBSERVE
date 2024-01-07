@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:35:27 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/06 13:52:53 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,25 @@
 
 void Execute::addAllEnvVars( void )
 {
-	// addEnvVar("AUTH_TYPE", "");
-	addEnvVar("CONTENT_LENGTH", "0");//body
-	addEnvVar("CONTENT_TYPE", "text/html");//if content type in headers
-	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 
+	// addEnvVar("AUTH_TYPE", "");
+	if (conf.request->getContentLength() > 0)
+	{
+		std::ostringstream oss;
+		oss << conf.request->getContentLength();
+		addEnvVar("CONTENT_LENGTH", oss.str());//body
+		addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
+	}
+	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 	addEnvVar("PATH_INFO", "conf.request->getPathInfo()");
 	// addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
 	addEnvVar("PATH_TRANSLATED", "conf.path_info_translated");
 	
 	// addEnvVar("QUERY_STRING", conf.request.getQueryString());
-	addEnvVar("QUERY_STRING", "conf.request.getQueryString()");//or "" if no query string
+	addEnvVar("QUERY_STRING", conf.request->getQueryString());//or "" if no query string
 
 	addEnvVar("REMOTE_ADDR", getRemoteAddr()); // ip of client
-	addEnvVar("REMOTE_HOST", ""); //should be passed to cgi
+	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
 	// addEnvVar("REQUEST_URI", conf.request.getUri());
 	addEnvVar("SCRIPT_NAME", conf.translated_path);//script path
@@ -68,8 +73,8 @@ std::string Execute::getServerName( void )
 
 void Execute::addAllArgs( void )
 {
-	std::cout << "conf.location.getCgiExe(): " << conf.location.getName() << std::endl;
-	std::cout << "conf.location.getCgiExe(): " << conf.location.getCgiExe() << std::endl;
+	// std::cout << "conf.location.getCgiExe(): " << conf.location.getName() << std::endl;
+	// std::cout << "conf.location.getCgiExe(): " << conf.location.getCgiExe() << std::endl;
 	args.push_back(const_cast<char*>(conf.location.getCgiExe().c_str()));
 	args.push_back(const_cast<char*>(conf.translated_path.c_str()));
 	args.push_back(NULL);

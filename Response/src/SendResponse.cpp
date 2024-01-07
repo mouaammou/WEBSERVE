@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/02 01:31:28 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/06 16:00:01 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ SendString::SendString( std::string const &data, int sfd )
 bool SendString::sendString( void )
 {
 	ssize_t d = write(sfd, data.c_str(), data.length());
-	// std::cerr << "SendString::sendString: " << d << std::endl;
 	if (d == 0 && data.empty())
 		return true;
 	data.erase(0, d);
@@ -90,7 +89,6 @@ bool SendString::send( int sfd )
 		// std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
 	}
-	std::cout << "------------------>: " << sfd << std::endl;
 	if (save[sfd]->sendString())
 	{
 		delete save[sfd];
