@@ -73,6 +73,13 @@ void Location::setIndex(const std::string& index) {
     this->index = index;
 }
 
+const std::string& Location::getUploadPath() const {
+	return upload_path;
+}
+
+void Location::setUploadPath(const std::string& path) {
+    this->upload_path = path;
+}
 const std::string& Location::getRoot() const {
 	return root;
 }
