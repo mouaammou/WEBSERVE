@@ -38,6 +38,6 @@ class UploadFiles
 	bool bodyContainsUploadedFile( std::string& headers);
 	bool boundaryBody( std::string &body );
 	void requestBody( std::string &body );
-	bool writeToFile( std::string &body );
+	void writeToFile( std::string &body );
 	bool isMultipartAndValid( void );
 };

@@ -33,6 +33,7 @@ void Response::autoIndex( void )
 
 void Response::statusLine( std::string code )
 {
+	std::cout << "***** response line -> " << StatusCodes().getStatusLine(code) << std::endl;
 	oss << StatusCodes().getStatusLine(code);
 }
 
@@ -65,13 +66,6 @@ Response::Response( config &args ) : args(args)
 		autoIndex();
 		return ;
 	}
-	if (args.response_code.compare(0, 3, "204") == 0)
-	{
-		statusLine(args.response_code);
-		oss << "\r\n";
-		SendResponse(oss.str(), -1, args.request->getFd());
-		return ;
-	}
 	switch (args.response_code[0])
 	{
 		case '2':
@@ -91,6 +85,18 @@ Response::Response( config &args ) : args(args)
 
 void Response::file( void )
 {
+	if (args.response_code.compare(0, 3, "201") == 0)
+	{
+		statusLine(args.response_code);
+		oss << "Location: " << args.uploaded_file_path << "\r\n";
+		oss << "Content-Length: " << args.uploaded_file_path.length() + 50 << "\r\n";
+		oss << "Content-Type: " << "text/plain" << "\r\n";
+		oss << "\r\n";
+		oss << "Resource created successfully. You can view it at ";
+		oss << args.uploaded_file_path;
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}
 	ffd = open(args.translated_path.c_str(), O_RDONLY);
 	fcntl(ffd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 	int64_t file_size = get_file_size();

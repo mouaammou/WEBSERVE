@@ -286,7 +286,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
-			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
+			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 			}

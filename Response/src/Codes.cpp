@@ -26,6 +26,7 @@ StatusCodes::StatusCodes(void)
 	codes["204"] = "No Content";
 	codes["205"] = "Reset Content";
 	codes["206"] = "Partial Content";
+	codes["207"] = "Multi-Status";//https://datatracker.ietf.org/doc/html/rfc4918#section-13
 
 	codes["300"] = "Multiple Choices";
 	codes["301"] = "Moved Permanently";

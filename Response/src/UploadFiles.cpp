@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../include/UploadFiles.hpp"
-
+// https://datatracker.ietf.org/doc/html/rfc7231#section-4.3.3
 
 UploadFiles::UploadFiles(config &args) : args(args) {
 	is_upload_request = false;
@@ -26,24 +26,25 @@ bool UploadFiles::isUploadRequest( void )
 	return is_upload_request;
 }
 
-bool UploadFiles::writeToFile( std::string &body )
+void UploadFiles::writeToFile( std::string &body )
 {
-	std::cout << "-----------writing to file---------" << std::endl;
 	std::ofstream *file = new std::ofstream();
 	size_t pos = args.translated_path.find_last_of("/");
 	args.translated_path.erase(pos + 1);
 	args.translated_path.append(filename);
-	file->open(args.translated_path.c_str(), std::ios::out | std::ios::binary);
+	file->open(args.translated_path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 	if ( ! file->is_open())
 	{
-		std::cout << "++++++++++++failed to open file for uploaded file++++++++++" << std::endl;
-		//code 500
-		return false;
+		// args.response_code = "500";
+		args.response_code = "500";
+		// args.special_headers.clear();
+		return ;
 	}
 	file->write(body.c_str(), body.length());
 	file->close();
+	if (args.uploaded_file_path.empty())
+		args.uploaded_file_path = std::string("/upload-path-not-set/") + filename;
 	delete file;
-	return true;
 }
 
 bool UploadFiles::bodyContainsUploadedFile( std::string& headers)
@@ -93,39 +94,47 @@ bool UploadFiles::bodyContainsUploadedFile( std::string& headers)
 	if (filename.empty())
 	{
 		std::cout << "invalid request: filename is empty" << std::endl;
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return false;
 	}
 	std::cout << "filename=" << filename << std::endl;
-	is_upload_request = true;
 	// std::cout << "filename --> "  << filename << std::endl;
 	return true;
 }
 
 bool UploadFiles::boundaryBody( std::string &body )
 {
-	std::cout << "boundaryBody -->"  << std::endl;
+	// std::cout << "boundaryBody -->"  << std::endl;
 	size_t pos = body.find("\r\n\r\n");
-	if (pos == std::string::npos)
+	if (pos == std::string::npos || pos == 0)
 	{
 		std::cout << "invalid request: end of headers not found" << std::endl;
-		//code 4xx
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return false;
 	}
 	std::string header = body.substr(0, pos + 4);
 	body.erase(0, pos + 4);
 	if ( ! bodyContainsUploadedFile(header))
 		return false;
-	return writeToFile(body);
+	is_upload_request = true;
+	// args.response_code = "201";
+	// args.multi_status[args.requested_path + filename] =  ;
+	// args.special_headers.push_back( std::string("Location:") + filename);
+	writeToFile(body);
+	return true;
 }
 
 void UploadFiles::requestBody( std::string &body )
 {
-	std::cout << "requestBody" << std::endl;
+	// std::cout << "requestBody" << std::endl;
 	size_t pos = body.find(end_boundary);
 	if (pos == std::string::npos)
 	{
 		std::cout << "invalid request: end boundary not found" << std::endl;
-		//code 4xx
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return; //invalid request
 	}
 	body.erase(pos);
@@ -133,7 +142,8 @@ void UploadFiles::requestBody( std::string &body )
 	if (pos == std::string::npos)
 	{
 		std::cout << "invalid request: boundary not found" << std::endl;
-		//code 4xx
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return; //invalid request
 	}
 	body.erase(0, pos + boundary.length());
@@ -143,14 +153,16 @@ void UploadFiles::requestBody( std::string &body )
 		std::string buff = body.substr(0, pos);
 		body.erase(0, pos + boundary.length());
 		boundaryBody(buff);
+		// if (args.response_code[0] == '5' || args.response_code[0] == '4')
+		// 	return;
 	}
 }
 
 bool UploadFiles::isMultipartAndValid( void )
 {
-	std::map<std::string, std::string> mp = args.request->getRequestHeaders();
-	std::map<std::string, std::string>::iterator it = mp.find("Content-Type:");
-	std::string content = it->second;
+	// std::map<std::string, std::string> mp = args.request->getRequestHeaders();
+	// std::map<std::string, std::string>::iterator it = mp.find("Content-Type:");
+	std::string content = args.request->getContentType();
 	// std::string content = " multipart/form-data; boundary=----WebKitFormBoundaryQfKkHui0vxFv0FvE";
 	content.erase(content.length() - 2);//\r\n
 	size_t pos = content.find_first_not_of(" \t");
@@ -171,19 +183,23 @@ bool UploadFiles::isMultipartAndValid( void )
 	if (content.compare(0, 9, "boundary=") != 0)
 	{
 		std::cout << "invalid request: boundary not found" << std::endl;
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return false;//invalid request
 	}
 	content.erase(0, 9);
 	if (content.empty())
 	{
 		std::cout << "invalid request: boundary is empty" << std::endl;
+		args.response_code = "400";
+		// args.special_headers.clear();
 		return false;//invalid request
 	}
 	boundary = std::string("--") + content;
 	end_boundary =  boundary + std::string("--\r\n");
 	boundary.append("\r\n");
-	std::cout << "boundary=" << boundary << std::endl;
-	std::cout << "end_boundary=" << end_boundary << std::endl;
+	// std::cout << "boundary=" << boundary << std::endl;
+	// std::cout << "end_boundary=" << end_boundary << std::endl;
 	return true;
 }
 

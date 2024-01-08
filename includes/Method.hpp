@@ -22,6 +22,7 @@ class Method
 		std::string		file_type;
 		t_config		 &method_config;
 		std::string		p_path;
+	
 
 	public:
 		Method(t_config &config_file);

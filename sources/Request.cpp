@@ -185,8 +185,8 @@ void Request::displayRequest()
 		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 		// 	std::cout << it->first << "=>" << it->second;
-		std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
-		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
+		// std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
+		// std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
 }
 

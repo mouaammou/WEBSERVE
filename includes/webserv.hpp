@@ -28,6 +28,7 @@
 
 #include <csignal>
 #include <sstream>
+#include <string>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -53,8 +54,9 @@ class Request;
 
 typedef struct config
 {
-	std::vector<Location> server_locations;
-	std::string server_name;
+	std::string				uploaded_file_path;
+	std::vector<Location>	server_locations;
+	std::string				server_name;
 	std::string port;
 	Directives 	*Server;
 	Location 	location;	
@@ -62,10 +64,8 @@ typedef struct config
 	std::string response_code;
 	std::string requested_path;
 	std::string autoindex;//on or off
-	Request *request;
-	bool cgi;
-	int	server_fd;
-	int body_size;
-	config( void );
-	config( const config &args );
+	Request		*request;
+	bool		cgi;
+	int			server_fd;
+	int			body_size;
 }		t_config;

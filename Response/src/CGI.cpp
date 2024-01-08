@@ -175,7 +175,7 @@ void CGI::onProcessExit( int status )
 	}
 	output_pipe->parentRead();
 	std::string output = output_pipe->getSavedOutput();
-	std::cout << "CGI OUTPUT---> "<<output << std::endl;
+	// std::cout << "CGI OUTPUT---> "<<output << std::endl;
 	ParseCGIOutput().response(status, output, args);
 }
 
