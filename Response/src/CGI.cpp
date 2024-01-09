@@ -84,14 +84,53 @@ bool CGI::runProcess( void )
 		return false;
 	else if (pid == 0)
 	{
+		std::string dir = args.translated_path.substr(0, args.translated_path.find_last_of('/'));
+		if (chdir(dir.c_str()) == -1)
+		{
+			std::cerr << "Error: chdir() failed: " << strerror(errno) << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 		input_pipe->inChild();
 		output_pipe->inChild();
+		int fds[2];
+		if (pipe(fds))
+		{
+			std::cerr << "Error: pipe() failed: " << strerror(errno) << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		if (dup2(fds[0], STDIN_FILENO) == -1)
+		{
+			std::cerr << "Error: dup2() failed: " << strerror(errno) << std::endl;
+			close(fds[0]);
+			close(fds[1]);
+			std::exit(EXIT_FAILURE);
+		}
+		close(fds[0]);
+		if (write(fds[1], args.request->getRequestBody().c_str(), args.request->getRequestBody().length()))
+		{
+			std::cerr << "Error: while writing request body to cgi stdin" << std::endl;
+			close(fds[0]);
+			close(fds[1]);
+			std::exit(EXIT_FAILURE);
+		}
+		if (close(fds[1]) == -1)
+		{
+			std::cerr << "Error: closing write end of pipe in cgi  failed: " << strerror(errno) << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 		// execle();
 		// std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
 		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
+<<<<<<< HEAD
 		// for
 		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
 		execve("/Users/moouaamm/Desktop/server/cgi_tester", getArgs(), getEnv());
+=======
+		// // for 
+		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
+		// execve(args.location.getCgiExe().c_str(), getArgs(), getEnv());
+		execve("/Users/samjaabo/Desktop/webserv/cgi_tester", getArgs(), getEnv());
+>>>>>>> 617099a1a7553f98ee62544c7da3f0980e849b3e
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;

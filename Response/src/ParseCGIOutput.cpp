@@ -127,8 +127,8 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 	translateHeaders();
 	new_headers.append("\r\n");
 
-	printf("REQUST ADRS: %p\n", args.request);
-	printf("args ADRS: %p\n", &args);
+	// printf("REQUST ADRS: %p\n", args.request);
+	// printf("args ADRS: %p\n", &args);
 	SendResponse(new_headers + body, -1, args.request->getFd());
 	// std::cout << "new_headers: " << new_headers << std::endl;
 	// std::cout << "body: " << body << std::endl;
