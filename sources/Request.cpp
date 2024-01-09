@@ -27,7 +27,6 @@ Request::Request(int fd, t_config config_file)
 	this->_has_headers = false;
 	this->_has_body = false;
 	this->transfer_encoding = "";
-	this->read_bytes = 0;
 	this->content_type = "";
 	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
@@ -70,11 +69,6 @@ std::string 			Request::getContentType() const
 std::string			 Request::getRequestBody() const
 {
 	return (this->request_body);
-}
-
-int				Request::getReadBytes() const
-{
-	return (this->read_bytes);
 }
 
 size_t Request::getContentLength() const
@@ -132,7 +126,6 @@ void   Request::resetRequestState()
 	this->content_length = 0;
 	this->_has_headers = false;
 	this->_has_body = false;
-	this->read_bytes = 0;
 	this->content_type = "";
 	this->transfer_encoding = "";
 	this->buffer[0] = '\0';
@@ -405,11 +398,7 @@ bool	Request::receiveRequest()//must read the request
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
-	{
-		return (perror("read"), this->read_bytes = 0, false);
-	}
-	this->buffer[readStatus] = '\0';
-	this->read_bytes += readStatus;
+		return (perror("read"), false);
 	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())
 	{

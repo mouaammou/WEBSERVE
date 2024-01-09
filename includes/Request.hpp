@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 22:43:29 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:19:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Request
 		bool	_has_headers;
 		bool	_has_body;
 		bool	request_received;
-		int		read_bytes;
 		int		_body_size;
 
 		std::string 	 _status_code;
@@ -48,7 +47,6 @@ class Request
 		~Request();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
-		int				getReadBytes() const;
 		std::string 	 getPath() const;
 		std::string 	  getVersion() const;
 		std::string 	   getRequestBody() const;

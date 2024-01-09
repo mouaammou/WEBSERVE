@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:02:25 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:40:23 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,16 @@ void			  PollServers::trackALLClients(void)
 
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
-		if (this->poll_Fds[i].revents & POLLIN)
+		fileDescriptor = this->poll_Fds[i].fd;
+		server = this->whitchServer(fileDescriptor);
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+			removeFromPoll(server, this->poll_Fds[i].fd);
+		else if (this->poll_Fds[i].revents & POLLIN)
 		{
-			fileDescriptor = this->poll_Fds[i].fd;
 			if (this->isServer(fileDescriptor))
 				this->acceptConnections(fileDescriptor);
 			else
 			{
-				server = this->whitchServer(fileDescriptor);
 				if (server)
 					clientPollIn(server, fileDescriptor);
 			}
@@ -89,9 +91,7 @@ void			  PollServers::trackALLClients(void)
 						server->setConfiguration(tmp_config);
 				}
 			}
-		}
-		if (this->poll_Fds[i].revents & POLLHUP)
-			removeFromPoll(server, this->poll_Fds[i].fd);
+		}	
 	}
 }
 
@@ -153,8 +153,7 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 	this->removeFileDescriptor(fd);
 	if (server)
 	{
-		
-	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
+		std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 		server->removeClient(fd);
 	}
 }
@@ -309,8 +308,6 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		}
 		Response response(server->serverConfigFile);
 	}
-	// else if (TheClient(server, fd)->getReadBytes() <= 0)
-	// 	return (removeFromPoll(server, fd), false);
 	else
 		return (false);
 	return true;
