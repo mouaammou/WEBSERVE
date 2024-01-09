@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 15:58:58 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 14:08:29 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,9 @@ bool CGI::runProcess( void )
 		// execle();
 		// std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
 		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
-		// for 
+		// for
 		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
-		execve(args.location.getCgiExe().c_str(), getArgs(), getEnv());
+		execve("/Users/moouaamm/Desktop/server/cgi_tester", getArgs(), getEnv());
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;
@@ -175,7 +175,7 @@ void CGI::onProcessExit( int status )
 	}
 	output_pipe->parentRead();
 	std::string output = output_pipe->getSavedOutput();
-	// std::cout << "CGI OUTPUT---> "<<output << std::endl;
+	std::cout << "CGI OUTPUT---> "<<output << std::endl;
 	ParseCGIOutput().response(status, output, args);
 }
 

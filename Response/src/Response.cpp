@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:22:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 11:38:08 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ Response::Response( config &args ) : args(args)
 	if (args.cgi)
 	{
 		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
-		runCGI();
+		runCGI();// 
 		return ;
 	}
 	else if (args.autoindex == "on")

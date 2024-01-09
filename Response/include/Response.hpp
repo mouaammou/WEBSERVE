@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:21:46 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 11:31:22 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ class Response
 
 	public:
 
-	Response( config &args );
+	Response( config &args );//
 
-	void runCGI( void );
-	void autoIndex( void );
+	void runCGI( void );//
+	void autoIndex( void );//
 	void file( void );
 	void redirect( void );
 	void error( void );

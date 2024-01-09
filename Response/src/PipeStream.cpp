@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PipeStream.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/23 01:14:38 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 13:22:25 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ std::string PipeStream::getSavedOutput( void )
 	return *saved_output;
 }
 
-void PipeStream::parentRead( void ) // true on error or eof
+void PipeStream::     parentRead( void ) // true on error or eof
 {
 	// if (readfd == -2)
 	// 	return ;
