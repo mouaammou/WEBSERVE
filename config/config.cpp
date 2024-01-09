@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/04 01:14:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/08 18:37:53 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,6 +369,8 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 			handle_redirection(locat, indice);
 		else if (ftokens[*indice] == "autoindex")
 			locat.setAutoindex(handle_autodx(indice));
+		else if (ftokens[*indice] == "upload_path")
+			locat.setUploadPath(next_str_arg(indice));
 		else if (ftokens[*indice] == "exe")
 			locat.setCgiExe(next_str_arg(indice));
 		else if (ftokens[*indice] == "proxy_method")
@@ -751,6 +753,7 @@ Config::~Config()
 // 			std::cout<<"Slashes " << directs[j].server_locations[i].getSlash() << std::endl;
 // 			std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
 // 			std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
+// 			std::cout<<"-----Upload file " << directs[j].server_locations[i].getUploadPath() << std::endl;
 // 			std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
 // 			std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
 // 			if (directs[j].server_locations[i].getReturnInt())

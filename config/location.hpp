@@ -17,6 +17,7 @@ class Location
 		std::string path;
 		std::string index;
 		std::string root;
+		std::string upload_path;
 		std::string cgi_exe;
 		std::vector<std::string> methods;
 		std::string	return_str;
@@ -34,6 +35,8 @@ class Location
 		void setIndex(const std::string& index);
 		const std::string& getRoot() const;
 		void setRoot(const std::string& root);
+		const std::string& getUploadPath() const;
+		void setUploadPath(const std::string& root);
 		const std::string& getCgiExe() const;
 		void setCgiExe(const std::string& cgiExe);
 		const std::vector<std::string>& getMethods() const;
