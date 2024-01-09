@@ -66,7 +66,7 @@ std::string 			Request::getContentType() const
 	return (this->content_type);
 }
 
-std::string			 Request::getRequestBody() const
+std::string			 &Request::getRequestBody()
 {
 	return (this->request_body);
 }
@@ -386,7 +386,7 @@ bool	Request::receiveRequest()//must read the request
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
 	// std::cout << "#####>" << buffer << std::endl;
-	this->request_body += this->buffer;
+	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())
 	{
 		size_t pos = this->request_body.find("\r\n\r\n");

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 16:13:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 21:53:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class Request
 		int				getReadBytes() const;
 		std::string 	 getPath() const;
 		std::string 	  getVersion() const;
-		std::string 	   getRequestBody() const;
+		std::string 	   &getRequestBody();
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
