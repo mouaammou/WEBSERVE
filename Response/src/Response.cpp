@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:22:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:14:08 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,12 @@ void Response::file( void )
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
-		oss << "Location: " << args.uploaded_file_path << "\r\n";
-		oss << "Content-Length: " << args.uploaded_file_path.length() + 50 << "\r\n";
+		oss << "Location: " << args.translated_path << "\r\n";
+		oss << "Content-Length: " << args.location.getUploadPath().length() + 57 << "\r\n";
 		oss << "Content-Type: " << "text/plain" << "\r\n";
 		oss << "\r\n";
-		oss << "Resource created successfully. You can view it at ";
-		oss << args.uploaded_file_path;
+		oss << "Resource(s) created successfully. you can access it at \r\n";
+		oss << args.location.getUploadPath() << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
 	}

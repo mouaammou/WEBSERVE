@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 12:42:32 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:18:20 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class CGI : private Execute
 	static std::vector<pid_t>			pids;//private
 	static std::map<int, CGI*>			runing_processes;//private
 
+	static void remove( int fd );
 	static void checkExitedProcess( void );
 	static std::map<int, CGI*>::iterator getProcess( pid_t pid );
 

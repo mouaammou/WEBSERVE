@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:40:23 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:42:45 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 		std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 		server->removeClient(fd);
 	}
+	CGI::remove(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)

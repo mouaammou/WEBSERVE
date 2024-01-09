@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:09:38 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:43:12 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ void CGI::checkExitedProcess( void )
 		it = getProcess(pid);
 		if (it == runing_processes.end())
 		{
-			printf("KILL PID: %d\n", pid);
-			kill(pid, SIGKILL);
+			pids.erase(pids.begin() + i);
 			continue ;
 		}
 		// std::cout << "pid " << pid << " exited" << std::endl;
@@ -128,7 +127,7 @@ bool CGI::runProcess( void )
 		// // for 
 		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
 		execve(args.location.getCgiExe().c_str(), getArgs(), getEnv());
-		// execve(, getArgs(), getEnv());
+		// execve("/Users/samjaabo/Desktop/webserv/cgi_tester", getArgs(), getEnv());
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;
@@ -222,4 +221,15 @@ pid_t CGI::getPid( void ) const
 }
 
 
-
+void CGI::remove( int fd )
+{
+	std::map<int, CGI*>::iterator it;
+	it = runing_processes.find(fd);
+	if (it == runing_processes.end())
+		return ;
+	// std::cout << "pid " << pid << " exited" << std::endl;
+	pid_t pid = it->second->getPid();
+	kill(pid, SIGKILL);
+	delete it->second;
+	runing_processes.erase(it);
+}

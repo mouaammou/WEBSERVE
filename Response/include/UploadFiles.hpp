@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/05 12:33:13 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 21:59:33 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,27 +17,52 @@
 #include "../../includes/webserv.hpp"
 #include "../../includes/Request.hpp"
 
-class UploadFiles
+// class UploadFiles
+// {
+// 	private:
+
+// 	config		&args;
+// 	std::string	boundary;
+// 	std::string	end_boundary;
+// 	std::string filename;
+// 	bool		is_upload_request;
+
+// 	public:
+
+// 	UploadFiles( config &args );
+
+// 	bool isUploadRequest( void );
+
+// 	private:
+
+// 	bool bodyContainsUploadedFile( std::string& headers);
+// 	bool boundaryBody( std::string &body );
+// 	void requestBody( std::string &body );
+// 	void writeToFile( std::string &body );
+// 	bool isMultipartAndValid( void );
+// };
+
+class FilesUpload
 {
-	private:
+    private:
 
-	config		&args;
-	std::string	boundary;
-	std::string	end_boundary;
-	std::string filename;
-	bool		is_upload_request;
+    // 422 Unprocessable Content
+    std::vector<std::string>    _uploaded_files;
+    std::string                 _upload_path;
+    std::string                 _filename;
+    std::string                 _boundary;
+    std::string                 _end_boundary;
+    std::string                 *_body;
+    t_config                    &conf;
 
-	public:
+    public:
 
-	UploadFiles( config &args );
-
-	bool isUploadRequest( void );
-
-	private:
-
-	bool bodyContainsUploadedFile( std::string& headers);
-	bool boundaryBody( std::string &body );
-	void requestBody( std::string &body );
-	void writeToFile( std::string &body );
-	bool isMultipartAndValid( void );
+    FilesUpload( t_config &conf );
+    bool isUploadRequest( void );
+    bool isValidContentType( void );
+    void removeFilesOnError( void );
+    void writeToFile( std::string &body );
+    bool bodyContainsUploadedFile( std::string& headers );
+    bool boundaryBody( std::string &body );
+    void requestBody( std::string &body );
 };

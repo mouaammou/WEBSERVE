@@ -66,7 +66,7 @@ std::string 			Request::getContentType() const
 	return (this->content_type);
 }
 
-std::string			 Request::getRequestBody() const
+std::string			 &Request::getRequestBody()
 {
 	return (this->request_body);
 }

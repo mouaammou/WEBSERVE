@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:19:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:43:33 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class Request
 		std::string 	getMethod() const;
 		std::string 	 getPath() const;
 		std::string 	  getVersion() const;
-		std::string 	   getRequestBody() const;
+		std::string 	   &getRequestBody();
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
