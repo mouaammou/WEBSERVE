@@ -1,5 +1,5 @@
-import cgi
-cgi.test()
-# while True:
-# 	pass
+# import cgi
+# cgi.test()
+while True:
+	pass
 

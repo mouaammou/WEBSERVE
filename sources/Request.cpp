@@ -12,7 +12,7 @@
 
 #include "../includes/Request.hpp"
 #include "../Response/include/Response.hpp"
-#include <cctype>
+
 
 Request::Request(int fd, t_config config_file)
 {
@@ -34,11 +34,12 @@ Request::Request(int fd, t_config config_file)
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
+	this->server_config.path_info = "";
 }
 
 Request::~Request()
 {
-	// delete [] this->buffer;
+	delete [] this->buffer;
 }
 
 std::string Request::getMethod() const
@@ -138,6 +139,7 @@ void   Request::resetRequestState()
 	this->request_received = false;
 	this->_status_code = "200 OK";
 	this->query_string = "";
+	this->server_config.path_info = "";
 }
 
 bool			      Request::handleBadRequest()
@@ -266,10 +268,25 @@ bool	Request::checkMethod()
 	return (true);
 }
 
-bool Request::checkPath()
+void       Request::handlePathInfo()
 {
-	if (this->path.find("..") != std::string::npos)
-		return (_status_code = "403 Forbidden", true);
+	if (this->path.find(".php") != std::string::npos || this->path.find(".py") != std::string::npos)
+	{
+		if (this->path.find(".php") != std::string::npos)
+		{
+			if (this->path.find(".php") + 4 < this->path.length())
+				this->server_config.path_info = this->path.substr(this->path.find(".php") + 4);
+		}
+		if (this->path.find(".py") != std::string::npos)
+		{
+			if (this->path.find(".py") + 3 < this->path.length())
+				this->server_config.path_info = this->path.substr(this->path.find(".py") + 3);
+		}
+	}
+}
+
+void	Request::handleQueryString()
+{
 	if (this->path.find("#") != std::string::npos)
 		this->path = this->path.substr(0, this->path.find("#"));
 	if (this->path.find("?") != std::string::npos)
@@ -277,6 +294,14 @@ bool Request::checkPath()
 		this->query_string = this->path.substr(this->path.find("?") + 1);
 		this->path = this->path.substr(0, this->path.find("?"));
 	}
+}
+
+bool 	Request::checkPath()
+{
+	if (this->path.find("..") != std::string::npos)
+		return (_status_code = "403 Forbidden", true);
+	this->handleQueryString();
+	this->handlePathInfo();
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";
@@ -385,8 +410,7 @@ bool	Request::receiveRequest()//must read the request
 	}
 	this->buffer[readStatus] = '\0';
 	this->read_bytes += readStatus;
-	// std::cout << "#####>" << buffer << std::endl;
-	this->request_body += this->buffer;
+	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())
 	{
 		size_t pos = this->request_body.find("\r\n\r\n");
