@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 13:52:53 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:54:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void Execute::addEnvVar( std::string key, std::string value )
 	if (pos != std::string::npos)
 		value.erase(0, pos);
 	std::string var = key + "=" + value;
-	std::cout << "$" << var <<  "$"<< std::endl;
+	// std::cout << "$" << var <<  "$"<< std::endl;
 	env.push_back(strdup(var));
 }
 

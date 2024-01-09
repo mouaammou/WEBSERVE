@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:00:01 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:52:33 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,3 +122,24 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 		SendFile::build(ffd, sfd);
 }
 
+void SendResponse::remove( int fd )
+{
+	SendString::remove(fd);
+	SendFile::remove(fd);
+}
+
+void SendString::remove( int fd )
+{
+	if (save.find(fd) == save.end())
+		return ;
+	delete save[fd];
+	save.erase(fd);
+}
+
+void SendFile::remove( int fd )
+{
+	if (files.find(fd) == files.end())
+		return ;
+	delete files[fd];
+	files.erase(fd);
+}

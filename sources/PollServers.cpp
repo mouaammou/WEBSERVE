@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:24:25 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:51:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,7 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 	if (server)
 		server->removeClient(fd);
 	CGI::remove(fd);
+	SendResponse::remove(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)
