@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 22:04:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:36:24 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,10 @@ void CGI::checkExitedProcess( void )
 		std::map<int, CGI*>::iterator it;
 		it = getProcess(pid);
 		if (it == runing_processes.end())
+		{
+			pids.erase(pids.begin() + i);
 			continue ;
+		}
 		// std::cout << "pid " << pid << " exited" << std::endl;
 		it->second->onProcessExit(status);
 		delete it->second;
@@ -218,4 +221,15 @@ pid_t CGI::getPid( void ) const
 }
 
 
-
+void CGI::remove( int fd )
+{
+	std::map<int, CGI*>::iterator it;
+	it = runing_processes.find(fd);
+	if (it == runing_processes.end())
+		return ;
+	// std::cout << "pid " << pid << " exited" << std::endl;
+	pid_t pid = it->second->getPid();
+	kill(pid, SIGKILL);
+	delete it->second;
+	runing_processes.erase(it);
+}
