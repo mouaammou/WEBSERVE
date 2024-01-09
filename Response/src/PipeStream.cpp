@@ -16,6 +16,7 @@
 
 std::string PipeStream::getSavedOutput( void )
 {
+	std::cout << "saved_output: " << *saved_output << "$$" << std::endl;
 	return *saved_output;
 }
 

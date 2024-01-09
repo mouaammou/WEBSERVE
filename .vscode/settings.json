@@ -68,6 +68,7 @@
 		"vector": "cpp",
 		"complex": "cpp",
 		"queue": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"filesystem": "cpp"
 	}
 }

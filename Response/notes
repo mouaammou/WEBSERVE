@@ -1,3 +1,11 @@
 Coral #FC766A
 Spiced Apple #783937
 Peach #F1AC88
+
+guys can someone help explain this two lines from webserv subject.
+i read them many times and have no clue what they mean excatly.
+
+∗ Because you won’t call the CGI directly, use the full path as PATH_INFO.
+∗ The CGI should be run in the correct directory for relative path file access.
+
+
