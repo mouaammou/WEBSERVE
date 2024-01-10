@@ -116,24 +116,6 @@ std::string 			 Request::getQueryString() const
 	return (this->query_string);
 }
 
-void   Request::resetRequestState()
-{
-	this->request_string = "";
-	this->request_body = "";
-	this->method = "";
-	this->path = "";
-	this->version = "";
-	this->content_length = 0;
-	this->_has_headers = false;
-	this->_has_body = false;
-	this->content_type = "";
-	this->transfer_encoding = "";
-	this->request_received = false;
-	this->_status_code = "200 OK";
-	this->query_string = "";
-	this->server_config.path_info = "";
-}
-
 bool			      Request::handleBadRequest()
 {
 	if (this->isLocationHasRedirection())
