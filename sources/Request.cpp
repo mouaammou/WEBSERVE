@@ -249,12 +249,18 @@ void       Request::handlePathInfo()
 		if (this->path.find(".php") != std::string::npos)
 		{
 			if (this->path.find(".php") + 4 < this->path.length())
+			{
 				this->server_config.path_info = this->path.substr(this->path.find(".php") + 4);
+				this->path = this->path.substr(0, this->path.find(".php") + 4);
+			}
 		}
 		if (this->path.find(".py") != std::string::npos)
 		{
 			if (this->path.find(".py") + 3 < this->path.length())
+			{
 				this->server_config.path_info = this->path.substr(this->path.find(".py") + 3);
+				this->path = this->path.substr(0, this->path.find(".py") + 3);
+			}
 		}
 	}
 }
