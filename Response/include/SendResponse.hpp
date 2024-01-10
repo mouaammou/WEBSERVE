@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 11:53:25 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 00:04:37 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 23:48:40 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class SendFile
 
 	public:
 
+	static void remove( int fd );
 	bool sendString( void );
 	static void build( int ffd, int sfd );
 	static bool send( int sfd );
@@ -59,6 +60,7 @@ class SendString
 
 	public:
 
+	static void remove( int fd );
 	bool sendString( void );
 	static void build( std::string const &data, int sfd );
 	static bool send( int sfd );
@@ -70,6 +72,7 @@ class SendResponse
 
 	public:
 
+	static void remove( int fd );
 	static bool send( int sfd );
 	SendResponse( std::string const &data, int ffd, int sfd );
 };

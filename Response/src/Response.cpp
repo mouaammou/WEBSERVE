@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 11:38:08 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/10 16:01:43 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ Response::Response( config &args ) : args(args)
 	if (args.cgi)
 	{
 		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
-		runCGI();// 
+		runCGI();//
 		return ;
 	}
 	else if (args.autoindex == "on")
@@ -88,12 +88,12 @@ void Response::file( void )
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
-		oss << "Location: " << args.uploaded_file_path << "\r\n";
-		oss << "Content-Length: " << args.uploaded_file_path.length() + 50 << "\r\n";
+		oss << "Location: " << args.translated_path << "\r\n";
+		oss << "Content-Length: " << args.location.getUploadPath().length() + 57 << "\r\n";
 		oss << "Content-Type: " << "text/plain" << "\r\n";
 		oss << "\r\n";
-		oss << "Resource created successfully. You can view it at ";
-		oss << args.uploaded_file_path;
+		oss << "Resource(s) created successfully. you can access it at \r\n";
+		oss << args.location.getUploadPath() << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
 	}

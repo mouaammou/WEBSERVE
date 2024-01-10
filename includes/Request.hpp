@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 16:13:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/10 11:42:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,21 @@ class Request
 		bool	_has_headers;
 		bool	_has_body;
 		bool	request_received;
-		int		read_bytes;
-		char	*buffer;
 		int		_body_size;
 
 		std::string 	 _status_code;
-		t_config 		server_config;
 
 	public:
+		t_config 		server_config;
+		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
 		Request(int fd, t_config config_file);
 		~Request();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
-		int				getReadBytes() const;
 		std::string 	 getPath() const;
 		std::string 	  getVersion() const;
-		std::string 	   getRequestBody() const;
+		std::string 	   &getRequestBody();
 		size_t			    getContentLength() const;
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
@@ -76,15 +74,17 @@ class Request
 		bool   		parseRequestHeaders(const std::string& line);
 		bool    		storeRequestBody();
 		bool			 storeChunkedRequestBody();
+		void				handlePathInfo();
+		void				  handleQueryString();
 
 		bool		checkMethod();
 		bool		 checkVersion();
 		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
-		
-		void    resetRequestState();
 			
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
+
+		std::string			extractChunks(const std::string& request);
 };

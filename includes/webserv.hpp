@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:18:39 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 19:50:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,12 @@ typedef struct config
 	Directives 	*Server;
 	Location 	location;	
 	std::string translated_path;
+	std::string path_info;
 	std::string response_code;
 	std::string requested_path;
 	std::string autoindex;//on or off
 	Request		*request;
+	
 	bool		cgi;
 	int			server_fd;
 	int			body_size;

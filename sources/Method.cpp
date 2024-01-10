@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 12:38:45 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 22:04:05 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,8 @@ Method::Method(t_config &config_file, std::string post): method_config(config_fi
 	(void)post;
 	this->method_config.autoindex = "off";
 	this->method_config.cgi = false;
-	if (UploadFiles(config_file).isUploadRequest())//upload file is supported.
-	{
-		this->method_config.response_code = "201 Created";
-	}
-	else
+	has_cgi();
+	if ( ! FilesUpload(config_file).isUploadRequest())//upload file is supported.
 	{
 		if (this->get_method_file_type())
 		{
@@ -275,6 +272,7 @@ bool			Method::has_cgi()
 		this->method_config.cgi = true;
 		return (true);
 	}
+	this->method_config.cgi = false;
 	return (false);
 }
 

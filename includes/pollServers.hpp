@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 16:08:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/10 03:12:11 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ class PollServers
 
 		std::vector<Server*> http_servers;//severs
 		std::vector <t_config> servers_config;
-		std::vector <t_config> tmp_config;
 
+		t_config tmp_config;
 		Config config_file;
 		size_t num_servers;
+		bool   multi_ports;
 
 	public:
 		PollServers(Config config_file);
@@ -49,6 +50,10 @@ class PollServers
 		bool				IsConfigHasMultiPorts(void);
 
 		bool				clientPollIn(Server *server, int fd);
+		void				handleMultiPorts(Server *server, int fd);
+		
+		void	handleTranslatedPath(Server *server, int fd);
+		void	handlePathInfo(Server *server, std::string path_info);
 
 		void			    trackALLClients(void);
 };
