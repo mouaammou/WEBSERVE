@@ -128,7 +128,6 @@ void   Request::resetRequestState()
 	this->_has_body = false;
 	this->content_type = "";
 	this->transfer_encoding = "";
-	this->buffer[0] = '\0';
 	this->request_received = false;
 	this->_status_code = "200 OK";
 	this->query_string = "";
@@ -398,7 +397,7 @@ bool	Request::receiveRequest()//must read the request
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
-		return (perror("read"), false);
+		return (perror("read ERR::"), false);
 	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())
 	{

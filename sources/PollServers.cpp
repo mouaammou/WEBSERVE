@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:55:21 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/10 01:59:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,11 @@ void			  PollServers::trackALLClients(void)
 		fileDescriptor = this->poll_Fds[i].fd;
 		server = this->whitchServer(fileDescriptor);
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
-		else if (this->poll_Fds[i].revents & POLLIN)
+			continue;
+		}
+		if (this->poll_Fds[i].revents & POLLIN)
 		{
 			if (this->isServer(fileDescriptor))
 				this->acceptConnections(fileDescriptor);
@@ -77,11 +80,11 @@ void			  PollServers::trackALLClients(void)
 					clientPollIn(server, fileDescriptor);
 			}
 		}
-		else
+		else if (this->poll_Fds[i].revents & POLLOUT)
 		{
 			fileDescriptor = this->poll_Fds[i].fd;
 			server = this->whitchServer(fileDescriptor);
-			if (server && (this->poll_Fds[i].revents & POLLOUT) && TheClient(server, fileDescriptor)->hasRequest())//here
+			if (TheClient(server, fileDescriptor)->hasRequest())//here
 			{
 				if (TheClient(server, fileDescriptor)->sendResponse())
 				{
@@ -89,9 +92,10 @@ void			  PollServers::trackALLClients(void)
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 					if (multi_ports == true)
 						server->setConfiguration(tmp_config);
+					this->removeFromPoll(server, fileDescriptor);
 				}
 			}
-		}	
+		}
 	}
 }
 
@@ -275,7 +279,7 @@ void		PollServers::handleMultiPorts(Server *server, int fd)
 }
 
 bool				PollServers::clientPollIn(Server *server, int fd)
-{
+{ 
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
 		this->handleMultiPorts(server, fd);
@@ -303,7 +307,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			{
 				server->pointedMethod = new Method(server->serverConfigFile, "post");
 			}
-			server->printf_t_config(server->serverConfigFile);
+			// server->printf_t_config(server->serverConfigFile);
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;
 
