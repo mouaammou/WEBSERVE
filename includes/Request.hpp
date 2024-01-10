@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:43:33 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 11:42:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ class Request
 		int		_body_size;
 
 		std::string 	 _status_code;
-		t_config 		server_config;
 
 	public:
+		t_config 		server_config;
 		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
 		Request(int fd, t_config config_file);
@@ -81,10 +81,10 @@ class Request
 		bool		 checkVersion();
 		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
-		
-		void    resetRequestState();
 			
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
+
+		std::string			extractChunks(const std::string& request);
 };

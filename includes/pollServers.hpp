@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 21:48:49 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 03:12:11 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,9 @@ class PollServers
 
 		bool				clientPollIn(Server *server, int fd);
 		void				handleMultiPorts(Server *server, int fd);
+		
+		void	handleTranslatedPath(Server *server, int fd);
+		void	handlePathInfo(Server *server, std::string path_info);
 
 		void			    trackALLClients(void);
 };
