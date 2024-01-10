@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 03:16:29 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 06:53:23 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,4 +85,7 @@ class Request
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
+
+		void 				handleChunkedRequest(const std::string& request);
+		std::string			extractChunks(const std::string& request);
 };

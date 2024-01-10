@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 03:57:22 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 06:11:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,12 +305,14 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		
+		TheClient(server, fd)->displayRequest();
+
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
 			this->handlePathInfo(server, server->serverConfigFile.path_info);
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
-			if (TheClient(server, fd)->getMethod() == "GET")
+			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
 			}
@@ -318,10 +320,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			{
 				server->pointedMethod = new Method(server->serverConfigFile, 1337);
 			}
-			else if (TheClient(server, fd)->getMethod() == "POST")
-			{
-				server->pointedMethod = new Method(server->serverConfigFile, "post");
-			}
+			// else if (TheClient(server, fd)->getMethod() == "POST")
+			// {
+			// 	server->pointedMethod = new Method(server->serverConfigFile, "post");
+			// }
 			// server->printf_t_config(server->serverConfigFile);
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;

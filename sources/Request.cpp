@@ -162,7 +162,7 @@ void Request::displayRequest()
 		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 		// 	std::cout << it->first << "=>" << it->second;
 		// std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
-		// std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
 }
 
@@ -367,12 +367,38 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 	return (false);
 }
 
+// Function to extract and concatenate the chunks from a chunked request
+std::string			Request::extractChunks(const std::string& request)
+{
+	std::stringstream stream(request);
+	std::stringstream chunks;
+	std::string line;
+
+	// Read and concatenate the chunks
+	while (std::getline(stream, line))
+	{
+		size_t chunkSize = strtoul(line.c_str(), NULL, 16);
+		if (chunkSize == 0) {
+			break; // End of chunks
+		}
+
+		while (chunkSize > 0 && std::getline(stream, line))
+		{
+			line += "\n";
+			size_t bytesRead = std::min(line.length(), chunkSize);
+			chunks.write(line.c_str(), bytesRead);//write the chunk to the stream
+			chunkSize -= bytesRead;
+		}
+	}
+	return chunks.str();
+}
+
 bool			Request::storeChunkedRequestBody()
 {
+	std::string chunks = extractChunks(this->request_body);
 	if (this->request_body.find("0\r\n\r\n") != std::string::npos)
 	{
-		this->request_body = this->request_body.substr(this->request_body.find("\r\n") + 2);
-		this->request_body = this->request_body.substr(0, this->request_body.find("0\r\n\r\n"));
+		this->request_body = chunks;
 		this->_has_body = true;
 		return (true);
 	}
@@ -399,7 +425,8 @@ bool	Request::receiveRequest()//must read the request
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
-
+	if (this->request_body.length() == 0)
+		return (true);
 	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
 	{
 		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
@@ -407,10 +434,10 @@ bool	Request::receiveRequest()//must read the request
 			this->_status_code = "413 Request Entity Too Large";
 			return (true);
 		}
-		if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos)
-			return (this->storeChunkedRequestBody());
 		if (this->hasHeaders() && this->content_length > 0)
 			return (this->storeRequestBody());
+		else if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos && this->content_length == 0)
+			return (this->storeChunkedRequestBody());
 	}
 
 	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
