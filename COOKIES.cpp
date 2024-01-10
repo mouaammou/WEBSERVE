@@ -5,6 +5,40 @@
 #include <cstdlib>
 #include <cstring>
 
+
+#include <string>
+#include <map>
+
+// Function to extract cookies from HTTP headers
+std::map<std::string, std::string> extractCookies(std::string headers) {
+    std::map<std::string, std::string> cookies;
+    std::string::size_type start = headers.find("Cookie: ");
+    if (start != std::string::npos) {
+        start += 8;  // Length of "Cookie: "
+        std::string::size_type end = headers.find("\r\n", start);
+        if (end != std::string::npos) {
+            std::string cookieString = headers.substr(start, end - start);
+            std::string::size_type pos = 0;
+            while ((pos = cookieString.find(";")) != std::string::npos) {
+                std::string cookie = cookieString.substr(0, pos);
+                std::string::size_type eqPos = cookie.find("=");
+                if (eqPos != std::string::npos) {
+                    std::string name = cookie.substr(0, eqPos);
+                    std::string value = cookie.substr(eqPos + 1);
+                    cookies[name] = value;
+                }
+                cookieString.erase(0, pos + 1);
+            }
+        }
+    }
+    return cookies;
+}
+
+// Function to set a cookie in HTTP headers
+std::string setCookie(std::string name, std::string value) {
+    return "Set-Cookie: " + name + "=" + value + "; Path=/; HttpOnly";
+}
+
 // Constants
 #define COLOR_YELLOW "\033[33m"
 #define COLOR_RESET "\033[0m"
