@@ -78,6 +78,13 @@ const std::string& Location::getUploadPath() const {
 }
 
 void Location::setUploadPath(const std::string& path) {
+	if (path.empty())
+		return ;
+	if (path[0] != '/')
+	{
+		std::cerr << "upload file must begin with a /" << std::endl;
+		exit (1);
+	}
     this->upload_path = path;
 }
 const std::string& Location::getRoot() const {

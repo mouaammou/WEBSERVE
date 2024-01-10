@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 14:08:29 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/09 14:14:20 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,16 +121,10 @@ bool CGI::runProcess( void )
 		// execle();
 		// std::cerr << "RUNING CGI: " << args.translated_path.c_str() << std::endl;
 		// execlp(INTERPRETER.c_str(), INTERPRETER.c_str(), args.translated_path.c_str(), NULL);
-<<<<<<< HEAD
-		// for
-		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
-		execve("/Users/moouaamm/Desktop/server/cgi_tester", getArgs(), getEnv());
-=======
-		// // for 
+		// // for
 		// std::cerr << "@@@@@args.cgi: " <<  args.location.getCgiExe() << std::endl;
 		// execve(args.location.getCgiExe().c_str(), getArgs(), getEnv());
-		execve("/Users/samjaabo/Desktop/webserv/cgi_tester", getArgs(), getEnv());
->>>>>>> 617099a1a7553f98ee62544c7da3f0980e849b3e
+		execve("/Users/moouaamm/Desktop/server/cgi_tester", getArgs(), getEnv());
 		std::cerr << "Error: execlp() failed to exec " << args.translated_path << std::endl;
 		std::exit(EXIT_FAILURE);
 		return false;

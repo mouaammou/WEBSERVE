@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 13:52:53 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/09 14:16:13 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 	// addEnvVar("PATH_INFO", "conf.request->getPathInfo()");
 	// addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
-	
+
 	// addEnvVar("QUERY_STRING", conf.request.getQueryString());
 	addEnvVar("QUERY_STRING", conf.request->getQueryString());//or "" if no query string
 
@@ -41,11 +41,11 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
 	addEnvVar("SERVER_SOFTWARE", "webserv/1.0");
 
-	addEnvVar("PATH_INFO", "/sddsgvd/");
-	addEnvVar("PATH_TRANSLATED", "/dfg/");
+	addEnvVar("PATH_INFO", "");
+	addEnvVar("PATH_TRANSLATED", "");
 
 	requestHeaderstToCGIVariables();
-	
+
 	env.push_back(NULL);//at the end
 }
 
