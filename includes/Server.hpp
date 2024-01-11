@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/31 05:24:14 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 04:21:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ class Server
 	public:
 		Server(t_config config);
 		Method* pointedMethod;//private, and set a setter
-
 		t_config serverConfigFile;
 		std::map<int, Request*> httpClients;
 		~Server();
+
 
 		Method* getPointedMethod() const;
 		int		getServerSocket() const;
