@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 15:47:00 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 16:58:11 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,6 +184,7 @@ void CGI::timeout( void )
 	// 	exit(0);
 	if (now >= MAX_MSEC_TO_TIMEOUT)
 	{
+		args.response_code = "504";
 		kill(pid, SIGKILL);
 		one_time_kill = true;
 	}
@@ -196,8 +197,6 @@ void CGI::onProcessExit( int status )
 	/*** cgi didnt run so pipefd didnt set to pollin,
 	 * so we need to call readFromPipe() manually
 	 * to let it generate Response and clear resources  ***/
-	if (pid == -1)
-		pipe_stream->readFromPipe();
 	// std::cout << "build cgi >>>>>>>> " << args.request->getFd() << std::endl;
 	// std::cout << "build cgi >>>>>>>> " << args.request->getContentType() << std::endl;
 	// std::cout << "build cgi >>>>>>>> " << args.Server->getHostName() << std::endl;

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 15:49:02 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 16:59:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,31 +114,31 @@ void  PipeStream::inChildProcess( void ) //call it in child proccess in cgi
 	/*** output pipe stream end ***/
 
 	/*** put pipe in STDIN, And write request body to it ***/
-	// if (pipe(fds))
-	// {
-	// 	std::cerr << "Error: pipe() failed: " << strerror(errno) << std::endl;
-	// 	std::exit(EXIT_FAILURE);
-	// }
-	// if (dup2(fds[0], STDIN_FILENO) == -1)
-	// {
-	// 	std::cerr << "Error 2: dup2() failed: " << strerror(errno) << std::endl;
-	// 	close(fds[0]);
-	// 	close(fds[1]);
-	// 	std::exit(EXIT_FAILURE);
-	// }
-	// close(fds[0]);
-	// if (write(fds[1], conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length()))
-	// {
-	// 	std::cerr << "Error: while writing request body to cgi stdin" << std::endl;
-	// 	close(fds[0]);
-	// 	close(fds[1]);
-	// 	std::exit(EXIT_FAILURE);
-	// }
-	// if (close(fds[1]) == -1)
-	// {
-	// 	std::cerr << "Error: closing write end of pipe in cgi  failed: " << strerror(errno) << std::endl;
-	// 	std::exit(EXIT_FAILURE);
-	// }
+	if (pipe(fds) == -1)
+	{
+		std::cerr << "Error: pipe() failed: " << strerror(errno) << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	if (dup2(fds[0], STDIN_FILENO) == -1)
+	{
+		std::cerr << "Error 2: dup2() failed: " << strerror(errno) << std::endl;
+		close(fds[0]);
+		close(fds[1]);
+		std::exit(EXIT_FAILURE);
+	}
+	close(fds[0]);
+	if (write(fds[1], conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length()) == -1)
+	{
+		std::cerr << "Error: while writing request body to cgi stdin" << std::endl;
+		close(fds[0]);
+		close(fds[1]);
+		std::exit(EXIT_FAILURE);
+	}
+	if (close(fds[1]) == -1)
+	{
+		std::cerr << "Error: closing write end of pipe in cgi  failed: " << strerror(errno) << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
 }
 
 void  PipeStream::inParentProcess( void )//call it in cgi

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/10 18:33:41 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 17:03:25 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("SERVER_NAME", getServerName());
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
-	addEnvVar("SERVER_SOFTWARE", "webserv/1.0");
+	addEnvVar("SERVER_SOFTWARE", "Nginx");
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 
 
