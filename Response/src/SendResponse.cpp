@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:52:33 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 16:26:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ bool SendFile::sendString( void )
 	offset += length;
 	length = 0;
 	if (d == 0)
-		return (close(filefd), true);
+		return (true);
 	return false;
 }
 
@@ -49,6 +49,13 @@ bool SendFile::send( int sfd )
 		return true;
 	}
 	return false;
+}
+
+
+SendFile::~SendFile( void )
+{
+	std::cout << "close file" << std::endl;
+	close(filefd);
 }
 
 // ---------------------------------------------

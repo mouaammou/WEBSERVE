@@ -6,11 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2024/01/11 02:42:38 by samjaabo         ###   ########.fr       */
-=======
-/*   Updated: 2024/01/11 04:37:09 by mouaammo         ###   ########.fr       */
->>>>>>> ff4f22d1b6d3025d4ea1f101fce645f6d8bdfe33
+/*   Updated: 2024/01/11 15:57:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +66,7 @@ void			  PollServers::trackALLClients(void)
 	{
 		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
 		{
-				std::cout  << "pipe read ------>>>>>> " << this->poll_Fds[i].fd << std::endl;
+				// std::cout  << "pipe read ------>>>>>> " << this->poll_Fds[i].fd << std::endl;
 				continue;
 		}
 		fileDescriptor = this->poll_Fds[i].fd;
