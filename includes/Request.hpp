@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 11:42:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 03:58:26 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ class Request
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>&	getRequestHeaders();
+		
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;
@@ -66,6 +67,7 @@ class Request
 		void				 setRequestReceived(bool request_received);
 		bool			      handleBadRequest();
 		bool 				   isLocationHasRedirection();
+		bool   					 handleRequestBody();
 
 		//display request headers
 		void	displayRequest();
@@ -81,6 +83,7 @@ class Request
 		bool		 checkVersion();
 		bool		  checkPath();
 		bool		   allowedURIchars(std::string& str);
+		bool 		checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
 			
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
