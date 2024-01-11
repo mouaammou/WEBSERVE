@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 22:04:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 20:20:02 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,7 @@ Method::Method(t_config &config_file, std::string post): method_config(config_fi
 		{
 			if (this->file_type == "file")
 			{
-				if (!this->has_cgi())
-					this->method_config.response_code = "403 Forbidden";
+				this->has_cgi();
 				return ;
 			}
 			else if (this->file_type == "dir")
@@ -273,7 +272,7 @@ bool			Method::has_cgi()
 		return (true);
 	}
 	this->method_config.cgi = false;
-	return (false);
+	return (true);
 }
 
 bool			Method::getCGI() const
