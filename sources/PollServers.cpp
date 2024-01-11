@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 09:04:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 02:42:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 	this->servers_config[i].Server = &this->config_file.get_directives()[i];
+	this->servers_config[i].poll = this;
 }
 
 void	PollServers::bindServers()
@@ -63,7 +64,14 @@ void			  PollServers::trackALLClients(void)
 
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
+		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
+		{
+				// std::cout  << "pipe read ------>>>>>> " << this->poll_Fds[i].fd << std::endl;
+				continue;
+		}
 		fileDescriptor = this->poll_Fds[i].fd;
+		// if (this->poll_Fds[i].revents & POLLHUP)
+		// 	continue;
 		server = this->whitchServer(fileDescriptor);
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
@@ -160,6 +168,8 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 		server->removeClient(fd);
 	}
 	CGI::remove(fd);
+	std::cout << "remove pipe stream ( int fd ) num=" << fd << std::endl;
+	PipeStream::remove(fd);
 	SendResponse::remove(fd);
 }
 
@@ -289,8 +299,10 @@ void	PollServers::handleTranslatedPath(Server *server, int fd)
 
 void	PollServers::handlePathInfo(Server *server, std::string path_info)
 {
+	Location tmp = server->serverConfigFile.location;
 	std::string re_location = server->getRequestedLocation(path_info);
-	server->serverConfigFile.path_info = server->getTranslatedPath(re_location, path_info);
+	server->serverConfigFile.path_info_translated = server->getTranslatedPath(re_location, path_info);
+	server->serverConfigFile.location = tmp;
 }
 
 
@@ -310,6 +322,8 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
 			this->handlePathInfo(server, server->serverConfigFile.path_info);
+		// std::cout << COLOR_GREEN "PATH_INFO :=> " COLOR_RESET << server->serverConfigFile.path_info << std::endl;
+		// std::cout << COLOR_GREEN "PATH_INFO_TRANSLATED :=> " COLOR_RESET << server->serverConfigFile.path_info_translated << std::endl;
 		if (server->getStatusCode().find("200") != std::string::npos)
 		{
 			if (TheClient(server, fd)->getMethod() == "GET" || TheClient(server, fd)->getMethod() == "POST")
@@ -324,7 +338,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			// {
 			// 	server->pointedMethod = new Method(server->serverConfigFile, "post");
 			// }
-			// server->printf_t_config(server->serverConfigFile);
+			server->printf_t_config(server->serverConfigFile);
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;
 

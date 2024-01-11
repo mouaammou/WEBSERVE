@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:01:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 00:11:36 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,14 @@ void ParseCGIOutput::additionalHeaders( void )
 
 void ParseCGIOutput::response( int status, std::string output, config &args )
 {
-	std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
+	if (status == -1)
+	{
+		// means pipe or fork failed and cgi didnt run
+		args.response_code = "500";
+		Response resp(args);
+		return ;
+	}
+	// std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
 	std::size_t pos = output.find("\n\n");
 	if (pos == std::string::npos)
 	{

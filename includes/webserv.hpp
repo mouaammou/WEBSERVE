@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/09 19:50:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 19:44:31 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Config;
 class Location;
 class Server;
 class Request;
+class PollServers;//may cause a problem if not included
 
 typedef struct config
 {
@@ -62,10 +63,12 @@ typedef struct config
 	Location 	location;	
 	std::string translated_path;
 	std::string path_info;
+	std::string path_info_translated;
 	std::string response_code;
 	std::string requested_path;
 	std::string autoindex;//on or off
 	Request		*request;
+	PollServers	*poll;
 	
 	bool		cgi;
 	int			server_fd;

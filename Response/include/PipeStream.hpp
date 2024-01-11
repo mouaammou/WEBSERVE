@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/22 23:00:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 02:46:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,34 +15,43 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <cstdio>
+#include <vector>
+#include <map>
+#include <poll.h>
+#include "ParseCGIOutput.hpp"
+
 
 
 class PipeStream
 {
-	public:
-
-	static const short PARENT_READ_CHILD_WRITE = 2;
-	static const short PARENT_WRITE_CHILD_READ = 4;
-
 	private:
 
+	int				fd;
+	t_config		&conf;// if read fails close it
+	int				buffer_size;
+	char			*buffer;
+	std::string		saved_output;
+	int				fds[2];
+	int 			exit_status;
 
-	static const size_t buffer_size = 1024;
-	int mode;
-	int readfd;
-	int writefd;
-
-	std::string *saved_output;
 
 	public:
 
-	std::string getSavedOutput( void );
-	void parentRead( void );
-	bool parentWrite( std::string &output );
-	bool fail( void ) const;
-	void inParent( void );
-	void inChild( void );
+	static std::map<int, PipeStream*>		pipes;
+	static bool isIsPipeStream( pollfd pfd );
+	static void remove( int fd );
+	
+	bool readFromPipe( void );
+	bool init( void ); //call it in cgi
+	void inChildProcess( void ); //call it in child proccess in cgi
+	void inParentProcess( void );//call it in cgi;
+	void  onReadComplete( void );
 
-	PipeStream( int mode=0 );
+	PipeStream( t_config &conf );
 	~PipeStream( void );
+
+	void				setExitStatus( int status );
+	t_config&			getConfig( void );
+	int			getFd( void );
+	void		setFd( void );
 };

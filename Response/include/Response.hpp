@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:21:46 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 15:42:10 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ class Response
 	public:
 
 	Response( config &args );
-
 	void runCGI( void );
 	void autoIndex( void );
 	void file( void );

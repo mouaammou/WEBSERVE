@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 03:12:11 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/10 21:11:41 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include "../includes/webserv.hpp"
 #include "../includes/Server.hpp"
+#include "../Response/include/PipeStream.hpp"
 
 class Server;
 
