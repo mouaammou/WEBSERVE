@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:14:08 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 00:12:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void Response::runCGI( void )
 void Response::autoIndex( void )
 {
 	std::string uri = args.request->getPath();
-	std::string root = args.translated_path;
+	std::string root = args.location.getRoot() + uri;
 	AutoIndex autoindex(args.request->getFd(), root, uri); // make sure to pass the right uri
 	if (autoindex.fail())
 	{
@@ -132,15 +132,19 @@ void Response::error( void )//5xx 4xx
 	// args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
 	args.translated_path = args.Server->getErrorPage(n);
 	// std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
-	ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
+	if ( ! args.translated_path.empty())
+		ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
 	int64_t file_size = get_file_size();
-	if (file_size == -1)
+	if (args.translated_path.empty() || file_size == -1)
 	{
-		statusLine("500");
-		oss << "Content-Length: " << 0 << "\r\n";
+		std::string error = StatusCodes().getStatusLine(args.response_code);
+		error = std::string("<!DOCTYPE html>\n<html>\n<body>\n\t<h1>\n\t\t") + error.erase(0, 9) + std::string("\t</h1>\n</body>\n</html>\n");
+		statusLine(args.response_code);
+		oss << "Content-Length: " << error.length() << "\r\n";
 		oss << "Content-Type: " << "text/html" << "\r\n";
 		oss << "Cache-Control: no-store\r\n";
 		oss << "\r\n";
+		oss << error;
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
 	}
