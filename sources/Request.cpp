@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/11 20:22:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 00:39:49 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,8 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 	std::size_t pos = line.find(':');
 	if (pos != std::string::npos)
 	{
-		//HOST: localhost:8080/r\n
 		std::string key = line.substr(0, pos + 1);
-		if (key.find(" ") != std::string::npos || key.find(":") == std::string::npos)
+		if (key.find(" ") != std::string::npos || key.find(":") == std::string::npos || key.empty())
 			return (false);
 		if (isdigit(key[0]))
 			return (false);
@@ -216,20 +215,12 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		if (key.compare("Transfer-Encoding:") == 0)//if the key is Transfer-Encoding
 		{
 			if (value == " chunked\r\n")
-			{
-				this->transfer_encoding = value;
-			}
+				this->transfer_encoding = "chunked";
 			else
-			{
-				this->transfer_encoding = "error";
-				this->_status_code = "501 Not Implemented";
-				return (true);
-			}
+				return (this->_status_code = "501 Not Implemented", true);
 		}
 		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
-		{
 			this->content_type = value;
-		}
 		this->request_headers[key] = value;
 	}
 	return (true);
@@ -237,7 +228,10 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 
 bool	Request::checkMethod()
 {
-	if (this->method.compare("GET") != 0 && this->method.compare("POST") != 0 && this->method.compare("DELETE") != 0)
+	if (this->method.compare("GET") != 0
+		&& this->method.compare("POST") != 0
+		&& this->method.compare("DELETE") != 0
+		)
 		this->_status_code = "405 Method Not Allowed";
 	return (true);
 }
@@ -340,10 +334,7 @@ bool Request::handleRequestHeaders(std::string bufferString)
 	{
 		line += "\n";
 		if (line.compare("\r\n") == 0)//end of headers
-		{
-			this->_has_headers = true;
-			return (true);
-		}
+			return (this->_has_headers = true, true);
 		size_t pos = line.find("\r\n");
 		if (pos == std::string::npos)
 			return (this->_status_code = "400 Bad Request", true);
@@ -407,40 +398,30 @@ bool			Request::storeChunkedRequestBody()
 
 bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
 {
-    // Define the essential headers
     std::string essentialHeaders[] = {"Host:", "User-Agent:", "Accept:"};
-
-    // Check if each essential header is present
     for (size_t i = 0; i < 3; i++)
     {
         std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
-            printf("it seconde = [%s]\n", it->second.c_str());
         if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
 		{
             return false;
         }
     }
-    // All essential headers found
     return true;
 }
 
 bool   		Request::handleRequestBody()
 {
-	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
+	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{
-		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
-		{
-			this->_status_code = "413 Request Entity Too Large";
-			return (true);
-		}
+		if (this->_body_size != -1 && (long long)this->request_body.length() > this->_body_size)
+			return (this->_status_code = "413 Request Entity Too Large", true);
 		if (this->hasHeaders() && this->content_length > 0)
 			return (this->storeRequestBody());
-		else if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos && this->content_length == 0)
+		else if (this->hasHeaders() && this->transfer_encoding == "chunked" && this->content_length == 0)
 			return (this->storeChunkedRequestBody());
 	}
-	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
-		return (true);
-	if (this->request_body.length() == 0)
+	if ((this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "") || ! this->request_body.length())
 		return (true);
 	return (false);
 }
@@ -464,6 +445,7 @@ bool	Request::receiveRequest()//must read the request
 		this->handleRequestHeaders(this->request_string);
 		if (this->hasHeaders() && ! this->checkEssentialHeaders(this->request_headers))
 			this->_status_code = "400 Bad Request";
+
 		if (this->handleBadRequest() == false)
 			return (true);
 	}

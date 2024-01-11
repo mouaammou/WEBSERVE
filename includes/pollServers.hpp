@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 21:11:41 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 00:08:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ class PollServers
 		void	handlePathInfo(Server *server, std::string path_info);
 
 		void			    trackALLClients(void);
+
+		void					checkProxyMethod(Server *server, std::string re_method);
 };
 
 void				stringTrim(std::string &str);
