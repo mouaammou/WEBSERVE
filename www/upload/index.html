@@ -9,13 +9,11 @@
 <body>
 <!-- partial:index.partial.html -->
 <div class="container">
-  <form class="form">
+  <form class="form" method="POST" enctype="multipart/form-data">
     <div class="file-upload-wrapper" data-text="Select your file!">
       <input name="file-upload-field" type="file" class="file-upload-field" value="">
     </div>
-    <div class="file-submit-wrapper file-upload-wrapper " data-text="Upload">
-      <input name="file-upload-field" type="file" class="file-upload-field" value="">
-    </div>
+    <input class="file-upload-btn" type="submit" value="Upload">
   </form>
 </div>
 

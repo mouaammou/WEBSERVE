@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/11 04:02:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 20:22:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -426,8 +426,6 @@ bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& 
 
 bool   		Request::handleRequestBody()
 {
-	if (this->request_body.length() == 0)
-		return (true);
 	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
 	{
 		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
@@ -441,6 +439,8 @@ bool   		Request::handleRequestBody()
 			return (this->storeChunkedRequestBody());
 	}
 	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
+		return (true);
+	if (this->request_body.length() == 0)
 		return (true);
 	return (false);
 }

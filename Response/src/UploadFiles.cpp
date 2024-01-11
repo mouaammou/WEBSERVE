@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/10 04:37:53 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 20:16:42 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,8 +284,9 @@ void FilesUpload::writeToFile( std::string &body )
 	file->open(_upload_path + _filename, std::ios::out | std::ios::binary | std::ios::trunc);
 	if ( ! file->is_open())
 	{
+		std::cout << "cannot open file->"<<_upload_path + _filename  << std::endl;
 		// conf.response_code = "500";
-		conf.response_code = "500";
+		conf.response_code = "500 jfghjghjfghjfghjghj";
 		// conf.special_headers.clear();
 		delete file;
 		return ;
