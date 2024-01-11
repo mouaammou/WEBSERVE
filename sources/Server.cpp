@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 00:24:20 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 04:24:40 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	Server::setServerSocket()
 	//GETADDRINFO
     struct addrinfo *result, hints;
 
-    memset(&hints, 0, sizeof(struct addrinfo));
+	memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
     hints.ai_socktype = SOCK_STREAM;//TCP
     hints.ai_flags = AI_PASSIVE;    // fill it with local IP address
@@ -140,7 +140,6 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)//
 
 void			Server::printf_t_config(t_config config_file)
 {
-	
 	std::cout << "configuration : \n";
 	printf("		server_name: %s\n", config_file.server_name.c_str());
 	printf("		port: %s\n", config_file.port.c_str());

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.cpp                                         :+:      :+:    :+:   */
+/*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/23 13:16:59 by mouaammo          #+#    #+#             */
-/*   Updated: 2023/12/11 18:12:36 by mouaammo         ###   ########.fr       */
+/*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
+/*   Updated: 2024/01/11 04:02:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,9 +158,9 @@ void Request::displayRequest()
 		// std::cout << COLOR_GREEN << "Method: " 			<< COLOR_RESET << this->method << std::endl;
 		// std::cout << COLOR_GREEN << "Path: " 			<< COLOR_RESET << this->path 	<< std::endl;
 		// std::cout << COLOR_GREEN << "Version: " 		<< COLOR_RESET << this->version << std::endl;
-		// std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
-		// for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
-		// 	std::cout << it->first << "=>" << it->second;
+		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
+			std::cout << it->first << "=>" << it->second;
 		// std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
 		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
@@ -254,7 +254,7 @@ void       Request::handlePathInfo()
 				this->path = this->path.substr(0, this->path.find(".php") + 4);
 			}
 		}
-		if (this->path.find(".py") != std::string::npos)
+		else if (this->path.find(".py") != std::string::npos)
 		{
 			if (this->path.find(".py") + 3 < this->path.length())
 			{
@@ -405,6 +405,46 @@ bool			Request::storeChunkedRequestBody()
 	return (false);
 }
 
+bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
+{
+    // Define the essential headers
+    std::string essentialHeaders[] = {"Host:", "User-Agent:", "Accept:"};
+
+    // Check if each essential header is present
+    for (size_t i = 0; i < 3; i++)
+    {
+        std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
+            printf("it seconde = [%s]\n", it->second.c_str());
+        if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
+		{
+            return false;
+        }
+    }
+    // All essential headers found
+    return true;
+}
+
+bool   		Request::handleRequestBody()
+{
+	if (this->request_body.length() == 0)
+		return (true);
+	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
+	{
+		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
+		{
+			this->_status_code = "413 Request Entity Too Large";
+			return (true);
+		}
+		if (this->hasHeaders() && this->content_length > 0)
+			return (this->storeRequestBody());
+		else if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos && this->content_length == 0)
+			return (this->storeChunkedRequestBody());
+	}
+	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
+		return (true);
+	return (false);
+}
+
 bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
@@ -422,27 +462,12 @@ bool	Request::receiveRequest()//must read the request
 			this->request_body = this->request_body.substr(pos + 4);
 		}
 		this->handleRequestHeaders(this->request_string);
+		if (this->hasHeaders() && ! this->checkEssentialHeaders(this->request_headers))
+			this->_status_code = "400 Bad Request";
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
-	if (this->request_body.length() == 0)
-		return (true);
-	if (this->content_length > 0 || this->transfer_encoding.find("chunked") != std::string::npos)
-	{
-		if (this->_body_size != -1 && (int)this->request_body.length() > this->_body_size)
-		{
-			this->_status_code = "413 Request Entity Too Large";
-			return (true);
-		}
-		if (this->hasHeaders() && this->content_length > 0)
-			return (this->storeRequestBody());
-		else if (this->hasHeaders() && this->transfer_encoding.find("chunked") != std::string::npos && this->content_length == 0)
-			return (this->storeChunkedRequestBody());
-	}
-
-	if (this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "")
-		return (true);
-	return (false);
+	return (this->handleRequestBody());
 }
 
 

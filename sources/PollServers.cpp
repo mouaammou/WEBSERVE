@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 09:04:37 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 04:37:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,10 +293,8 @@ void	PollServers::handlePathInfo(Server *server, std::string path_info)
 	server->serverConfigFile.path_info = server->getTranslatedPath(re_location, path_info);
 }
 
-
-
 bool				PollServers::clientPollIn(Server *server, int fd)
-{ 
+{
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
 		this->handleMultiPorts(server, fd);
