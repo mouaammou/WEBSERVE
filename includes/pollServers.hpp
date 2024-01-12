@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 06:03:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 09:44:59 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,4 @@ class PollServers
 		void					checkProxyMethod(Server *server, std::string re_method);
 };
 
-void				stringTrim(std::string &str);
 Request				*TheClient(Server *server, int fd);

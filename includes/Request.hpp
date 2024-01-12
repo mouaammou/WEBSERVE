@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 03:20:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 08:45:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../includes/Server.hpp"
 #include <sstream>
+#include <string>
 
 class Request
 {
@@ -41,7 +42,9 @@ class Request
 		std::string 	 _status_code;
 
 	public:
+		std::string      _connection;
 		int   read_bytes;
+		
 		t_config 		server_config;
 		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request

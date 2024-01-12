@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 06:11:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 10:40:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,19 @@ void	PollServers::bindServers()
 void			  PollServers::trackALLClients(void)
 {
 	Server		*server;
+	Request		*request;
 	int			fileDescriptor;
 
 	for (size_t i = 0; i < this->poll_Fds.size(); i++)
 	{
+		fileDescriptor = this->poll_Fds[i].fd;
+		server = this->whitchServer(fileDescriptor);
+		request = TheClient(server, fileDescriptor);
+
 		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
 		{
 				continue;
 		}
-		fileDescriptor = this->poll_Fds[i].fd;
-		server = this->whitchServer(fileDescriptor);
-	
-		
 		if (this->poll_Fds[i].revents & POLLIN)
 		{
 			if (this->isServer(fileDescriptor))
@@ -79,22 +80,32 @@ void			  PollServers::trackALLClients(void)
 			else
 			{
 				if (server)
-					clientPollIn(server, fileDescriptor);
+				{
+					if (! clientPollIn(server, fileDescriptor) && request->read_bytes == 0)
+					{
+						std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
+						removeFromPoll(server, fileDescriptor);
+						continue;
+					}
+				}
 			}
 		}
 		else if (this->poll_Fds[i].revents & POLLOUT)
 		{
-			fileDescriptor = this->poll_Fds[i].fd;
-			server = this->whitchServer(fileDescriptor);
-			if (TheClient(server, fileDescriptor)->hasRequest())//here
+			if (request->hasRequest())//here
 			{
-				if (TheClient(server, fileDescriptor)->sendResponse())
+				if (request->sendResponse())
 				{
-					TheClient(server, fileDescriptor)->resetRequest();
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 					if (multi_ports == true)
 						server->setConfiguration(tmp_config);
-					// close(TheClient(server, fileDescriptor)->getFd());
+					if (request->_connection == "close")
+					{
+						std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
+						removeFromPoll(server, fileDescriptor);
+						continue;
+					}
+					request->resetRequest();
 				}
 			}
 		}
@@ -102,7 +113,6 @@ void			  PollServers::trackALLClients(void)
 		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
 		}
-		
 	}
 }
 
@@ -161,15 +171,14 @@ Server*				PollServers::whitchServer(int clientFd)
 
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
+	this->removeFileDescriptor(fd);
 	if (server)
 	{
-		std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
 		server->removeClient(fd);
 	}
 	CGI::remove(fd);
 	PipeStream::remove(fd);
 	SendResponse::remove(fd);
-	// this->removeFileDescriptor(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)
@@ -188,8 +197,8 @@ void		PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
+			close(poll_Fds[i].fd);
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
-			close(fd);
 			break;
 		}
 	}
@@ -329,7 +338,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 		
-		// TheClient(server, fd)->displayRequest();
+		TheClient(server, fd)->displayRequest();
 
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
@@ -351,24 +360,9 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			}
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;
-
 		}
 		server->printf_t_config(server->serverConfigFile);
 		Response response(server->serverConfigFile);
-	}
-	else if (TheClient(server, fd)->read_bytes == 0)
-	{
-		std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
-		this->removeFileDescriptor(fd);
-		removeFromPoll(server, fd);
-		// if (server)
-		// {
-		// 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
-		// 	server->removeClient(fd);
-		// }
-		// CGI::remove(fd);
-		// PipeStream::remove(fd);
-		// SendResponse::remove(fd);
 	}
 	else
 		return (false);

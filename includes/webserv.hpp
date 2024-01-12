@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 01:15:03 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/12 10:11:12 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 #define COLOR_CYAN    "\033[0;36m"
 
 #define PERMISSION_CHECK 0644
-#define MAX_REQUEST_SIZE 50000
+#define MAX_REQUEST_SIZE 1024
 
 class Config;
 class Location;
@@ -74,3 +74,5 @@ typedef struct config
 	int			server_fd;
 	int			body_size;
 }		t_config;
+
+void				stringTrim(std::string &str);

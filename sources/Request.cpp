@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 05:44:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 10:16:21 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,13 @@ Request::Request(int fd, t_config config_file)
 	this->_status_code = "200 OK";
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
+	this->_connection = "";
 }
 
 void	Request::resetRequest()
 {
 	this->request_string = "";
+	this->_connection = "";
 	this->method = "";
 	this->path = "";
 	this->version = "";
@@ -231,6 +233,12 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		{
 			std::stringstream ss(value);
 			ss >> this->content_length;
+		}
+		if (key.compare("Connection:") == 0)//if the key is Connection
+		{
+			std::string tmp = value;
+			stringTrim(tmp);
+			this->_connection = tmp;
 		}
 		if (key.compare("Transfer-Encoding:") == 0)//if the key is Transfer-Encoding
 		{
@@ -450,6 +458,8 @@ bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
+	if (errno == EAGAIN || errno == EWOULDBLOCK)
+		return (true);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
 		return (perror("read ERR::"), this->read_bytes = 0, false);
