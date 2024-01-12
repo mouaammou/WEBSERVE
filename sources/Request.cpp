@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 00:39:49 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 03:26:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,28 @@
 Request::Request(int fd, t_config config_file)
 {
 	this->fd = fd;
+	read_bytes = -1;
 	this->server_config = config_file;
+	this->request_string = "";
+	this->method = "";
+	this->path = "";
+	this->version = "";
+	this->request_body = "";
+	this->content_length = 0;
+	this->_has_headers = false;
+	this->_has_body = false;
+	this->transfer_encoding = "";
+	this->content_type = "";
+	this->buffer = new char[MAX_REQUEST_SIZE + 1];
+	this->request_received = false;
+	this->query_string = "";
+	this->_status_code = "200 OK";
+	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
+	this->server_config.path_info = "";
+}
+
+void	Request::resetRequest()
+{
 	this->request_string = "";
 	this->method = "";
 	this->path = "";
@@ -432,7 +453,8 @@ bool	Request::receiveRequest()//must read the request
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
-		return (perror("read ERR::"), false);
+		return (perror("read ERR::"), this->read_bytes = 0, false);
+	this->read_bytes += readStatus;
 	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())
 	{

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 00:29:26 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 05:00:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,18 +66,11 @@ void			  PollServers::trackALLClients(void)
 	{
 		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
 		{
-				// std::cout  << "pipe read ------>>>>>> " << this->poll_Fds[i].fd << std::endl;
 				continue;
 		}
 		fileDescriptor = this->poll_Fds[i].fd;
-		// if (this->poll_Fds[i].revents & POLLHUP)
-		// 	continue;
 		server = this->whitchServer(fileDescriptor);
-		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-		{
-			removeFromPoll(server, this->poll_Fds[i].fd);
-			continue;
-		}
+	
 		if (this->poll_Fds[i].revents & POLLIN)
 		{
 			if (this->isServer(fileDescriptor))
@@ -96,13 +89,17 @@ void			  PollServers::trackALLClients(void)
 			{
 				if (TheClient(server, fileDescriptor)->sendResponse())
 				{
+					TheClient(server, fileDescriptor)->resetRequest();
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 					if (multi_ports == true)
 						server->setConfiguration(tmp_config);
-					this->removeFromPoll(server, fileDescriptor);
 				}
 			}
 		}
+		// if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		// {
+		// 	removeFromPoll(server, this->poll_Fds[i].fd);
+		// }
 	}
 }
 
@@ -168,7 +165,6 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 		server->removeClient(fd);
 	}
 	CGI::remove(fd);
-	std::cout << "remove pipe stream ( int fd ) num=" << fd << std::endl;
 	PipeStream::remove(fd);
 	SendResponse::remove(fd);
 }
@@ -292,6 +288,7 @@ void	PollServers::handleTranslatedPath(Server *server, int fd)
 	std::string path = TheClient(server, fd)->getPath();
 	std::string re_location = server->getRequestedLocation(path);
 
+	std::cout << COLOR_BLUE "re_location :=> " COLOR_RESET<< re_location << std::endl;
 	server->serverConfigFile.translated_path 	= server->getTranslatedPath(re_location, path);
 	server->serverConfigFile.requested_path 	= path;
 	server->serverConfigFile.request 			= TheClient(server, fd);
@@ -355,6 +352,11 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		}
 		server->printf_t_config(server->serverConfigFile);
 		Response response(server->serverConfigFile);
+	}
+	else if (TheClient(server, fd)->read_bytes == 0)
+	{
+		std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
+		removeFromPoll(server, fd);
 	}
 	else
 		return (false);

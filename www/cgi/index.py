@@ -1,19 +1,8 @@
-import cgi
-# while True:
-# 	pass
-a=open('test.txt','wb')
 
-while True:
-    try:
-        st = input() + '\n'
-    except EOFError:
-        break
-    a.write(st.encode())
+print("Content-type: text/html\n")
+print("<html><body>")
+print("<h1>CGI Script</h1>")
+print("<p>Python Script</p>")
+print("</body></html>")
+print()
 
-
-a.close()
-
-
-
-
-cgi.test()

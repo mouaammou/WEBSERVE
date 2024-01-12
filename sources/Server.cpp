@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 00:40:31 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 03:31:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,9 @@ std::string			Server::getRequestedLocation(std::string path)
 {
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
 	{
-		if (path.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
+		std::string tmp = path;
+		tmp[tmp.length() - 1] != '/' ? tmp += "/" : tmp;
+		if (tmp.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
 			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
 			return (this->serverConfigFile.server_locations[i].getName());

@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/11 20:20:02 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 02:21:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
+#include <cstdio>
 
 
 bool Method::hasValidCGI(const std::string& filename)
@@ -91,12 +92,12 @@ Method::Method(t_config &config_file, std::string post): method_config(config_fi
 			}
 			else if (this->file_type == "dir")
 			{
-				if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] != '/')
+				if (this->method_config.requested_path[this->method_config.requested_path.length() - 1] != '/')
 				{
 					this->method_config.response_code = "301 Moved Permanent";
 					return ;
 				}
-				else if (this->method_config.translated_path[this->method_config.translated_path.length() - 1] == '/')
+				else if (this->method_config.requested_path[this->method_config.requested_path.length() - 1] == '/')
 				{
 					if (this->hasIndexFiles())
 					{
@@ -171,6 +172,7 @@ Method::Method(t_config &config_file): method_config(config_file)
 	this->method_config.cgi = false;
 	if (this->get_method_file_type())
 	{
+		puts("Method::Method(t_config &config_file)");
 		if (this->file_type == "file")
 		{
 			this->has_cgi();
@@ -214,7 +216,7 @@ bool			Method::hasIndexFiles()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (method_config.requested_path == this->method_config.server_locations[i].getName())
+		if (method_config.requested_path == this->method_config.server_locations[i].getName())// post path http
 		{
 			if (this->method_config.server_locations[i].getIndex() != "")
 			{
@@ -243,6 +245,8 @@ bool		Method::get_method_file_type()
 	}
 	else
 	{
+		printf("translated_path: %s\n", this->method_config.translated_path.c_str());
+	puts("not found");
 		this->method_config.response_code = "404 Not Found";
 		return (false);
 	}

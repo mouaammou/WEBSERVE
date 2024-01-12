@@ -6,7 +6,7 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/10 09:07:36 by mouaammo         ###   ########.fr        #
+#    Updated: 2024/01/12 03:00:52 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
 	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
 	@echo "\033[35mWEBSEVER IS READY\033[0m";
 
-%.o : %.cpp $(HEADER_FILES) 
+%.o : %.cpp $(HEADER_FILES) Makefile
 	@$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
 	@printf "\033[1;36m Compiling \033[0m $< \033[1;36m√\033[0m\n";
 
