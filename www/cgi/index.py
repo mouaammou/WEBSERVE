@@ -1,35 +1,20 @@
-#generete auto response http
+#!/usr/bin/env python
 
-response = ""
+print("Content-type: text/html\n")  # Required header indicating the content type (HTML in this case)
 
-response += "HTTP/1.1 200 OK\n"
-response += "Content-Type: text/html\n"
-response += "\n"
+# Your HTML content goes here
+html_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CGI Python Script</title>
+</head>
+<body>
+    <h1>Hello, CGI World!</h1>
+    <p>This is a simple CGI script written in Python.</p>
+</body>
+</html>
+"""
 
-response += "<!DOCTYPE html>\n"
-response += "<html>\n"
-response += "<head>\n"
-response += "<title>My Response</title>\n"
-response += "</head>\n"
-
-response += "<body>\n"
-response += "<h1>Welcome to My Response</h1>\n"
-response += "<p>This is a sample response with 20 lines.</p>\n"
-response += "<ul>\n"
-response += "<li>Line 1</li>\n"
-response += "<li>Line 2</li>\n"
-response += "<li>Line 3</li>\n"
-response += "<li>Line 4</li>\n"
-response += "<li>Line 5</li>\n"
-response += "<li>Line 6</li>\n"
-response += "<li>Line 7</li>\n"
-response += "<li>Line 8</li>\n"
-response += "<li>Line 9</li>\n"
-response += "<li>Line 10</li>\n"
-response += "</ul>\n"
-response += "</body>\n"
-
-response += "</html>\n"
-
-print(response)
-
+# Print the HTML content to the standard output
+print(html_content)

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 10:40:15 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 11:15:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,45 @@ void	PollServers::bindServers()
 	}
 }
 
+bool		PollServers::handlePollEvents(Server *server, int i, int fileDescriptor, Request *request)
+{
+		if (this->poll_Fds[i].revents & POLLIN)
+		{
+			if (this->isServer(fileDescriptor))
+				this->acceptConnections(fileDescriptor);
+			else
+			{
+				if (server)
+				{
+					if (! clientPollIn(server, fileDescriptor) && request && request->read_bytes == 0)
+					{
+						std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
+						return (removeFromPoll(server, fileDescriptor), false);
+					}
+				}
+			}
+		}
+		else if (this->poll_Fds[i].revents & POLLOUT)
+		{
+			if (server && request && request->hasRequest())//here
+			{
+				if (request->sendResponse())
+				{
+					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
+					if (multi_ports == true)
+						server->setConfiguration(tmp_config);
+					if (request->_connection == "close")
+					{
+						std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
+						return (removeFromPoll(server, fileDescriptor), false);
+					}
+					request->resetRequest();
+				}
+			}
+		}
+		return (true);
+}
+
 void			  PollServers::trackALLClients(void)
 {
 	Server		*server;
@@ -70,45 +109,9 @@ void			  PollServers::trackALLClients(void)
 		request = TheClient(server, fileDescriptor);
 
 		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
-		{
 				continue;
-		}
-		if (this->poll_Fds[i].revents & POLLIN)
-		{
-			if (this->isServer(fileDescriptor))
-				this->acceptConnections(fileDescriptor);
-			else
-			{
-				if (server)
-				{
-					if (! clientPollIn(server, fileDescriptor) && request->read_bytes == 0)
-					{
-						std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
-						removeFromPoll(server, fileDescriptor);
-						continue;
-					}
-				}
-			}
-		}
-		else if (this->poll_Fds[i].revents & POLLOUT)
-		{
-			if (request->hasRequest())//here
-			{
-				if (request->sendResponse())
-				{
-					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
-					if (multi_ports == true)
-						server->setConfiguration(tmp_config);
-					if (request->_connection == "close")
-					{
-						std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
-						removeFromPoll(server, fileDescriptor);
-						continue;
-					}
-					request->resetRequest();
-				}
-			}
-		}
+		if (handlePollEvents(server, i, fileDescriptor, request) == false)
+			continue;
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
@@ -197,8 +200,8 @@ void		PollServers::removeFileDescriptor(int fd)
 	{
 		if (this->poll_Fds[i].fd == fd)
 		{
-			close(poll_Fds[i].fd);
 			this->poll_Fds.erase(this->poll_Fds.begin() + i);
+			close(fd);
 			break;
 		}
 	}
