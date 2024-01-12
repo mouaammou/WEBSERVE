@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 12:15:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 22:57:21 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Request
 	private:
 
 		int fd;
-		
+
 		std::string 	request_string;
 		std::string 	method;
 		std::string 	path;
@@ -42,12 +42,12 @@ class Request
 
 
 		std::string 	 _status_code;
-
+		std::string		_cookies;
 	public:
 		size_t reqeust_timeout;
 		std::string      _connection;
 		int   read_bytes;
-		
+
 		t_config 		server_config;
 		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
@@ -62,12 +62,15 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
 		int				      getFd() const;
+		std::string getCookies() const;
+		void	setCookies(std::string &cookies);
+
 		void					 setFd(int fd);
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>&	getRequestHeaders();
-		
+
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;
@@ -92,7 +95,7 @@ class Request
 		bool		  checkPath();
 		bool		   	allowedURIchars(std::string& str);
 		bool 				checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
-			
+
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
