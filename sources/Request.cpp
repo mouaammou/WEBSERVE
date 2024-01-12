@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 15:14:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 23:02:06 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
 	this->_connection = "";
+	this->_cookies = "";
 	// this->reqeust_timeout = this->server_config.timeout;
 	this->reqeust_timeout = 0;
 }
@@ -60,6 +61,7 @@ void	Request::resetRequest()
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
+	this->_cookies = "";
 }
 
 Request::~Request()
@@ -70,6 +72,11 @@ Request::~Request()
 std::string Request::getMethod() const
 {
 	return (this->method);
+}
+
+std::string Request::getCookies() const
+{
+	return (this->_cookies);
 }
 
 std::string Request::getPath() const
@@ -120,6 +127,11 @@ int				Request::getFd() const
 void					 Request::setFd(int fd)
 {
 	this->fd = fd;
+}
+
+void					Request::setCookies(std::string &cookies)
+{
+	this->_cookies = cookies;
 }
 
 std::string 		  Request::getStatusCode() const
@@ -237,6 +249,10 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		{
 			std::stringstream ss(value);
 			ss >> this->content_length;
+		}
+		if (key.compare("Cookie:") == 0)
+		{
+			this->setCookies(value);
 		}
 		if (key.compare("Connection:") == 0)//if the key is Connection
 		{

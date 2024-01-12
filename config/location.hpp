@@ -6,7 +6,6 @@
 #include <sstream>
 #include <cctype>
 #include <iterator>
-
 #ifndef LOCA_HPP
 #define LOCA_HPP
 
