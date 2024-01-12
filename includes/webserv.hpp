@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 10:11:12 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 12:09:06 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <ctime>
 
 #include "../config/config.hpp"
 

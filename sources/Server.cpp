@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 11:09:47 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 11:27:58 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ Server::Server(t_config config)//constructor
 
 Server::~Server()//close server socket
 {
+	for (std::map<int, Request*>::iterator it = this->httpClients.begin(); it != this->httpClients.end(); it++)
+	{
+		delete it->second;
+		it->second = NULL;
+	}
     close(this->serverSocket);
 }
 

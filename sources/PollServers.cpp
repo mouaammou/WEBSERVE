@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 11:15:15 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 14:54:55 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,46 +57,74 @@ void	PollServers::bindServers()
 	}
 }
 
-bool		PollServers::handlePollEvents(Server *server, int i, int fileDescriptor, Request *request)
+long long 	current_time_in_milliseconds()
 {
-		if (this->poll_Fds[i].revents & POLLIN)
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
+    return milliseconds;
+}
+
+bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Request *HttpClient)
+{
+	if (this->poll_Fds[i].revents & POLLIN)
+	{
+		if (this->isServer(fileDescriptor))
+			this->acceptConnections(fileDescriptor);
+		else
 		{
-			if (this->isServer(fileDescriptor))
-				this->acceptConnections(fileDescriptor);
-			else
+			if (server && HttpClient)
 			{
-				if (server)
+				HttpClient->reqeust_timeout = current_time_in_milliseconds();
+				if (! clientPollIn(server, fileDescriptor) && HttpClient && HttpClient->read_bytes == 0)
 				{
-					if (! clientPollIn(server, fileDescriptor) && request && request->read_bytes == 0)
-					{
-						std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
-						return (removeFromPoll(server, fileDescriptor), false);
-					}
+					std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
+					return (removeFromPoll(server, fileDescriptor), false);
+				}
+				else 
+				{
+					// std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
+					HttpClient->reqeust_timeout = current_time_in_milliseconds() - HttpClient->reqeust_timeout;
 				}
 			}
 		}
-		else if (this->poll_Fds[i].revents & POLLOUT)
+	}
+	return (true);	
+}
+
+bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Request *HttpClient)
+{
+	if (this->poll_Fds[i].revents & POLLOUT)
+	{
+		if (server && HttpClient && HttpClient->hasRequest())//here
 		{
-			if (server && request && request->hasRequest())//here
+			if (HttpClient->sendResponse())
 			{
-				if (request->sendResponse())
+				std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
+				if (multi_ports == true)
+					server->setConfiguration(tmp_config);
+				if (HttpClient->_connection == "close")
 				{
-					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
-					if (multi_ports == true)
-						server->setConfiguration(tmp_config);
-					if (request->_connection == "close")
-					{
-						std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
-						return (removeFromPoll(server, fileDescriptor), false);
-					}
-					request->resetRequest();
+					std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
+					return (removeFromPoll(server, fileDescriptor), false);
 				}
+				HttpClient->resetRequest();
 			}
 		}
+	}
+	return (true);
+}
+
+bool		PollServers::handle_Poll_Events(Server *server, int i, int fileDescriptor, Request *HttpClient)
+{
+		if (handle_PollIn(server, i, fileDescriptor, HttpClient) == false)
+			return (false);
+		else if (handle_PollOut(server, i, fileDescriptor, HttpClient) == false)
+			return (false);
 		return (true);
 }
 
-void			  PollServers::trackALLClients(void)
+void			  PollServers::track_ALL_Clients(void)
 {
 	Server		*server;
 	Request		*request;
@@ -110,7 +138,7 @@ void			  PollServers::trackALLClients(void)
 
 		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
 				continue;
-		if (handlePollEvents(server, i, fileDescriptor, request) == false)
+		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
@@ -136,7 +164,7 @@ void 				PollServers::initPoll()
 			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
 		else
 		{
-			this->trackALLClients();
+			this->track_ALL_Clients();
 		}
 		CGI::checkTimeoutAndExitedProcesses();
 	}

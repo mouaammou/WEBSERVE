@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 02:21:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 15:15:40 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,6 @@ Method::Method(t_config &config_file): method_config(config_file)
 	this->method_config.cgi = false;
 	if (this->get_method_file_type())
 	{
-		puts("Method::Method(t_config &config_file)");
 		if (this->file_type == "file")
 		{
 			this->has_cgi();

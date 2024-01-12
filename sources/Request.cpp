@@ -6,13 +6,14 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 10:16:21 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 15:14:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
 #include "../Response/include/Response.hpp"
 #include <cerrno>
+#include <system_error>
 
 
 Request::Request(int fd, t_config config_file)
@@ -37,10 +38,13 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
 	this->_connection = "";
+	// this->reqeust_timeout = this->server_config.timeout;
+	this->reqeust_timeout = 0;
 }
 
 void	Request::resetRequest()
 {
+	this->reqeust_timeout = 0;
 	this->request_string = "";
 	this->_connection = "";
 	this->method = "";
@@ -458,8 +462,6 @@ bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
-	if (errno == EAGAIN || errno == EWOULDBLOCK)
-		return (true);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
 		return (perror("read ERR::"), this->read_bytes = 0, false);

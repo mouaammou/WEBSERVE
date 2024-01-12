@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 11:15:21 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 14:54:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,14 @@ class PollServers
 		void	handleTranslatedPath(Server *server, int fd);
 		void	handlePathInfo(Server *server, std::string path_info);
 
-		void			    trackALLClients(void);
+		void			    track_ALL_Clients(void);
 
 		void					checkProxyMethod(Server *server, std::string re_method);
 
-		bool		handlePollEvents(Server *server, int i, int fileDescriptor, Request *request);
+		bool		handle_Poll_Events(Server *server, int i, int fileDescriptor, Request *request);
+		bool		handle_PollIn(Server *server, int i, int fileDescriptor, Request *HttpClient);
+		bool		handle_PollOut(Server *server, int i, int fileDescriptor, Request *HttpClient);
 };
 
 Request				*TheClient(Server *server, int fd);
+long long 			current_time_in_milliseconds();
