@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/12 05:01:15 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 23:04:54 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ Response::Response( config &args ) : args(args)
 
 void Response::file( void )
 {
+	args.request.getH
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
