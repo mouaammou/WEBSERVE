@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 23:02:06 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/13 00:35:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,6 +322,7 @@ bool 	Request::checkPath()
 {
 	if (this->path.find("..") != std::string::npos)
 		return (_status_code = "403 Forbidden", true);
+	this->server_config.request_url = this->path;
 	this->handleQueryString();
 	this->handlePathInfo();
 	if (this->allowedURIchars(this->path) == false)

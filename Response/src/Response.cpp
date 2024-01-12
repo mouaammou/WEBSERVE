@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/12 23:07:56 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 23:12:30 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void Response::file( void )
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
+	oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
 	oss << "\r\n";
 	// std::cout << "RESPONSE::file->" << ffd << std::endl;
 	SendResponse(oss.str(), ffd, args.request->getFd());

@@ -1,8 +1,27 @@
-#!/usr/local/bin/perl
-print ("Content-type: text/html", "\n\n");
-print ("<HTML>", "\n");
-print ("<HEAD><TITLE>Simple Virtual HTML Document</TITLE></HEAD>", "\n");
-print ("<BODY>", "\n");
-print ("<H1>", "Virtual HTML", "</H1>", "<HR>", "\n");
-print ("Hey look, I just created a virtual (yep, virtual) HTML document!", "\n");
-print ("</BODY></HTML>", "\n");
+# from http import cookies
+
+# # Create a new SimpleCookie object
+# C = cookies.SimpleCookie()
+
+# # Set some cookies
+# C["UserID"] = "rthdrhtetrhert"
+# C["Password"] = "XYZ123"
+
+# # Print the cookies
+# print(C)
+# print()
+import cgitb
+cgitb.enable()
+import os
+print('Content-Type: text/plain; charset=utf-8')
+print()
+# print(os.environ)
+for i in os.environ:
+    print(i,"--->", os.environ[i])
+
+print("\n\n----------------------------------------------\n")
+while True:
+    try:
+        print(input())
+    except:
+        break
