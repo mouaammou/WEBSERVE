@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 05:00:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 06:11:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void			  PollServers::trackALLClients(void)
 		fileDescriptor = this->poll_Fds[i].fd;
 		server = this->whitchServer(fileDescriptor);
 	
+		
 		if (this->poll_Fds[i].revents & POLLIN)
 		{
 			if (this->isServer(fileDescriptor))
@@ -93,13 +94,15 @@ void			  PollServers::trackALLClients(void)
 					std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 					if (multi_ports == true)
 						server->setConfiguration(tmp_config);
+					// close(TheClient(server, fileDescriptor)->getFd());
 				}
 			}
 		}
-		// if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-		// {
-		// 	removeFromPoll(server, this->poll_Fds[i].fd);
-		// }
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		{
+			removeFromPoll(server, this->poll_Fds[i].fd);
+		}
+		
 	}
 }
 
@@ -158,7 +161,6 @@ Server*				PollServers::whitchServer(int clientFd)
 
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
-	this->removeFileDescriptor(fd);
 	if (server)
 	{
 		std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
@@ -167,6 +169,7 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 	CGI::remove(fd);
 	PipeStream::remove(fd);
 	SendResponse::remove(fd);
+	// this->removeFileDescriptor(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)
@@ -356,7 +359,16 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	else if (TheClient(server, fd)->read_bytes == 0)
 	{
 		std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
+		this->removeFileDescriptor(fd);
 		removeFromPoll(server, fd);
+		// if (server)
+		// {
+		// 	std::cout << COLOR_RED "Client removed " << fd << COLOR_RESET << std::endl;
+		// 	server->removeClient(fd);
+		// }
+		// CGI::remove(fd);
+		// PipeStream::remove(fd);
+		// SendResponse::remove(fd);
 	}
 	else
 		return (false);

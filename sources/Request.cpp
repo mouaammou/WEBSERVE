@@ -6,12 +6,13 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 03:26:28 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 05:44:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
 #include "../Response/include/Response.hpp"
+#include <cerrno>
 
 
 Request::Request(int fd, t_config config_file)
@@ -49,11 +50,9 @@ void	Request::resetRequest()
 	this->_has_body = false;
 	this->transfer_encoding = "";
 	this->content_type = "";
-	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
 	this->query_string = "";
 	this->_status_code = "200 OK";
-	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
 }
 

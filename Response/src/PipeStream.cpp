@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PipeStream.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 23:22:58 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/12 06:00:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ bool  PipeStream::isIsPipeStream( pollfd pfd )
 void  PipeStream::remove( int fd )
 {
 	/*** use it on CGI remove ***/
-	std::cout << "PipeStream::remove( int fd )" << std::endl;
+	// std::cout << "PipeStream::remove( int fd )" << std::endl;
 	std::map<int, PipeStream*>::iterator it;
 	it = pipes.find(fd);
 	if (it == pipes.end())
