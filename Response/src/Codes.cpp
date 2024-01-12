@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/23 01:22:23 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 00:16:41 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,9 @@ StatusCodes::StatusCodes(void)
 const std::string StatusCodes::getStatusLine( std::string const &code ) const
 {
 	if (codes.find(code) == codes.end())
+	{
 		return std::string("HTTP/1.1 ") + code + "\r\n";
+	}
 	return std::string("HTTP/1.1 ") + code + std::string(" ") + codes.at(code) + "\r\n";
 }
 const std::string StatusCodes::getStatusLine( int code ) const///TODO: remove this function

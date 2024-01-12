@@ -6,13 +6,14 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/11 03:58:26 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 00:37:45 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../includes/Server.hpp"
+#include <sstream>
 
 class Request
 {
@@ -35,7 +36,7 @@ class Request
 		bool	_has_headers;
 		bool	_has_body;
 		bool	request_received;
-		int		_body_size;
+		long long		_body_size;
 
 		std::string 	 _status_code;
 
@@ -82,8 +83,8 @@ class Request
 		bool		checkMethod();
 		bool		 checkVersion();
 		bool		  checkPath();
-		bool		   allowedURIchars(std::string& str);
-		bool 		checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
+		bool		   	allowedURIchars(std::string& str);
+		bool 				checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
 			
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
