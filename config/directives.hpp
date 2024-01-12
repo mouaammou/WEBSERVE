@@ -12,7 +12,7 @@ class Directives
 		std::map<int, std::string> error_page;
 		std::vector<int> port;
 		int server_id;
-		int body_size;
+		unsigned long long body_size;
 	public:
 		Directives();
 		~Directives();
@@ -28,9 +28,9 @@ class Directives
 		void setDefMethod(const std::vector<std::string>& serverName);
 		const std::string& getHostName() const;
 		void setHostName(const std::string& hostName);
-		int getBodySize() const;
+		unsigned long long  getBodySize() const;
 		std::vector<int> getPorts()const;
 		void setPorts(std::vector<int>& ports);
-		void setBodySize(int bodySize);
+		void setBodySize(unsigned long long bodySize);
 };
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/01 23:27:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 01:22:10 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <cctype>
 #include <iterator>
 #include "directives.hpp"
+#define COLOR_RED     "\033[0;31m"
+#define COLOR_RESET   "\033[0m"
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
@@ -51,7 +53,7 @@ class Config
 		//server :
 		void handle_port(Directives& server,std::vector<int> &ports, int *indice);
 		std::string next_str_arg(int *indice);
-		int max_body_size(int *indice);
+		unsigned long long max_body_size(int *indice);
 		void handle_error_page(Directives &server, int *indice);
 		void handle_locations(int *indice);
 		void handle_inside_locations(Directives& server, int *indice);
@@ -61,13 +63,10 @@ class Config
 		void check_server_name_dup(std::string serv_name);
 		const std::string get_page_error(std::string serv_name, int status);
 		void summarize();
-		void handle_default_method(Directives& server, int *indice);
-		const Location& search_uri(int serverId, std::string uri);
 		std::vector<Location> sort_location(std::vector<Location> locat);
 		void check_dup_location(std::vector<Location> locat);
 		void handle_redirection(Location &location, int *indice);
-		void set_default_pages(Directives &server);
-
+		unsigned long long int octet_convert(std::string& str);
 		~Config();
 };
 

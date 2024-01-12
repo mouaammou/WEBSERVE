@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/12 02:50:06 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/12 05:01:15 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ Response::Response( config &args ) : args(args)
 	if (args.cgi)
 	{
 		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
-		runCGI();
+		runCGI();//
 		return ;
 	}
 	else if (args.autoindex == "on")

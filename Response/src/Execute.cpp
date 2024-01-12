@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 17:03:25 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 23:23:23 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void Execute::addAllEnvVars( void )
 
 
 	requestHeaderstToCGIVariables();
-	
+
 	env.push_back(NULL);//at the end
 }
 

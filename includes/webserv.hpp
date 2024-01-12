@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/10 19:44:31 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/12 01:15:03 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@
 #include "../config/config.hpp"
 
 #define COLOR_RED     "\033[0;31m"
+#define COLOR_RESET   "\033[0m"
 #define COLOR_GREEN   "\033[0;32m"
 #define COLOR_BLUE    "\033[0;34m"
 #define COLOR_YELLOW  "\033[0;33m"
 #define COLOR_MAGENTA "\033[0;35m"
-#define COLOR_RESET   "\033[0m"
 #define COLOR_CYAN    "\033[0;36m"
 
 #define PERMISSION_CHECK 0644
@@ -60,7 +60,7 @@ typedef struct config
 	std::string				server_name;
 	std::string port;
 	Directives 	*Server;
-	Location 	location;	
+	Location 	location;
 	std::string translated_path;
 	std::string path_info;
 	std::string path_info_translated;
@@ -69,7 +69,7 @@ typedef struct config
 	std::string autoindex;//on or off
 	Request		*request;
 	PollServers	*poll;
-	
+
 	bool		cgi;
 	int			server_fd;
 	int			body_size;

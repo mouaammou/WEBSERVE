@@ -59,11 +59,11 @@ void Directives::setHostName(const std::string& hostName) {
     host_name = hostName;
 }
 
-int Directives::getBodySize() const {
+unsigned long long  Directives::getBodySize() const {
 	return body_size;
 }
 
-void Directives::setBodySize(int bodySize) {
+void Directives::setBodySize(unsigned long long bodySize) {
     body_size = bodySize;
 }
 

@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/08 18:37:53 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/12 02:07:22 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,9 @@ void Config::server_count()
 
 void Config::error_call(std::string error)
 {
-	std::cerr << error << std::endl;
+	for (size_t i = 0; i < error.size(); i++)
+		error[i] = toupper(error[i]);
+	std::cerr << COLOR_RED << error << COLOR_RESET << std::endl;
 	exit(1);
 }
 
@@ -324,33 +326,6 @@ void Config::handle_proxy_methode(Location &location, int *indice)
 	location.setMethods(methods);
 }
 
-
-void Config::handle_default_method(Directives& server, int *indice)
-{
-	int tmp;
-	std::vector<std::string> methods;
-	tmp = (*indice);
-	while (ftokens[tmp].compare(";"))
-		tmp++;
-	(*indice)++;
-	if ((*indice) == tmp || tmp - (*indice) > 3)
-		error_call("error default_method!");
-	while ((*indice) < tmp)
-	{
-		if (ftokens[(*indice)] == "GET")
-			methods.push_back(ftokens[(*indice)]);
-		else if (ftokens[(*indice)] == "POST")
-			methods.push_back(ftokens[(*indice)]);
-		else if (ftokens[(*indice)] == "DELETE")
-			methods.push_back(ftokens[(*indice)]);
-		else
-			error_call("only GET,POST and DELETE accepted!");
-		(*indice)++;
-	}
-	if (methods.size() > 3 || methode_duplicated(methods))
-		error_call("methods must not be duplicated!");
-	server.setDefMethod(methods);
-}
 
 void Config::handle_inside_locations(Directives& server, int *indice)
 {
@@ -449,9 +424,31 @@ std::string Config::next_str_arg(int *indice)
 	return(this->ftokens[*indice]);
 }
 
-int Config::max_body_size(int *indice)
+unsigned long long int Config::octet_convert(std::string& str)
+{
+	std::stringstream ss;
+	unsigned long long value;
+	ss << str;
+	ss >> value;//1000
+	switch (std::toupper(str[str.length() - 1]))
+	{
+		case 'K':
+			return value * 1024;
+		case 'M':
+			return value * 1024 * 1024;
+		case 'G':
+			return value * 1024 * 1024 * 1024;
+		default:
+			return value;
+	}
+	return (0);
+}
+
+
+unsigned long long Config::max_body_size(int *indice)
 {
 	int size;
+	unsigned long long max;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
 		error_call(this->ftokens[*indice] + " not set!");
@@ -460,10 +457,18 @@ int Config::max_body_size(int *indice)
 	(*indice)++;
 	if (this->ftokens[*indice + 1].compare(";"))
 		error_call(this->ftokens[*indice - 1] + " directive accept only one attribute");
+	if (this->ftokens[*indice + 1].size() > 18)
+		error_call(this->ftokens[*indice] + " is too large!");
 	if (!str_digit(ftokens[*indice]))
-		error_call("max body size must be digits!");
-	long long max;;
-	max = atoll(ftokens[*indice].c_str());
+	{
+		if (ftokens[*indice].find("M", 0) != std::string::npos || ftokens[*indice].find("K", 0) != std::string::npos
+				 || ftokens[*indice].find("G", 0) != std::string::npos)
+			return(octet_convert(ftokens[*indice]));
+		else
+			error_call("max body size must be digits!");
+	}
+	std::stringstream ss(ftokens[*indice]);
+	ss >> max;
 	return(max);
 }
 
@@ -523,28 +528,6 @@ void Config::check_server_name_dup(std::string serv_name)
 	}
 }
 
-void Config::set_default_pages(Directives &server)
-{
-	std::string tmp;
-	std::stringstream number;
-	for (int i = 400; i < 417; i++)
-	{
-		number << i;
-		tmp = server.getErrorPage(i);
-		if (tmp.empty())
-			server.setErrorPage(i, std::string("./www/error/") + number.str() + ".html");
-		number.str("");
-	}
-	for (int i = 500; i < 505; i++)
-	{
-		number << i;
-		tmp = server.getErrorPage(i);
-		if (tmp.empty())
-			server.setErrorPage(i, std::string("./www/error/") + number.str() + ".html");
-		number.str("");
-	}
-}
-
 void Config::handle_servers(int *indice)
 {
 	Directives server;
@@ -584,8 +567,6 @@ void Config::handle_servers(int *indice)
 			handle_locations(indice);
 			handle_inside_locations(server, indice);
 		}
-		else if (ftokens[*indice] == "default_method")
-			handle_default_method(server, indice);
 		else if (!is_token(indice))
 			error_call(ftokens[*indice] + " not refering to any directive!");
 		(*indice)++;
@@ -602,7 +583,6 @@ void Config::handle_servers(int *indice)
 		server.setPorts(ports);
 	}
 	server.server_locations = sort_location(server.getLocations());
-	set_default_pages(server);
 	this->directs.push_back(server);
 }
 
@@ -728,47 +708,47 @@ Config::~Config()
 // 	{
 // 		std::cout << "Server : " << j << std::endl;
 // 		std::cout << directs[j].getServerId() << std::endl;
-// 		ports = directs[j].getPorts();
-// 		for (size_t i = 0; i < ports.size() ; i++)
-// 		{
-// 			std::cout << "port " << i << " " << ports[i] << std::endl;
-// 		}
-// 		std::cout << "server name    "<< directs[j].getServerName() << std::endl;
-// 		std::cout << "Error pages:" << std::endl;
-// 		std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
-// 		std::cout << "101 " << directs[j].getErrorPage(101)<< std::endl;
-// 		std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
-// 		std::cout << "404 " << directs[j].getErrorPage(404)<< std::endl;
-// 		std::cout << "413 " << directs[j].getErrorPage(413)<< std::endl;
-// 		std::cout << "202 " << directs[j].getErrorPage(202)<< std::endl;
-// 		std::cout << "205 " << directs[j].getErrorPage(205)<< std::endl;
-// 		std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
-// 		std::cout << "502 " << directs[j].getErrorPage(502)<< std::endl;
-// 		std::cout << "503 " << directs[j].getErrorPage(503)<< std::endl;
+// 		// ports = directs[j].getPorts();
+// 		// for (size_t i = 0; i < ports.size() ; i++)
+// 		// {
+// 		// 	std::cout << "port " << i << " " << ports[i] << std::endl;
+// 		// }
+// 		// std::cout << "server name    "<< directs[j].getServerName() << std::endl;
+// 		// std::cout << "Error pages:" << std::endl;
+// 		// std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
+// 		// std::cout << "101 " << directs[j].getErrorPage(101)<< std::endl;
+// 		// std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
+// 		// std::cout << "404 " << directs[j].getErrorPage(404)<< std::endl;
+// 		// std::cout << "413 " << directs[j].getErrorPage(413)<< std::endl;
+// 		// std::cout << "202 " << directs[j].getErrorPage(202)<< std::endl;
+// 		// std::cout << "205 " << directs[j].getErrorPage(205)<< std::endl;
+// 		// std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
+// 		// std::cout << "502 " << directs[j].getErrorPage(502)<< std::endl;
+// 		// std::cout << "503 " << directs[j].getErrorPage(503)<< std::endl;
 // 		std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
-// 		std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
-// 		std::cout << "Locations for server "<< j << std::endl;
-// 		for (size_t i = 0; i < directs[j].server_locations.size(); i++)
-// 		{
-// 			std::cout<<"Slashes " << directs[j].server_locations[i].getSlash() << std::endl;
-// 			std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
-// 			std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
-// 			std::cout<<"-----Upload file " << directs[j].server_locations[i].getUploadPath() << std::endl;
-// 			std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
-// 			std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
-// 			if (directs[j].server_locations[i].getReturnInt())
-// 				std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
-// 			if (!directs[j].server_locations[i].getCgiExe().empty())
-// 			std::cout<<"------- CGIII -->:  " << directs[j].server_locations[i].getCgiExe() << std::endl;
-// 			std::cout << "Methodes ";
-// 			std::vector<std::string> methods;
-// 			methods = directs[j].server_locations[i].getMethods();
-// 			for (size_t k = 0; k < methods.size(); k++)
-// 			{
-// 				std::cout << methods[k] << "   ";
-// 			}
-// 			std::cout << std::endl;
-// 		}
+// 		// std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
+// 		// std::cout << "Locations for server "<< j << std::endl;
+// 		// for (size_t i = 0; i < directs[j].server_locations.size(); i++)
+// 		// {
+// 		// 	std::cout<<"Slashes " << directs[j].server_locations[i].getSlash() << std::endl;
+// 		// 	std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
+// 		// 	std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
+// 		// 	std::cout<<"-----Upload file " << directs[j].server_locations[i].getUploadPath() << std::endl;
+// 		// 	std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
+// 		// 	std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
+// 		// 	if (directs[j].server_locations[i].getReturnInt())
+// 		// 		std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
+// 		// 	if (!directs[j].server_locations[i].getCgiExe().empty())
+// 		// 	std::cout<<"------- CGIII -->:  " << directs[j].server_locations[i].getCgiExe() << std::endl;
+// 		// 	std::cout << "Methodes ";
+// 		// 	std::vector<std::string> methods;
+// 		// 	methods = directs[j].server_locations[i].getMethods();
+// 		// 	for (size_t k = 0; k < methods.size(); k++)
+// 		// 	{
+// 		// 		std::cout << methods[k] << "   ";
+// 		// 	}
+// 		// 	std::cout << std::endl;
+// 		// }
 // 		j++;
 // 	}
 // 		return 0;
