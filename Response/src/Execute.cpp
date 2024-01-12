@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/10 16:01:54 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/11 23:23:23 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,9 @@ void Execute::addAllEnvVars( void )
 		addEnvVar("CONTENT_LENGTH", oss.str());//body
 		addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
 	}
-	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
-	// addEnvVar("PATH_INFO", "conf.request->getPathInfo()");
-	// addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
-
-	// addEnvVar("QUERY_STRING", conf.request.getQueryString());
 	addEnvVar("QUERY_STRING", conf.request->getQueryString());//or "" if no query string
+	addEnvVar("PATH_INFO", conf.path_info);
+	addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
 
 	addEnvVar("REMOTE_ADDR", getRemoteAddr()); // ip of client
 	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
@@ -39,10 +36,9 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("SERVER_NAME", getServerName());
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
-	addEnvVar("SERVER_SOFTWARE", "webserv/1.0");
+	addEnvVar("SERVER_SOFTWARE", "Nginx");
+	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 
-	addEnvVar("PATH_INFO", "");
-	addEnvVar("PATH_TRANSLATED", "");
 
 	requestHeaderstToCGIVariables();
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/11 04:24:40 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/11 15:52:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,9 @@ void			Server::printf_t_config(t_config config_file)
 	printf("		Location: %s\n", config_file.location.getName().c_str());
 	printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
 	printf("		method: %s\n", config_file.request->getMethod().c_str());
+	 std::cout << COLOR_GREEN "PATH_INFO :=> " COLOR_RESET << config_file.path_info << std::endl;
+	 std::cout << COLOR_GREEN "PATH_INFO_TRANSLATED :=> " COLOR_RESET << config_file.path_info_translated << std::endl;
+		// std::
 }
 
 Method* 		Server::getPointedMethod() const

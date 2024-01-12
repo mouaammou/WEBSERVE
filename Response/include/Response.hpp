@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 11:31:22 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/11 23:22:16 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,9 @@ class Response
 
 	public:
 
-	Response( config &args );//
-
-	void runCGI( void );//
-	void autoIndex( void );//
+	Response( config &args );
+	void runCGI( void );
+	void autoIndex( void );
 	void file( void );
 	void redirect( void );
 	void error( void );

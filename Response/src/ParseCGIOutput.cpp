@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/06 16:01:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 17:03:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,30 @@ void ParseCGIOutput::generateStatusLine( void )
 void ParseCGIOutput::additionalHeaders( void )
 {
 	new_headers.append("Cache-Control: no-store\r\n");
-	new_headers.append("Server: Webserv/1.0\r\n");
+	new_headers.append("Server: Nginx\r\n");
 }
 
 void ParseCGIOutput::response( int status, std::string output, config &args )
 {
-	std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
+	if (args.response_code == "504")
+	{
+		Response resp(args);
+		return ;
+	}
+	if (status == -1)
+	{
+		// means pipe or fork failed and cgi didnt run
+		args.response_code = "500";//read failed
+		Response resp(args);
+		return ;
+	}
+	// std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
 	std::size_t pos = output.find("\n\n");
 	if (pos == std::string::npos)
 	{
 		//found no headers
 		// std::cout << "no headers" << std::endl;
-		args.response_code = "500";
+		args.response_code = "502";
 		Response resp(args);
 		return;
 	}
@@ -106,13 +118,13 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 	{
 		//headers is case sensitve
 		//Content-Length is not Content-length
-		args.response_code = "500";
+		args.response_code = "502";
 		Response resp(args);
 		return;
 	}
 	else if ( ! thereIsContentLength() && status != 0)
 	{
-		args.response_code = "500";
+		args.response_code = "502";
 		Response resp(args);
 		return;
 	}

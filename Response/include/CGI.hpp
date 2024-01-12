@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 23:18:20 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/11 15:44:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include "../../includes/Request.hpp"
 #include "Execute.hpp"
 
+class PipeStream;
 
 class CGI : private Execute
 {
@@ -54,8 +55,7 @@ class CGI : private Execute
 	bool					one_time_kill;
 	
 	config					&args;
-	PipeStream				*input_pipe;
-	PipeStream				*output_pipe;
+	PipeStream				*pipe_stream;
 	pid_t					pid;
 
 	bool runProcess( void );
@@ -66,9 +66,10 @@ class CGI : private Execute
 	CGI( config &args);
 	~CGI( void );
 
-	void run(void );
+	bool run(void );
 	void timeout( void );
 	void onProcessExit( int status = -1 );
 	pid_t getPid( void ) const;
+	// PipeStream* getPipeStream( void );
 };
 
