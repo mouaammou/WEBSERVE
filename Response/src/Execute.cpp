@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 00:37:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 04:35:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
 	addEnvVar("REQUEST_URI", conf.request_url);
-	addEnvVar("SCRIPT_NAME", conf.translated_path);//script path
+	addEnvVar("SCRIPT_NAME", conf.request->getPath());//script path
 
 	addEnvVar("SERVER_NAME", conf.server_name);
 	addEnvVar("SERVER_PORT", conf.port);

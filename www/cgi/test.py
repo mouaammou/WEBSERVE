@@ -13,7 +13,8 @@
 import cgitb
 cgitb.enable()
 import os
-print('Content-Type: text/plain; charset=utf-8')
+print('Content-sdsType: text/plain; charset=utf-8')
+print('Content-sdsType: text/plain; charset=utf-8')
 print()
 # print(os.environ)
 for i in os.environ:
