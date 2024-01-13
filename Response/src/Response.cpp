@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 20:05:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 20:33:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,12 @@ void Response::file( void )
 		statusLine(args.response_code);
 		oss << "Cache-Control: no-cache\r\n";
 		oss << "Date: " << getDate() << "\r\n";
+		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+		oss << "Accept-Ranges: none\r\n";
+		oss << "Server: " << "webserv/1.0" << "\r\n";
 		oss << "\r\n";
-		SendResponse(oss.str(), ffd, args.request->getFd());
+		close(ffd);
+		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
 	}
 	statusLine(args.response_code);
@@ -123,6 +127,8 @@ void Response::file( void )
 	oss << "Cache-Control: no-cache\r\n";
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+	oss << "Accept-Ranges: none\r\n";
+	oss << "Server: " << "webserv/1.0" << "\r\n";
 	// oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
 	oss << "\r\n";
 	// std::cout << "RESPONSE::file->" << ffd << std::endl;
