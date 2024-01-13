@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 15:14:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 21:21:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,14 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
 	this->_connection = "";
-	// this->reqeust_timeout = this->server_config.timeout;
+	this->_cookies = "";
 	this->reqeust_timeout = 0;
 }
 
 void	Request::resetRequest()
 {
 	this->reqeust_timeout = 0;
+	this->_cookies = "";
 	this->request_string = "";
 	this->_connection = "";
 	this->method = "";
@@ -60,6 +61,7 @@ void	Request::resetRequest()
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
+	this->_cookies_map.clear();
 }
 
 Request::~Request()
@@ -253,9 +255,33 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		}
 		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
 			this->content_type = value;
+		if (key.compare("Cookie:") == 0)//if the key is Cookie
+		{
+			this->_cookies = value;
+			this->_cookies_map =  extractCookies();
+		}
 		this->request_headers[key] = value;
 	}
 	return (true);
+}
+
+std::string       Request::generateSessionId() 
+{
+	const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	const int idLength = 16;
+
+	std::string sessionId;
+	for (int i = 0; i < idLength; ++i) {
+		srand(time(0));
+		sessionId += charset[rand() % (sizeof(charset) - 1)];
+	}
+
+	return sessionId;
+}
+
+void 		 Request::setCookie(std::string name, std::string value)
+{
+	this->_cookies_map[name] = value;
 }
 
 bool	Request::checkMethod()
@@ -397,7 +423,6 @@ std::string			Request::extractChunks(const std::string& request)
 	std::stringstream chunks;
 	std::string line;
 
-	// Read and concatenate the chunks
 	while (std::getline(stream, line))
 	{
 		size_t chunkSize = strtoul(line.c_str(), NULL, 16);
@@ -442,6 +467,38 @@ bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& 
     return true;
 }
 
+std::map<std::string, std::string> 			Request::extractCookies()
+{
+    std::map<std::string, std::string> cookies;
+	std::string cookies_value = "Cookie:" + this->_cookies;
+    std::string::size_type start = cookies_value.find("Cookie: ");
+    if (start != std::string::npos)
+	{
+        start += 8;  // Length of "Cookie: "
+        std::string::size_type end = cookies_value.find("\r\n", start);
+        if (end != std::string::npos) {
+            std::string cookieString = cookies_value.substr(start, end - start);
+            std::string::size_type pos = 0;
+            while ((pos = cookieString.find(";")) != std::string::npos)
+			{
+				// printf("IN WHILE\n");
+                std::string cookie = cookieString.substr(0, pos);
+                std::string::size_type eqPos = cookie.find("=");
+                if (eqPos != std::string::npos)
+				{
+                    std::string value = cookie.substr(eqPos + 1);
+                    std::string name = cookie.substr(0, eqPos);
+					stringTrim(name);
+					stringTrim(value);
+                    cookies[name] = value;
+                }
+                cookieString.erase(0, pos + 1);
+            }
+        }
+    }
+    return cookies;
+}
+
 bool   		Request::handleRequestBody()
 {
 	if (this->content_length > 0 || this->transfer_encoding == "chunked")
@@ -450,8 +507,8 @@ bool   		Request::handleRequestBody()
 			return (this->_status_code = "413 Request Entity Too Large", true);
 		if (this->hasHeaders() && this->content_length > 0)
 			return (this->storeRequestBody());
-		else if (this->hasHeaders() && this->transfer_encoding == "chunked" && this->content_length == 0)
-			return (this->storeChunkedRequestBody());
+		else if (this->hasHeaders() && this->transfer_encoding == "chunked")
+			return (this->storeChunkedRequestBody(), true);
 	}
 	if ((this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "") || ! this->request_body.length())
 		return (true);

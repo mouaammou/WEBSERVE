@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 14:54:55 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 03:53:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,11 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 				{
 					// std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
 					HttpClient->reqeust_timeout = current_time_in_milliseconds() - HttpClient->reqeust_timeout;
+					if (HttpClient->reqeust_timeout > 1000 * 60 * 5)
+					{
+						std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
+						return (removeFromPoll(server, fileDescriptor), false);
+					}
 				}
 			}
 		}
@@ -103,7 +108,7 @@ bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Re
 				std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				if (multi_ports == true)
 					server->setConfiguration(tmp_config);
-				if (HttpClient->_connection == "close")
+				if (HttpClient->_connection == "close")//connectio: keep-alive, close
 				{
 					std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
 					return (removeFromPoll(server, fileDescriptor), false);
@@ -392,7 +397,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;
 		}
-		server->printf_t_config(server->serverConfigFile);
+		// server->printf_t_config(server->serverConfigFile);
 		Response response(server->serverConfigFile);
 	}
 	else

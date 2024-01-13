@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 12:15:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 03:01:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,11 @@ class Request
 		bool	request_received;
 		long long		_body_size;
 
-
 		std::string 	 _status_code;
 
 	public:
+		std::string 	     _cookies;
+		std::map<std::string, std::string> _cookies_map;
 		size_t reqeust_timeout;
 		std::string      _connection;
 		int   read_bytes;
@@ -99,5 +100,8 @@ class Request
 
 		void	resetRequest();
 
-		std::string			extractChunks(const std::string& request);
+		std::string								extractChunks(const std::string& request);
+		std::map<std::string, std::string> 			extractCookies();
+		void 											setCookie(std::string name, std::string value);
+		std::string 										generateSessionId();
 };
