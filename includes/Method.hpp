@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/05 12:37:18 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 04:31:32 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,18 @@ class Method
 		std::string		file_type;
 		t_config		 &method_config;
 		std::string		p_path;
-	
+
 
 	public:
 		Method(t_config &config_file);
-		Method(t_config &config_file, int for_delete);
-		Method(t_config &config_file, std::string post);
 
 		~Method();
 
-		bool				hasIndexFiles_2();
 
-		bool				get_method_file_type_post();
-		bool				DeleteFolderContents(const std::string& directoryPath);
-		std::string			get_status_code();
+		void 				getMethod();
+		void 				deleteMethod();
+		void 				postMethod();
+		bool				deleteFolderContents(const std::string& directoryPath);
 		std::string			get_method_location();
 		bool				get_method_file_type();
 		bool				has_cgi();

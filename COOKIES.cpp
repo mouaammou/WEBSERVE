@@ -46,7 +46,8 @@ std::string setCookie(std::string name, std::string value) {
 // Simulated database for session storage
 std::map<std::string, std::string> sessions;
 
-class PollServers {
+class PollServers
+{
 private:
     // Other members...
 

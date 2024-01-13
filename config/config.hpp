@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 21:44:57 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/13 00:27:42 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ class Config
 		void print_file2(Config &conf);
 		void server_count();
 		void fill_directive();
-		void error_page(std::vector<std::string> vec, int indice);
 		void handle_servers(int *indice);
 		void check_coma(std::string line);
 		void error_call(std::string error);

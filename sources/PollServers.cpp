@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 14:54:55 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 04:26:41 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ PollServers::~PollServers()
 	for (size_t i = 0; i < this->num_servers; i++)
 	{
 		delete this->http_servers[i];
-		this->http_servers[i] = NULL;	
+		this->http_servers[i] = NULL;
 	}
 }
 
@@ -81,7 +81,7 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 					std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
 					return (removeFromPoll(server, fileDescriptor), false);
 				}
-				else 
+				else
 				{
 					// std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
 					HttpClient->reqeust_timeout = current_time_in_milliseconds() - HttpClient->reqeust_timeout;
@@ -89,7 +89,7 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 			}
 		}
 	}
-	return (true);	
+	return (true);
 }
 
 bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Request *HttpClient)
@@ -364,11 +364,11 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
 		this->handleMultiPorts(server, fd);
-		
+
 		server->serverConfigFile = TheClient(server, fd)->server_config;
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
-		
+
 		TheClient(server, fd)->displayRequest();
 
 		this->handleTranslatedPath(server, fd);
@@ -380,14 +380,17 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			if (TheClient(server, fd)->getMethod() == "GET")
 			{
 				server->pointedMethod = new Method(server->serverConfigFile);
+				server->pointedMethod->getMethod();
 			}
 			else if (TheClient(server, fd)->getMethod() == "DELETE")
 			{
-				server->pointedMethod = new Method(server->serverConfigFile, 1337);
+				server->pointedMethod = new Method(server->serverConfigFile);
+				server->pointedMethod->deleteMethod();
 			}
 			else if (TheClient(server, fd)->getMethod() == "POST")
 			{
-				server->pointedMethod = new Method(server->serverConfigFile, "post");
+				server->pointedMethod = new Method(server->serverConfigFile);
+				server->pointedMethod->postMethod();
 			}
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;

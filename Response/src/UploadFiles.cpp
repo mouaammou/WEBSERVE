@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 20:16:42 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 00:21:38 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@
 
 // bool UploadFiles::bodyContainsUploadedFile( std::string& headers)
 // {
-// 	std::cout << "headers->" << std::endl;   
+// 	std::cout << "headers->" << std::endl;
 // 	size_t pos = headers.find("Content-Disposition:");
 // 	if (pos == std::string::npos)
 // 	{
@@ -301,7 +301,7 @@ void FilesUpload::writeToFile( std::string &body )
 
 bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 {
-	std::cout << "headers->" << std::endl;   
+	std::cout << "headers->" << std::endl;
 	size_t pos = headers.find("Content-Disposition:");
 	if (pos == std::string::npos)
 	{
@@ -339,7 +339,7 @@ bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 	pos = _filename.find("\"");
 	if (pos == std::string::npos)
 	{
-		std::cout << "invalid request: vvv filename not found" << std::endl;
+		std::cout << "invalid request: filename not found" << std::endl;
 		return false;
 	}
 	_filename.erase(pos);

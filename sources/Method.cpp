@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 15:15:40 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 04:54:12 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,7 @@ bool Method::hasValidCGI(const std::string& filename)
 	return false;
 }
 
-
-
-bool Method::DeleteFolderContents(const std::string& directoryPath)
+bool Method::deleteFolderContents(const std::string& directoryPath)
 {
 	DIR* dir = opendir(directoryPath.c_str());
 	if (dir == NULL)
@@ -47,7 +45,7 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 			{
 				if (S_ISDIR(fileStat.st_mode))
 				{
-					if (!DeleteFolderContents(fullPath))
+					if (!deleteFolderContents(fullPath))
 					{
 						closedir(dir);
 						return false;
@@ -75,13 +73,10 @@ bool Method::DeleteFolderContents(const std::string& directoryPath)
 	return true;
 }
 
-Method::Method(t_config &config_file, std::string post): method_config(config_file)
+void Method::postMethod()
 {
-	(void)post;
-	this->method_config.autoindex = "off";
-	this->method_config.cgi = false;
 	has_cgi();
-	if ( ! FilesUpload(config_file).isUploadRequest())//upload file is supported.
+	if ( ! FilesUpload(this->method_config).isUploadRequest())//upload file is supported.
 	{
 		if (this->get_method_file_type())
 		{
@@ -117,11 +112,9 @@ Method::Method(t_config &config_file, std::string post): method_config(config_fi
 }
 
 
-Method::Method(t_config &config_file, int for_delete): method_config(config_file)
+void Method::deleteMethod()
 {
-	(void)for_delete;
-	this->method_config.autoindex = "off";
-	this->method_config.cgi = false;
+	std::cout << "i'm in ----------> **********\n";
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
@@ -151,7 +144,7 @@ Method::Method(t_config &config_file, int for_delete): method_config(config_file
 				}
 				else
 				{
-					if (DeleteFolderContents(this->method_config.translated_path))
+					if (deleteFolderContents(this->method_config.requested_path))
 						this->method_config.response_code = "204 No Content";
 					else
 					{
@@ -170,6 +163,10 @@ Method::Method(t_config &config_file): method_config(config_file)
 {
 	this->method_config.autoindex = "off";
 	this->method_config.cgi = false;
+}
+
+void Method::getMethod()
+{
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
