@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 01:22:10 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/12 21:44:57 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include <cctype>
 #include <iterator>
 #include "directives.hpp"
-#define COLOR_RED     "\033[0;31m"
-#define COLOR_RESET   "\033[0m"
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 

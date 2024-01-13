@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 21:21:25 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 21:48:42 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,11 @@ std::string Request::getMethod() const
 	return (this->method);
 }
 
+std::string Request::getCookies() const
+{
+	return (this->_cookies);
+}
+
 std::string Request::getPath() const
 {
 	return (this->path);
@@ -122,6 +127,11 @@ int				Request::getFd() const
 void					 Request::setFd(int fd)
 {
 	this->fd = fd;
+}
+
+void					Request::setCookies(std::string &cookies)
+{
+	this->_cookies = cookies;
 }
 
 std::string 		  Request::getStatusCode() const
@@ -240,6 +250,10 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 			std::stringstream ss(value);
 			ss >> this->content_length;
 		}
+		if (key.compare("Cookie:") == 0)
+		{
+			this->setCookies(value);
+		}
 		if (key.compare("Connection:") == 0)//if the key is Connection
 		{
 			std::string tmp = value;
@@ -332,6 +346,7 @@ bool 	Request::checkPath()
 {
 	if (this->path.find("..") != std::string::npos)
 		return (_status_code = "403 Forbidden", true);
+	this->server_config.request_url = this->path;
 	this->handleQueryString();
 	this->handlePathInfo();
 	if (this->allowedURIchars(this->path) == false)

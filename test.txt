@@ -1,3 +1,17 @@
 This is the first chunk.
 This is the second chunk.
 This is the third chunk.
+https://www.bootdey.com/snippets/view/chat-app
+
+
+allow
+content-language
+content-location
+content-type
+date
+Last-modified
+location
+Retry-after
+Server
+transtfer-encoding
+www-Authenticte

@@ -39,7 +39,7 @@ void Location::set_return_status(int status)
 {
 	if (status < 300 || status > 307)
 	{
-		std::cerr << "redirect status must be between 300 and 307" << std::endl;
+		std::cerr << "\033[0;31m" << "REDIRECT STATUS MUST BE BETWEEN 300 AND 307" << "\033[0m" << std::endl;
 		exit(1);
 	}
 	this->return_status = status;
@@ -59,7 +59,7 @@ const std::string& Location::getName() const {
 void Location::setName(const std::string& name) {
 	if (name[name.length() - 1] != '/')
 	{
-		std::cerr << "the location name " + name + " must end with / " << std::endl;
+		std::cerr << "\033[0;31m" << "THE LOCATION NAME : " + name + " MUST END WITH /" << "\033[0m" << std::endl;
 		exit(1);
 	}
     this->name = name;

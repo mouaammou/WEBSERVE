@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 23:23:23 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/13 04:35:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("REMOTE_ADDR", getRemoteAddr()); // ip of client
 	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
-	addEnvVar("REQUEST_URI", conf.request->getPath());
-	addEnvVar("SCRIPT_NAME", conf.translated_path);//script path
+	addEnvVar("REQUEST_URI", conf.request_url);
+	addEnvVar("SCRIPT_NAME", conf.request->getPath());//script path
 
-	addEnvVar("SERVER_NAME", getServerName());
+	addEnvVar("SERVER_NAME", conf.server_name);
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
 	addEnvVar("SERVER_SOFTWARE", "Nginx");

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 03:01:25 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 21:49:28 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Request
 	private:
 
 		int fd;
-		
+
 		std::string 	request_string;
 		std::string 	method;
 		std::string 	path;
@@ -41,14 +41,13 @@ class Request
 		long long		_body_size;
 
 		std::string 	 _status_code;
-
 	public:
-		std::string 	     _cookies;
+		std::string		_cookies;
 		std::map<std::string, std::string> _cookies_map;
 		size_t reqeust_timeout;
 		std::string      _connection;
 		int   read_bytes;
-		
+
 		t_config 		server_config;
 		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
@@ -63,12 +62,15 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
 		int				      getFd() const;
+		std::string getCookies() const;
+		void	setCookies(std::string &cookies);
+
 		void					 setFd(int fd);
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
 		std::map<std::string, std::string>&	getRequestHeaders();
-		
+
 
 		bool			  hasHeaders() const;
 		bool			   hasBody() const;
@@ -93,7 +95,7 @@ class Request
 		bool		  checkPath();
 		bool		   	allowedURIchars(std::string& str);
 		bool 				checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
-			
+
 		bool	handleRequestHeaders(std::string buffe1rString);
 		bool	receiveRequest();
 		bool	sendResponse();
