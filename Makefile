@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
+#    By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/14 07:53:15 by mouaammo         ###   ########.fr        #
+#    Updated: 2024/01/14 20:51:28 by moouaamm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,15 +16,15 @@ NAME 		= webserver
 CCPP 		= c++
 RM 			= rm -fr
 
-RES_FILES 	= $(addprefix Response/src/, AutoIndex.cpp CGI.cpp Config.cpp  Codes.cpp MediaTypes.cpp  ParseCGIOutput.cpp CacheControl.cpp  \
+RES_FILES 	= $(addprefix Response/src/, AutoIndex.cpp CGI.cpp Codes.cpp MediaTypes.cpp  ParseCGIOutput.cpp CacheControl.cpp  \
 				PipeStream.cpp  Response.cpp  SendResponse.cpp Execute.cpp UploadFiles.cpp )
-RES_HEADERS = $(addprefix Response/include/, AutoIndex.hpp CGI.hpp Config.hpp  Codes.hpp  MediaTypes.hpp  ParseCGIOutput.hpp  CacheControl.hpp \
+RES_HEADERS = $(addprefix Response/include/, AutoIndex.hpp CGI.hpp  Codes.hpp  MediaTypes.hpp  ParseCGIOutput.hpp  CacheControl.hpp \
 				PipeStream.hpp  Response.hpp  SendResponse.hpp Execute.hpp UploadFiles.hpp )
 
 FILES 		=  $(RES_FILES) $(addprefix sources/, Server.cpp Request.cpp PollServers.cpp Method.cpp) \
-				main.cpp $(addprefix config/, config.cpp directives.cpp location.cpp)
+				main.cpp $(addprefix config/src/, config.cpp directives.cpp location.cpp)
 HEADER_FILES 	= $(RES_HEADERS) $(addprefix includes/, Server.hpp Request.hpp PollServers.hpp webserv.hpp Method.hpp) \
-					 $(addprefix config/, config.hpp directives.hpp location.hpp)
+					 $(addprefix config/include/, config.hpp directives.hpp location.hpp)
 
 OBJECT_FILES = $(FILES:%.cpp=%.o)
 

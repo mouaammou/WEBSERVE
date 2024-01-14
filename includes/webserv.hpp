@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 21:57:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:52:02 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 #include <map>
 #include <ctime>
 
-#include "../config/config.hpp"
+#include "../config/include/config.hpp"
 
 #define COLOR_RED     "\033[0;31m"
 #define COLOR_RESET   "\033[0m"
