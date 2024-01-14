@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 23:22:44 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 05:22:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 std::map<int, CGI*>			CGI::runing_processes;
 std::vector<pid_t>			CGI::pids;
 
-void CGI::remove( int fd )
+void CGI::remove( int fd ) 
 {
 	std::map<int, CGI*>::iterator it;
 	it = runing_processes.find(fd);//RUNING CGI SCRIPTS
@@ -75,13 +75,24 @@ std::map<int, CGI*>::iterator CGI::getProcess( pid_t pid )
 
 void CGI::build( config &args )//call this for new cgi
 {
+	// delete request from tconig
+	// delete runing_processes[args.request->getFd()]->args.request;
+	PipeStream::remove(args.request->getFd());
+	if (runing_processes.find(args.request->getFd()) != runing_processes.end())
+	{
+		// std::cout << "CGI::build( config &args ) 200" << std::endl;
+		delete runing_processes[args.request->getFd()];
+		runing_processes.erase(args.request->getFd());
+	}
 	CGI *cgi = new CGI(args);
+	runing_processes[args.request->getFd()] = cgi;
 	if ( ! cgi->run())
 	{
+
 		delete cgi;
+		runing_processes.erase(args.request->getFd());
 		return ;
 	}
-	runing_processes[args.request->getFd()] = cgi;
 }
 
 void CGI::checkTimeoutAndExitedProcesses( void ) //use it in poll
@@ -112,7 +123,6 @@ bool CGI::runProcess( void )
 		std::string dir = args.translated_path.substr(0, args.translated_path.find_last_of('/'));
 		if (chdir(dir.c_str()) == -1)
 		{
-			std::cerr << "Error: chdir() failed: " << strerror(errno) << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		// std::cerr << "EXECUTE CGI USING: " <<  args.location.getCgiExe() << "<|" << std::endl;
@@ -137,7 +147,6 @@ int64_t CGI::getTime( void )
 	if (gettimeofday(&tv, NULL))
 	{
 		//timeout will happen
-		// std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
 		// exit(0);//error dont exit
 		//internal server error when it fails because the timeout will kill it
 		return (0);

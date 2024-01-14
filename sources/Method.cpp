@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 02:46:24 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 07:04:30 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ void Method::getMethod()
 			}
 			else
 			{
-				this->method_config.response_code = "403 Forbidden";
+				this->method_config.response_code = "403 Forbidden no index file";
 				return ;
 			}
 		}
@@ -267,6 +267,20 @@ bool	Method::has_autoindex()
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
 		if (this->method_config.requested_path == this->method_config.server_locations[i].getName())
+		{
+			if (this->method_config.server_locations[i].getAutoindex() == 1)
+				return (true);
+			else if (this->method_config.server_locations[i].getAutoindex() == 0 
+			|| this->method_config.server_locations[i].getAutoindex() == -1)
+			{
+				return (false);
+			}
+		}
+	}
+	//check if the root has autoindex
+	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
+	{
+		if (this->method_config.server_locations[i].getName() == "/")
 		{
 			if (this->method_config.server_locations[i].getAutoindex())
 				return (true);

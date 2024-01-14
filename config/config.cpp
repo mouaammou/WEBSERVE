@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/13 00:27:34 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 05:38:53 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -442,6 +442,7 @@ unsigned long long Config::max_body_size(int *indice)
 	int size;
 	unsigned long long max;
 	size = this->ftokens.size();
+	printf("ftokens[*indice] = %s\n", ftokens[*indice].c_str());
 	if (size == *indice + 1)
 		error_call(this->ftokens[*indice] + " not set!");
 	if (this->ftokens[*indice + 1] == ";")
@@ -457,7 +458,7 @@ unsigned long long Config::max_body_size(int *indice)
 				 || ftokens[*indice].find("G", 0) != std::string::npos)
 			return(octet_convert(ftokens[*indice]));
 		else
-			error_call("max body size must be digits!");
+			error_call("max body  size must be digits!");
 	}
 	std::stringstream ss(ftokens[*indice]);
 	ss >> max;
@@ -535,6 +536,7 @@ void Config::handle_servers(int *indice)
 	(*indice)++;
 	this->count++;
 	server.setServerId(this->count);
+	server.setBodySize(-1);
 	while ((size_t)*indice < ftokens.size() && ftokens[*indice].compare("server"))
 	{
 		if (ftokens[*indice] == "port")

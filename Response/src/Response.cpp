@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 20:33:42 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 04:02:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,15 @@ Response::Response( config &args ) : args(args)
 
 void Response::file( void )
 {
+	if (args.response_code.compare(0, 3, "204") == 0)
+	{
+		statusLine(args.response_code);
+		oss << "Content-Length: " << 0 << "\r\n";
+		oss << "Content-Type: " << "text/plain" << "\r\n";
+		oss << "\r\n";
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
@@ -107,20 +116,20 @@ void Response::file( void )
 		return ;
 	}
 	CacheControl cache(args, ffd);
-	if ( ! cache.isModifiedSince())
-	{
-		args.response_code = "304";
-		statusLine(args.response_code);
-		oss << "Cache-Control: no-cache\r\n";
-		oss << "Date: " << getDate() << "\r\n";
-		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-		oss << "Accept-Ranges: none\r\n";
-		oss << "Server: " << "webserv/1.0" << "\r\n";
-		oss << "\r\n";
-		close(ffd);
-		SendResponse(oss.str(), -1, args.request->getFd());
-		return ;
-	}
+	// if ( ! cache.isModifiedSince())
+	// {
+	// 	args.response_code = "304";
+	// 	statusLine(args.response_code);
+	// 	oss << "Cache-Control: no-cache\r\n";
+	// 	oss << "Date: " << getDate() << "\r\n";
+	// 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+	// 	oss << "Accept-Ranges: none\r\n";
+	// 	oss << "Server: " << "webserv/1.0" << "\r\n";
+	// 	oss << "\r\n";
+	// 	close(ffd);
+	// 	SendResponse(oss.str(), -1, args.request->getFd());
+	// 	return ;
+	// }
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
