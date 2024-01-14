@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 03:51:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 03:53:00 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,16 +421,16 @@ bool			Request::storeChunkedRequestBody()
 
 bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
 {
-    std::string essentialHeaders[] = {"Host:", "User-Agent:", "Accept:"};
-    for (size_t i = 0; i < 3; i++)
-    {
-        std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
-        if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
+	std::string essentialHeaders[3] = {"Host:", "User-Agent:", "Accept:"};
+	for (size_t i = 0; i < 3; i++)
+	{
+		std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
+		if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
 		{
-            return false;
-        }
-    }
-    return true;
+			return false;
+		}
+	}
+	return true;
 }
 
 bool   		Request::handleRequestBody()

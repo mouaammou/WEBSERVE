@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/12 22:48:16 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/13 00:27:34 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,17 +215,7 @@ bool Config::str_digit(std::string str)
 	return true;
 }
 
-void Config::error_page(std::vector<std::string> vec, int indice)
-{
-	for (size_t i = 1; indice + i < vec.size(); i++)
-	{
-		if (!str_digit(vec[indice + i]))
-		{
-			std::cout << "Error :" << vec[indice + i - 1] << " " << vec[indice + i] << " Not digit" <<std::endl;
-			exit(0);
-		}
-	}
-}
+
 
 void Config::server_count()
 {
