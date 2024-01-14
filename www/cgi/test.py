@@ -13,16 +13,8 @@
 import cgitb
 cgitb.enable()
 import os
-print('Content-sdsType: text/plain; charset=utf-8')
-print('Content-sdsType: text/plain; charset=utf-8')
+print('Location: index.html')
+print('Status: 302 Found')
+print('Content-Type: text/html; charset=utf-8')
 print()
-# print(os.environ)
-for i in os.environ:
-    print(i,"--->", os.environ[i])
-
-print("\n\n----------------------------------------------\n")
-while True:
-    try:
-        print(input())
-    except:
-        break
+print('<html><body>Redirecting...</body></html>')
