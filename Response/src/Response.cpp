@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 02:52:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 04:02:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,20 +116,20 @@ void Response::file( void )
 		return ;
 	}
 	CacheControl cache(args, ffd);
-	if ( ! cache.isModifiedSince())
-	{
-		args.response_code = "304";
-		statusLine(args.response_code);
-		oss << "Cache-Control: no-cache\r\n";
-		oss << "Date: " << getDate() << "\r\n";
-		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-		oss << "Accept-Ranges: none\r\n";
-		oss << "Server: " << "webserv/1.0" << "\r\n";
-		oss << "\r\n";
-		close(ffd);
-		SendResponse(oss.str(), -1, args.request->getFd());
-		return ;
-	}
+	// if ( ! cache.isModifiedSince())
+	// {
+	// 	args.response_code = "304";
+	// 	statusLine(args.response_code);
+	// 	oss << "Cache-Control: no-cache\r\n";
+	// 	oss << "Date: " << getDate() << "\r\n";
+	// 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+	// 	oss << "Accept-Ranges: none\r\n";
+	// 	oss << "Server: " << "webserv/1.0" << "\r\n";
+	// 	oss << "\r\n";
+	// 	close(ffd);
+	// 	SendResponse(oss.str(), -1, args.request->getFd());
+	// 	return ;
+	// }
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";

@@ -13,8 +13,8 @@
 import cgitb
 cgitb.enable()
 import os
-print('Location: index.html')
-print('Status: 302 Found')
+# print('Location: index.html')
+# print('Status: 302 Found')
 print('Content-Type: text/html; charset=utf-8')
 print()
 print('<html><body>Redirecting...</body></html>')

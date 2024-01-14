@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 16:26:56 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 04:36:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ bool SendFile::sendString( void )
 
 void SendFile::build( int ffd, int sfd )
 {
+	delete files[sfd];
 	files[sfd] = new SendFile(ffd, sfd);
 }
 
@@ -79,6 +80,7 @@ bool SendString::sendString( void )
 
 void SendString::build( std::string const &data, int sfd )
 {
+	delete save[sfd];
 	save[sfd] = new SendString(data, sfd);
 }
 
@@ -131,6 +133,7 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 
 void SendResponse::remove( int fd )
 {
+	std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
 }
