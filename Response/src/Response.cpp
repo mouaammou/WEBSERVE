@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:02:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:53:10 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void Response::file( void )
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: no-cache\r\n";
+	oss << "Cache-Control: no-store\r\n";
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 	oss << "Accept-Ranges: none\r\n";

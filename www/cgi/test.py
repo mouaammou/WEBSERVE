@@ -20,8 +20,5 @@
 # print('<html><body>Redirecting...</body></html>')
 
 # //inifinite loop in python
-# while True:
-#     pass
-dsfdsf
-dsfdsfsdf
-dsfdsf
+print("Content-Type: text/html; charset=utf-8\n\n")
+print("hello")

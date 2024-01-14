@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 16:40:52 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:48:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,12 @@ int		Server::getServerSocket() const
 
 std::string			Server::getRequestedLocation(std::string path)
 {
+	std::cout << COLOR_GREEN "PATH :=> " COLOR_RESET << path << std::endl;
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
 	{
 		std::string tmp = path;
 		tmp[tmp.length() - 1] != '/' ? tmp += "/" : tmp;
+		std::cout << "tmp tmp: " << tmp << std::endl;
 		if (tmp.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
 			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];

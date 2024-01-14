@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 07:04:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:52:36 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,7 @@ void Method::getMethod()
 		}
 		else if (this->file_type == "dir")
 		{
+			
 			if (method_config.requested_path[method_config.requested_path.length() - 1] != '/')
 			{
 				this->method_config.response_code = "301 Moved Permanently";
