@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/14 05:38:53 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 21:01:09 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.hpp"
+#include "../include/config.hpp"
 
 int Config::count = 0;
 
@@ -253,6 +253,8 @@ int Config::handle_autodx(int *indice)
 		return 0;
 	else
 		error_call("auto index take only on or off!");
+	if (this->ftokens[(*indice) + 1].compare(";"))
+		error_call("auto index accept only one attribute");
 	return 0;
 }
 
@@ -391,6 +393,8 @@ void Config::handle_port(Directives& server,std::vector<int> &ports, int *indice
 	if (this->ftokens[*indice + 1] == ";")
 		error_call("port not set!");
 	(*indice)++;
+	if (this->ftokens[*indice + 1].compare(";"))
+		error_call("port accept only one attribute!");
 	if (!str_digit(ftokens[*indice]))
 		error_call("port must be digit!");
 	int port;

@@ -1,4 +1,4 @@
-#include "location.hpp"
+#include "../include/location.hpp"
 
 Location::Location() {
 	numOfSlash = 0;

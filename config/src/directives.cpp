@@ -1,4 +1,4 @@
-#include "directives.hpp"
+#include "../include/directives.hpp"
 
 Directives::Directives()
 {
