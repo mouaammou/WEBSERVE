@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:27:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 08:08:42 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,7 +374,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
-		TheClient(server, fd)->displayRequest();
+		// TheClient(server, fd)->displayRequest();
 
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
@@ -400,7 +400,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 			delete server->pointedMethod;
 			server->pointedMethod = NULL;
 		}
-		// server->printf_t_config(server->serverConfigFile);
+		server->printf_t_config(server->serverConfigFile);
 		Response response(server->serverConfigFile);
 	}
 	else
