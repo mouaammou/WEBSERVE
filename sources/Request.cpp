@@ -6,15 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 21:48:42 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 03:51:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
 #include "../Response/include/Response.hpp"
-#include <cerrno>
-#include <system_error>
-
 
 Request::Request(int fd, t_config config_file)
 {
@@ -38,14 +35,12 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
 	this->server_config.path_info = "";
 	this->_connection = "";
-	this->_cookies = "";
 	this->reqeust_timeout = 0;
 }
 
 void	Request::resetRequest()
 {
 	this->reqeust_timeout = 0;
-	this->_cookies = "";
 	this->request_string = "";
 	this->_connection = "";
 	this->method = "";
@@ -61,7 +56,6 @@ void	Request::resetRequest()
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
-	this->_cookies_map.clear();
 }
 
 Request::~Request()
@@ -72,11 +66,6 @@ Request::~Request()
 std::string Request::getMethod() const
 {
 	return (this->method);
-}
-
-std::string Request::getCookies() const
-{
-	return (this->_cookies);
 }
 
 std::string Request::getPath() const
@@ -122,16 +111,6 @@ bool			Request::hasBody() const
 int				Request::getFd() const
 {
 	return (this->fd);
-}
-
-void					 Request::setFd(int fd)
-{
-	this->fd = fd;
-}
-
-void					Request::setCookies(std::string &cookies)
-{
-	this->_cookies = cookies;
 }
 
 std::string 		  Request::getStatusCode() const
@@ -250,10 +229,6 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 			std::stringstream ss(value);
 			ss >> this->content_length;
 		}
-		if (key.compare("Cookie:") == 0)
-		{
-			this->setCookies(value);
-		}
 		if (key.compare("Connection:") == 0)//if the key is Connection
 		{
 			std::string tmp = value;
@@ -269,33 +244,9 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 		}
 		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
 			this->content_type = value;
-		if (key.compare("Cookie:") == 0)//if the key is Cookie
-		{
-			this->_cookies = value;
-			this->_cookies_map =  extractCookies();
-		}
 		this->request_headers[key] = value;
 	}
 	return (true);
-}
-
-std::string       Request::generateSessionId() 
-{
-	const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	const int idLength = 16;
-
-	std::string sessionId;
-	for (int i = 0; i < idLength; ++i) {
-		srand(time(0));
-		sessionId += charset[rand() % (sizeof(charset) - 1)];
-	}
-
-	return sessionId;
-}
-
-void 		 Request::setCookie(std::string name, std::string value)
-{
-	this->_cookies_map[name] = value;
 }
 
 bool	Request::checkMethod()
@@ -480,38 +431,6 @@ bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& 
         }
     }
     return true;
-}
-
-std::map<std::string, std::string> 			Request::extractCookies()
-{
-    std::map<std::string, std::string> cookies;
-	std::string cookies_value = "Cookie:" + this->_cookies;
-    std::string::size_type start = cookies_value.find("Cookie: ");
-    if (start != std::string::npos)
-	{
-        start += 8;  // Length of "Cookie: "
-        std::string::size_type end = cookies_value.find("\r\n", start);
-        if (end != std::string::npos) {
-            std::string cookieString = cookies_value.substr(start, end - start);
-            std::string::size_type pos = 0;
-            while ((pos = cookieString.find(";")) != std::string::npos)
-			{
-				// printf("IN WHILE\n");
-                std::string cookie = cookieString.substr(0, pos);
-                std::string::size_type eqPos = cookie.find("=");
-                if (eqPos != std::string::npos)
-				{
-                    std::string value = cookie.substr(eqPos + 1);
-                    std::string name = cookie.substr(0, eqPos);
-					stringTrim(name);
-					stringTrim(value);
-                    cookies[name] = value;
-                }
-                cookieString.erase(0, pos + 1);
-            }
-        }
-    }
-    return cookies;
 }
 
 bool   		Request::handleRequestBody()
