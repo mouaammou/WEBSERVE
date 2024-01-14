@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PipeStream.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:12 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/12 06:00:25 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 05:25:26 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,7 @@ bool  PipeStream::readFromPipe( void )
 		return true;
 	if (ret == -1)
 	{
-		// std::cerr << "status:" << exit_status <<  std::endl;//error remove errno
 		exit_status = -1;
-		std::cerr << "Error: read() from cgi pipe failed: " << fd << strerror(errno) << std::endl;//error remove errno
 		return true;
 	}
 	buffer[ret] = '\0';
@@ -91,7 +89,6 @@ bool  PipeStream::init( void ) //call it in cgi
 	fds[1] = -1;
 	if (pipe(fds) == -1)
 	{
-		std::cerr << "Error 0: pipe() failed: " << strerror(errno) << std::endl;
 		return false;
 	}
 	fd = fds[0];
@@ -106,7 +103,6 @@ void  PipeStream::inChildProcess( void ) //call it in child proccess in cgi
 	close(fds[0]);
 	if (dup2(fds[1], STDOUT_FILENO) == -1)
 	{
-		std::cerr << "Error 1: dup2() failed: " << fds[1] << strerror(errno) << std::endl;
 		close(fds[1]);
 		std::exit(EXIT_FAILURE);
 	}
@@ -116,12 +112,10 @@ void  PipeStream::inChildProcess( void ) //call it in child proccess in cgi
 	/*** put pipe in STDIN, And write request body to it ***/
 	if (pipe(fds) == -1)
 	{
-		std::cerr << "Error: pipe() failed: " << strerror(errno) << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	if (dup2(fds[0], STDIN_FILENO) == -1)
 	{
-		std::cerr << "Error 2: dup2() failed: " << strerror(errno) << std::endl;
 		close(fds[0]);
 		close(fds[1]);
 		std::exit(EXIT_FAILURE);
@@ -136,7 +130,6 @@ void  PipeStream::inChildProcess( void ) //call it in child proccess in cgi
 	}
 	if (close(fds[1]) == -1)
 	{
-		std::cerr << "Error: closing write end of pipe in cgi  failed: " << strerror(errno) << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 03:53:00 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/14 05:40:01 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Request::Request(int fd, t_config config_file)
 	this->request_received = false;
 	this->query_string = "";
 	this->_status_code = "200 OK";
-	this->_body_size  = this->server_config.body_size > 0 ? this->server_config.body_size : -1;
+	this->_body_size  = this->server_config.body_size;
 	this->server_config.path_info = "";
 	this->_connection = "";
 	this->reqeust_timeout = 0;
@@ -56,6 +56,7 @@ void	Request::resetRequest()
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
+	this->_body_size = -1;
 }
 
 Request::~Request()

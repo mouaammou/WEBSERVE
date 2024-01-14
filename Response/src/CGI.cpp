@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 05:01:24 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 05:22:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ bool CGI::runProcess( void )
 		std::string dir = args.translated_path.substr(0, args.translated_path.find_last_of('/'));
 		if (chdir(dir.c_str()) == -1)
 		{
-			std::cerr << "Error: chdir() failed: " << strerror(errno) << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		// std::cerr << "EXECUTE CGI USING: " <<  args.location.getCgiExe() << "<|" << std::endl;
@@ -148,7 +147,6 @@ int64_t CGI::getTime( void )
 	if (gettimeofday(&tv, NULL))
 	{
 		//timeout will happen
-		// std::cerr << "Error: gettimeofday() failed: " << strerror(errno) << std::endl;
 		// exit(0);//error dont exit
 		//internal server error when it fails because the timeout will kill it
 		return (0);
