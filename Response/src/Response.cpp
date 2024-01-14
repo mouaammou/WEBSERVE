@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 20:33:42 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 02:52:22 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,15 @@ Response::Response( config &args ) : args(args)
 
 void Response::file( void )
 {
+	if (args.response_code.compare(0, 3, "204") == 0)
+	{
+		statusLine(args.response_code);
+		oss << "Content-Length: " << 0 << "\r\n";
+		oss << "Content-Type: " << "text/plain" << "\r\n";
+		oss << "\r\n";
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
