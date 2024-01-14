@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 00:37:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/14 02:19:39 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,14 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
 	addEnvVar("REQUEST_URI", conf.request_url);
-	addEnvVar("SCRIPT_NAME", conf.translated_path);//script path
+	addEnvVar("SCRIPT_NAME", conf.request->getPath());//script path
 
 	addEnvVar("SERVER_NAME", conf.server_name);
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
 	addEnvVar("SERVER_SOFTWARE", "Nginx");
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
+	addEnvVar("REDIRECT_STATUS", "200");//vesrion of cgi
 
 
 	requestHeaderstToCGIVariables();
@@ -116,7 +117,7 @@ void Execute::requestHeaderstToCGIVariables( void )
 	{
 		std::string key = toUpperCaseVar(it->first);
 		// printf("key: %s\n", key.c_str());
-		if (key == "HTTP_CONTENT_LENGTH" || key == "HTTP_CONTENT_TYPE" || key == "HTTP_TRANSFER_ENCODING" || key == "HTTP_CONNECTION" || key == "HTTP_COOKIE")
+		if (key == "HTTP_CONTENT_LENGTH" || key == "HTTP_CONTENT_TYPE" || key == "HTTP_TRANSFER_ENCODING" || key == "HTTP_CONNECTION")
 			continue;
 		headers[key] = it->second;
 	}

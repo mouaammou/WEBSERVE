@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 00:21:38 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 02:47:16 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,6 @@ FilesUpload::FilesUpload( t_config &conf ) : conf(conf)
 	this->_upload_path = conf.location.getRoot() + conf.location.getUploadPath();
 	if ( ! this->isValidContentType())
 	{
-		std::cout << "Invalid content type to upload file" << std::endl;
 		conf.response_code = "400";
 		return ;
 	}

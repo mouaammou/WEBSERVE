@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/12 23:12:30 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 20:33:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,11 +106,30 @@ void Response::file( void )
 		error();
 		return ;
 	}
+	CacheControl cache(args, ffd);
+	if ( ! cache.isModifiedSince())
+	{
+		args.response_code = "304";
+		statusLine(args.response_code);
+		oss << "Cache-Control: no-cache\r\n";
+		oss << "Date: " << getDate() << "\r\n";
+		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+		oss << "Accept-Ranges: none\r\n";
+		oss << "Server: " << "webserv/1.0" << "\r\n";
+		oss << "\r\n";
+		close(ffd);
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: no-store\r\n";
-	oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
+	oss << "Cache-Control: no-cache\r\n";
+	oss << "Date: " << getDate() << "\r\n";
+	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+	oss << "Accept-Ranges: none\r\n";
+	oss << "Server: " << "webserv/1.0" << "\r\n";
+	// oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
 	oss << "\r\n";
 	// std::cout << "RESPONSE::file->" << ffd << std::endl;
 	SendResponse(oss.str(), ffd, args.request->getFd());
@@ -161,4 +180,16 @@ bool Response::onPollout( int sfd )
 {
 	// std::cout << "onPollout " << sfd << std::endl;
 	return SendResponse::send(sfd);
+}
+
+std::string Response::getDate( void )
+{
+    std::time_t currentTime = std::time(NULL);
+    std::tm* utcTime = std::gmtime(&currentTime);
+    char buffer[120];
+    std::memset(buffer, 0, sizeof(buffer));
+    std::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", utcTime);
+    // Date: Tue, 15 Nov 1994 08:12:31 GMT
+    // _date = buffer;
+	return buffer;
 }

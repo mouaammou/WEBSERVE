@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 00:34:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 21:57:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,14 +60,14 @@ typedef struct config
 	std::vector<Location>	server_locations;
 	std::string				server_name;
 	std::string				request_url;
-	std::string port;
-	Directives 	*Server;
-	Location 	location;
-	std::string translated_path;
-	std::string path_info;
-	std::string path_info_translated;
-	std::string response_code;
-	std::string requested_path;
+	std::string 		port;
+	Directives 			*Server;
+	Location 			location;
+	std::string 		translated_path;
+	std::string 		path_info;
+	std::string 		path_info_translated;
+	std::string 		response_code;
+	std::string 		requested_path;
 	std::string autoindex;//on or off
 	Request		*request;
 	PollServers	*poll;

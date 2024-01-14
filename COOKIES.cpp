@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -52,20 +53,23 @@ private:
     // Other members...
 
     // Function to generate a random session ID
-    std::string generateSessionId() {
+    // srand(time(NULL));
+    std::string generateSessionId()
+    {
         const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         const int idLength = 16;
 
         std::string sessionId;
         for (int i = 0; i < idLength; ++i) {
+            srand(time(0));
             sessionId += charset[rand() % (sizeof(charset) - 1)];
         }
-
         return sessionId;
     }
 
     // Function to handle session creation and retrieval
-    std::string manageSession(int clientSocket) {
+    std::string manageSession(int clientSocket)
+    {
         // Extract session ID from the incoming request (you need to parse the request headers)
         std::string sessionId = extractSessionIdFromRequest(clientSocket);
 
@@ -83,7 +87,8 @@ private:
     }
 
     // Function to extract session ID from request (you need to parse headers)
-    std::string extractSessionIdFromRequest(int clientSocket) {
+    std::string extractSessionIdFromRequest(int clientSocket)
+    {
         // Implement the logic to extract the session ID from the request headers
         // For example, look for a "Cookie" header and extract the session ID from it.
         // Return an empty string if not found.
@@ -94,7 +99,7 @@ private:
     void sendSessionCookie(int clientSocket, const std::string& sessionId) {
         // Implement the logic to send the "Set-Cookie" header with the session ID in the response.
         // This depends on your specific response format. For example:
-        std::string setCookieHeader = "Set-Cookie: session_id=" + sessionId + "; Path=/";
+        std::string setCookieHeader = "Set-Cookie: session_id=" + sessionId;
         sendHttpResponseHeader(clientSocket, setCookieHeader);
     }
 
