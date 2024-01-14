@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 04:54:12 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 02:46:24 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ bool Method::deleteFolderContents(const std::string& directoryPath)
 {
 	DIR* dir = opendir(directoryPath.c_str());
 	if (dir == NULL)
+	{
+		std::cerr << directoryPath << " can not opened" << std::endl;
 		return false;
+	}
 	struct dirent* entry;
 	while ((entry = readdir(dir)) != NULL)
 	{
@@ -69,12 +72,14 @@ bool Method::deleteFolderContents(const std::string& directoryPath)
 	}
 	closedir(dir);
 	if (remove(directoryPath.c_str()) != 0)
-		std::cerr << "not removed" << std::endl;  /// in case of error what should we do			??????????????????????????
+		std::cerr << "not removed" << std::endl;
 	return true;
 }
 
 void Method::postMethod()
 {
+	this->method_config.autoindex = "off";
+	this->method_config.cgi = false;
 	has_cgi();
 	if ( ! FilesUpload(this->method_config).isUploadRequest())//upload file is supported.
 	{
@@ -114,7 +119,9 @@ void Method::postMethod()
 
 void Method::deleteMethod()
 {
-	std::cout << "i'm in ----------> **********\n";
+	this->method_config.autoindex = "off";
+	this->method_config.cgi = false;
+	this->method_config.translated_path = this->method_config.location.getRoot() + this->method_config.requested_path;
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
@@ -144,11 +151,13 @@ void Method::deleteMethod()
 				}
 				else
 				{
-					if (deleteFolderContents(this->method_config.requested_path))
+					if (deleteFolderContents(this->method_config.translated_path))//
+					{
 						this->method_config.response_code = "204 No Content";
+					}
 					else
 					{
-						if (access(this->method_config.translated_path.c_str(), W_OK | R_OK) == 0)
+						if (access(this->method_config.translated_path.c_str(), W_OK) == 0)
 							this->method_config.response_code = "500 Internal Server Error";
 						this->method_config.response_code = "403 Forbidden";
 					}
@@ -161,12 +170,15 @@ void Method::deleteMethod()
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
-	this->method_config.autoindex = "off";
-	this->method_config.cgi = false;
+
+
 }
 
 void Method::getMethod()
 {
+	this->method_config.autoindex = "off";
+	this->method_config.cgi = false;
+
 	if (this->get_method_file_type())
 	{
 		if (this->file_type == "file")
@@ -242,7 +254,7 @@ bool		Method::get_method_file_type()
 	else
 	{
 		printf("translated_path: %s\n", this->method_config.translated_path.c_str());
-	puts("not found");
+		puts("not found");
 		this->method_config.response_code = "404 Not Found";
 		return (false);
 	}
@@ -272,7 +284,7 @@ bool			Method::has_cgi()
 		return (true);
 	}
 	this->method_config.cgi = false;
-	return (true);
+	return (false);
 }
 
 bool			Method::getCGI() const

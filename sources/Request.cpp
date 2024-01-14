@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 23:02:06 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 00:19:43 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,6 +322,7 @@ bool 	Request::checkPath()
 {
 	if (this->path.find("..") != std::string::npos)
 		return (_status_code = "403 Forbidden", true);
+	this->server_config.request_url = this->path;
 	this->handleQueryString();
 	this->handlePathInfo();
 	if (this->allowedURIchars(this->path) == false)
@@ -446,19 +447,19 @@ bool			Request::storeChunkedRequestBody()
 
 bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
 {
-    std::string essentialHeaders[] = {"Host:", "User-Agent:", "Accept:"};
-    for (size_t i = 0; i < 3; i++)
-    {
-        std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
-        if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
+	std::string essentialHeaders[3] = {"Host:", "User-Agent:", "Accept:"};
+	for (size_t i = 0; i < 3; i++)
+	{
+		std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
+		if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
 		{
-            return false;
-        }
-    }
-    return true;
+			return false;
+		}
+	}
+	return true;
 }
 
-bool   		Request::handleRequestBody()
+bool		Request::handleRequestBody()
 {
 	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{

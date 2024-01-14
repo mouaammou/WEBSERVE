@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 22:57:21 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 00:43:09 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class Request
 		t_config 		server_config;
 		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
-		Request(int fd, t_config config_file);
+		Request(int fd, t_config config_file);             //
 		~Request();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
@@ -83,22 +83,22 @@ class Request
 		//display request headers
 		void	displayRequest();
 		// Function to parse the raw HTTP request
-		bool  	parseRequestFirstLine(const std::string& line);
-		bool   		parseRequestHeaders(const std::string& line);
+		bool	parseRequestFirstLine(const std::string& line);
+		bool		parseRequestHeaders(const std::string& line);
 		bool    		storeRequestBody();
 		bool			 storeChunkedRequestBody();
 		void				handlePathInfo();
 		void				  handleQueryString();
 
 		bool		checkMethod();
-		bool		 checkVersion();
-		bool		  checkPath();
-		bool		   	allowedURIchars(std::string& str);
-		bool 				checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
+		bool		checkVersion();
+		bool		checkPath();
+		bool		allowedURIchars(std::string& str);
+		bool 		checkEssentialHeaders(const std::map<std::string, std::string>& request_headers);
 
-		bool	handleRequestHeaders(std::string buffe1rString);
-		bool	receiveRequest();
-		bool	sendResponse();
+		bool		handleRequestHeaders(std::string buffe1rString);
+		bool		receiveRequest();
+		bool		sendResponse();
 
 		void	resetRequest();
 

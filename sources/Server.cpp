@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 11:27:58 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/13 16:40:52 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,25 @@ void	Server::setConfiguration(t_config configfile)
 void	Server::setServerSocket()
 {
 	//GETADDRINFO
-    struct addrinfo *result, hints;
+	struct addrinfo *result, hints;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-    hints.ai_socktype = SOCK_STREAM;//TCP
-    hints.ai_flags = AI_PASSIVE;    // fill it with local IP address
+	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+	hints.ai_socktype = SOCK_STREAM; //TCP
+	hints.ai_flags = AI_PASSIVE;    // fill it with local IP address
 
-    if (getaddrinfo(NULL, this->severPort.c_str(), &hints, &result) != 0)
-    {
-        perror("getaddrinfo");
-        throw std::runtime_error("getaddrinfo");
-    }
-    //SETSOCKOPT
-    this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (this->serverSocket == -1)
-    {
-        perror("socket");
-        throw std::runtime_error("socket");// exit not allowed after server launched
-    }
+	if (getaddrinfo(NULL, this->severPort.c_str(), &hints, &result) != 0)
+	{
+		perror("getaddrinfo");
+		throw std::runtime_error("getaddrinfo");
+	}
+	//SETSOCKOPT
+	this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+	if (this->serverSocket == -1)
+	{
+		perror("socket");
+		throw std::runtime_error("socket");// exit not allowed after server launched
+	}
 	this->result = result;
 }
 
@@ -70,13 +70,13 @@ void    Server::bindServerSocket()
 		perror("setsockopt");
 		throw std::runtime_error("setsockopt");
 	}
-    //BIND
-    if (bind(this->serverSocket, this->result->ai_addr, this->result->ai_addrlen) == -1)
-    {
-        perror("bind");
-        throw std::runtime_error("bind");
-    }
-    freeaddrinfo(this->result);//free the linked list
+	//BIND
+	if (bind(this->serverSocket, this->result->ai_addr, this->result->ai_addrlen) == -1)
+	{
+		perror("bind");
+		throw std::runtime_error("bind");
+	}
+	freeaddrinfo(this->result);//free the linked list
 }
 
 int  Server::listenForConnections()
@@ -132,7 +132,7 @@ std::string			Server::getRequestedLocation(std::string path)
 
 std::string		Server::getTranslatedPath(std::string location, std::string path)//localhost:8080/adsfadsf
 {
-	size_t i; 
+	size_t i;
 	for (i = 0; i < this->serverConfigFile.server_locations.size(); i++)
 	{
 		if (this->serverConfigFile.server_locations[i].getName() == location)

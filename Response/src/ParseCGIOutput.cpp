@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/11 17:03:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/13 01:00:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,12 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 		body = output.substr(pos + 2, getContentLength());
 	else
 		body = output.substr(pos + 2);
+	// if ( ! body.empty() && getFiled("Content-Type").empty())
+	// {
+	// 	args.response_code = "502";
+	// 	Response resp(args);
+	// 	return;
+	// }
 	if (thereIsContentLength() && body.length() < getContentLength())
 	{
 		//headers is case sensitve
