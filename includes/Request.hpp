@@ -3,19 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 02:47:02 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/14 03:52:41 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "../includes/Server.hpp"
-#include <cstddef>
-#include <sstream>
-#include <string>
 
 class Request
 {
@@ -42,11 +39,9 @@ class Request
 
 		std::string 	 _status_code;
 	public:
-		std::string		_cookies;
-		std::map<std::string, std::string> _cookies_map;
-		size_t reqeust_timeout;
-		std::string      _connection;
-		int   read_bytes;
+		size_t 				reqeust_timeout;
+		std::string      	_connection;
+		int   				read_bytes;
 
 		t_config 		server_config;
 		char	*buffer;
@@ -62,10 +57,7 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
 		int				      getFd() const;
-		std::string getCookies() const;
-		void	setCookies(std::string &cookies);
 
-		void					 setFd(int fd);
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
 		// Method*				    getRequestedMethod() const;
@@ -102,8 +94,5 @@ class Request
 
 		void	resetRequest();
 
-		std::string								extractChunks(const std::string& request);
-		std::map<std::string, std::string> 			extractCookies();
-		void 											setCookie(std::string name, std::string value);
-		std::string 										generateSessionId();
+		std::string		extractChunks(const std::string& request);
 };
