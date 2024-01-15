@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 05:40:01 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/15 11:44:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,14 +422,10 @@ bool			Request::storeChunkedRequestBody()
 
 bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
 {
-	std::string essentialHeaders[3] = {"Host:", "User-Agent:", "Accept:"};
-	for (size_t i = 0; i < 3; i++)
+	std::map<std::string, std::string>::const_iterator it = request_headers.find("Host:");
+	if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
 	{
-		std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
-		if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
-		{
-			return false;
-		}
+		return false;
 	}
 	return true;
 }

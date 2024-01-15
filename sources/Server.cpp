@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 20:48:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:59:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void	Server::setServerSocket()
 {
 	//GETADDRINFO
 	struct addrinfo *result, hints;
-
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
 	hints.ai_socktype = SOCK_STREAM; //TCP
@@ -48,14 +47,12 @@ void	Server::setServerSocket()
 
 	if (getaddrinfo(NULL, this->severPort.c_str(), &hints, &result) != 0)
 	{
-		perror("getaddrinfo");
 		throw std::runtime_error("getaddrinfo");
 	}
 	//SETSOCKOPT
 	this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (this->serverSocket == -1)
 	{
-		perror("socket");
 		throw std::runtime_error("socket");// exit not allowed after server launched
 	}
 	this->result = result;
@@ -66,14 +63,13 @@ void    Server::bindServerSocket()
 	//set server socket
 	this->setServerSocket();
 	int sendBufferSize = 1;  // Adjust the buffer size as needed
-	if (setsockopt(this->serverSocket , SOL_SOCKET, SO_REUSEPORT , &sendBufferSize, sizeof(sendBufferSize)) == -1) {
-		perror("setsockopt");
+	if (setsockopt(this->serverSocket , SOL_SOCKET, SO_REUSEPORT , &sendBufferSize, sizeof(sendBufferSize)) == -1)
+	{
 		throw std::runtime_error("setsockopt");
 	}
 	//BIND
 	if (bind(this->serverSocket, this->result->ai_addr, this->result->ai_addrlen) == -1)
 	{
-		perror("bind");
 		throw std::runtime_error("bind");
 	}
 	freeaddrinfo(this->result);//free the linked list
@@ -86,7 +82,6 @@ int  Server::listenForConnections()
     //LISTEN
     if (listen(this->serverSocket, 1024) == -1)
     {
-        perror("listen");
 		throw std::runtime_error("listen");
     }
     return (this->serverSocket);
@@ -99,7 +94,6 @@ bool		Server::isClient(int fd)
 
 void		Server::addClient(int fd)
 {
-	std::cout << COLOR_CYAN "New client" COLOR_RESET << std::endl;
 	this->httpClients[fd] = new Request(fd, this->serverConfigFile);
 }
 
@@ -117,12 +111,10 @@ int		Server::getServerSocket() const
 
 std::string			Server::getRequestedLocation(std::string path)
 {
-	std::cout << COLOR_GREEN "PATH :=> " COLOR_RESET << path << std::endl;
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
 	{
 		std::string tmp = path;
 		tmp[tmp.length() - 1] != '/' ? tmp += "/" : tmp;
-		std::cout << "tmp tmp: " << tmp << std::endl;
 		if (tmp.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
 			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];

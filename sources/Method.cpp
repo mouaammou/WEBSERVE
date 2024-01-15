@@ -6,13 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 20:52:36 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/15 19:16:51 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
-#include <cstdio>
-
 
 bool Method::hasValidCGI(const std::string& filename)
 {
@@ -170,8 +168,6 @@ void Method::deleteMethod()
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
-
-
 }
 
 void Method::getMethod()
@@ -294,7 +290,6 @@ bool			Method::has_cgi()
 {
 	if (hasValidCGI(method_config.translated_path))
 	{
-		// std::cout << "**** CGI FOUND" << std::endl;
 		this->method_config.cgi = true;
 		return (true);
 	}
