@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 08:35:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:33:03 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void ParseCGIOutput::additionalHeaders( void )
 
 void ParseCGIOutput::response( int status, std::string output, config &args )
 {
-	std::cout << "response is called\n"<< output << std::endl;
+	// std::cout << "response is called\n"<< output << std::endl;
 	if (args.response_code == "504")
 	{
 		Response resp(args);

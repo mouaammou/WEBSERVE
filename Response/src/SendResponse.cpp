@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 10:29:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:31:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 
 void SendResponse::remove( int fd )
 {
-	std::cout << "remove send response" << std::endl;
+	// std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
 	std::ostringstream oss;

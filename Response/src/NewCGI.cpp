@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 10:29:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:33:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void NewCGI::checkExitedProcess( void )
     for (size_t i=0; i < pids_to_remove.size(); ++i)
     {
         //collect exit status of removed CGI's
-        std::cout << "WAIT FOR PID: " << pids_to_remove[i] << std::endl;
+        // std::cout << "WAIT FOR PID: " << pids_to_remove[i] << std::endl;
         pid_t pid = pids_to_remove[i];
         if (pid == -1)
             continue ;
@@ -85,7 +85,7 @@ void NewCGI::checkExitedProcess( void )
 
 void NewCGI::build( config &conf )//call this for new cgi
 {
-    std::cout << "BUILD CGI <=====>" << conf.socket_fd  << std::endl;
+    // std::cout << "BUILD CGI <=====>" << conf.socket_fd  << std::endl;
     remove(conf.server_fd);
     NewCGI *cgi = new NewCGI(conf);
     active_procs[conf.request->getFd()] = cgi;
@@ -101,7 +101,7 @@ void NewCGI::build( config &conf )//call this for new cgi
 
 void NewCGI::onProcessExit()
 {
-    std::cout << "CGI EXITED" << std::endl;
+    // std::cout << "CGI EXITED" << std::endl;
     std::ifstream file(filename.c_str());
     if ( ! file.is_open())
     {
@@ -130,7 +130,7 @@ bool NewCGI::execute( void)
     {
 
         child();
-        std::cerr << "EXECUTE CGI USING: " <<  conf.location.getCgiExe() << "<|" << std::endl;
+        // std::cerr << "EXECUTE CGI USING: " <<  conf.location.getCgiExe() << "<|" << std::endl;
         std::string dir = conf.translated_path.substr(0, conf.translated_path.find_last_of('/'));
         if (chdir(dir.c_str()) == -1)
             std::exit(EXIT_FAILURE);
