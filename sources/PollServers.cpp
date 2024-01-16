@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/15 19:04:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/15 22:07:55 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Re
 				std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				if (multi_ports == true)
 					server->setConfiguration(tmp_config);
-				if (HttpClient->_connection == "close")//connectio: keep-alive, close
+				if (HttpClient->_connection == "close")//connection: keep-alive, close
 				{
 					return (removeFromPoll(server, fileDescriptor), false);
 				}
@@ -142,7 +142,7 @@ void			  PollServers::track_ALL_Clients(void)
 				continue;
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
-		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR))
 		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
 		}
@@ -407,7 +407,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		this->checkProxyMethod(server, TheClient(server, fd)->getMethod());
 
 		//call the method class
-		handle_Method(server, fd);
+		this->handle_Method(server, fd);
 
 		server->printf_t_config(server->serverConfigFile);
 		//generate the response
