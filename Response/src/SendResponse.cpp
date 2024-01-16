@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:36:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 05:54:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void SendString::build( std::string const &data, int sfd )
 bool SendString::send( int sfd )
 {
 	// means cgi is running and we should wait for it
-	if (CGI::runing_processes.find(sfd) != CGI::runing_processes.end())
+	if (NewCGI::active_procs.find(sfd) != NewCGI::active_procs.end())
 	{
 		// std::cerr << "Wait CGI RESPONSE    " <<  sfd << std::endl;
 		return false;
@@ -125,7 +125,7 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
-	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
+	std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);

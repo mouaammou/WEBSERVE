@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 20:53:10 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/16 05:56:03 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void Response::runCGI( void )
 {
-	CGI::build( args );
+	NewCGI::build( args );
 }
 
 void Response::autoIndex( void )
@@ -187,7 +187,7 @@ void Response::error( void )//5xx 4xx
 
 bool Response::onPollout( int sfd )
 {
-	// std::cout << "onPollout " << sfd << std::endl;
+	std::cout << "onPollout " << sfd << std::endl;
 	return SendResponse::send(sfd);
 }
 
