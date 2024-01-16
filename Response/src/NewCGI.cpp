@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:56:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 07:45:19 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void NewCGI::remove( int sfd )
     active_procs[cgi->socketfd ] = NULL;
     delete cgi;
     active_procs.erase(sfd);
+    SendResponse::remove(sfd);
 }
 
 NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf(conf)

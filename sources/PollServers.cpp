@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:56:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 09:04:07 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,11 @@ void 				PollServers::initPoll()
 		{
 			this->track_ALL_Clients();
 		}
-		NewCGI::checkExitedProcess();
+		try{
+			NewCGI::checkExitedProcess();
+		}catch(const std::exception& e){
+			std::cerr << "=========dsfdsfdsdsff====" <<e.what() << '\n';
+		}
 	}
 }
 
@@ -206,8 +210,8 @@ Server*				PollServers::whitchServer(int clientFd)
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
 	std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
+	SendResponse::remove(fd);
 	this->removeFileDescriptor(fd);
-	NewCGI::remove(fd);
 	if (server)
 	{
 		server->removeClient(fd);

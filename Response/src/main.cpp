@@ -95,7 +95,7 @@ class UploadFiles
 
 	bool bodyContainsUploadedFile( std::string& headers)
 	{
-		std::cout << "headers->" << std::endl;
+		// std::cout << "headers->" << std::endl;
 		size_t pos = headers.find("Content-Disposition:");
 		if (pos == std::string::npos)
 		{

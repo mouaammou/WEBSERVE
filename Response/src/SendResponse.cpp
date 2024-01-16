@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:54:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 09:20:10 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,14 @@ SendFile::SendFile( int ffd, int sfd )
 
 bool SendFile::sendString( void )
 {
-	short d = sendfile(filefd, sfd, offset, &length, NULL, 0);
+	short d = 0;
+	try{
+	d = sendfile(filefd, sfd, offset, &length, NULL, 0);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << "===--0-908985673948763948567893456748935674895";
+	}
 	offset += length;
 	length = 0;
 	if (d == 0)
@@ -71,6 +78,7 @@ SendString::SendString( std::string const &data, int sfd )
 
 bool SendString::sendString( void )
 {
+	// std::cout << "==x==>" << write(sfd, 0, 0) << std::endl;
 	ssize_t d = write(sfd, data.c_str(), data.length());
 	if (d == 0 && data.empty())
 		return true;
@@ -113,6 +121,7 @@ bool SendString::send( int sfd )
 
 bool SendResponse::send( int sfd )
 {
+	(void)sfd;
 	// call this from poll loop
 	if ( ! SendString::send(sfd))
 		return false;
@@ -125,10 +134,16 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
-	std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
+	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
+	try{
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << "DDDDDDDDDd" << '\n';
+	}
 }
 
 void SendResponse::remove( int fd )
