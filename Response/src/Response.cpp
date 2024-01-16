@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:56:03 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:47:11 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ int64_t Response::get_file_size( void )
 
 Response::Response( config &args ) : args(args)
 {
+	args.socket_fd = args.request->getFd();
 	// args.autoindex = args.location.getAutoindex()? "on" : "off";
 	// std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
 	if (args.cgi)

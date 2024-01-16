@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:27:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:48:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ Request::Request(int fd, t_config config_file)
 	this->server_config.path_info = "";
 	this->_connection = "";
 	this->reqeust_timeout = 0;
-	config_file.socket_fd = fd;
 }
 
 void	Request::resetRequest()
@@ -63,6 +62,7 @@ void	Request::resetRequest()
 Request::~Request()
 {
 	delete [] this->buffer;
+	this->server_config.request = NULL;
 }
 
 std::string Request::getMethod() const

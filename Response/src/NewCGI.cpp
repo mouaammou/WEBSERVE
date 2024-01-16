@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:30:44 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:56:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,13 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf
 void NewCGI::checkExitedProcess( void )
 {
     // ALWAYS AFTER POLL RETURN CHECK FOR ANY EXUTED PROCESSES
+    // std::cout << "CHECK EXITED CGI" << std::endl;
     std::vector<int> to_remove;
     int status = 0;
     std::map<int, NewCGI*>::iterator it;
     for (it = active_procs.begin(); it != active_procs.end(); ++it)
     {
+
         NewCGI *cgi = it->second;
         cgi->timeout();
         pid_t pid = waitpid(cgi->getPid(), &status, WNOHANG);
@@ -69,6 +71,7 @@ void NewCGI::checkExitedProcess( void )
     for (size_t i=0; i < pids_to_remove.size(); ++i)
     {
         //collect exit status of removed CGI's
+        std::cout << "WAIT FOR PID: " << pids_to_remove[i] << std::endl;
         pid_t pid = pids_to_remove[i];
         if (pid == -1)
             continue ;
@@ -81,11 +84,8 @@ void NewCGI::checkExitedProcess( void )
 
 void NewCGI::build( config &conf )//call this for new cgi
 {
-    // if (active_procs.find(conf.request->getFd()) != active_procs.end())
-    // {
-    //     delete active_procs[conf.request->getFd()];
-    //     active_procs.erase(conf.request->getFd());
-    // }
+    std::cout << "BUILD CGI <=====>" << conf.socket_fd  << std::endl;
+    remove(conf.server_fd);
     NewCGI *cgi = new NewCGI(conf);
     active_procs[conf.request->getFd()] = cgi;
     if ( ! cgi->execute())
