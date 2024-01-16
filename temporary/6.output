@@ -1,4 +1,0 @@
-Content-Type: application/json
-Set-Cookie: COUNTER=37; Path=/
-
-{"sessionId":"9s9yrepz13k","counter":37}

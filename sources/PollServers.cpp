@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 09:54:02 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 12:17:06 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,11 +169,7 @@ void 				PollServers::initPoll()
 		{
 			this->track_ALL_Clients();
 		}
-		try{
-			NewCGI::checkExitedProcess();
-		}catch(const std::exception& e){
-			std::cerr << "=========dsfdsfdsdsff====" <<e.what() << '\n';
-		}
+		NewCGI::checkExitedProcess();
 	}
 }
 

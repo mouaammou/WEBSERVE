@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:31:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 12:16:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,7 @@ SendFile::SendFile( int ffd, int sfd )
 
 bool SendFile::sendString( void )
 {
-	short d = 0;
-	try{
-	d = sendfile(filefd, sfd, offset, &length, NULL, 0);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << "===--0-908985673948763948567893456748935674895";
-	}
+	short d = sendfile(filefd, sfd, offset, &length, NULL, 0);
 	offset += length;
 	length = 0;
 	if (d == 0)

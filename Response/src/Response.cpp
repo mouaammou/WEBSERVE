@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 08:25:12 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 12:16:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,15 +189,7 @@ void Response::error( void )//5xx 4xx
 bool Response::onPollout( int sfd )
 {
 	// std::cout << "onPollout " << sfd << std::endl;
-	try
-	{
 	return SendResponse::send(sfd);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << "DDDDDDDDDd" << '\n';
-	}
-	return false;
 }
 
 std::string Response::getDate( void )
