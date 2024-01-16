@@ -6,11 +6,11 @@
 #    By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/16 05:17:00 by samjaabo         ###   ########.fr        #
+#    Updated: 2024/01/16 10:12:37 by samjaabo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FLAGS 		= -Wall -Wextra -Werror -g -fsanitize=address
+FLAGS 		= -Wall -Wextra -Werror #-g -fsanitize=address
 VERSION 	= -std=c++98
 NAME 		= webserver
 CCPP 		= c++

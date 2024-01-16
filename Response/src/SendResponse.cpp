@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 09:43:47 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 10:29:26 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ bool SendFile::send( int sfd )
 	}
 	return false;
 }
-
 
 SendFile::~SendFile( void )
 {
@@ -147,6 +146,9 @@ void SendResponse::remove( int fd )
 	std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
+	std::ostringstream oss;
+	oss << "temporary/" << fd << ".output";
+	std::remove(oss.str().c_str());
 }
 
 void SendString::remove( int fd )
