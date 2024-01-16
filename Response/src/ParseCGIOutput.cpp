@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:53:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:31:40 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 
 	// printf("REQUST ADRS: %p\n", args.request);
 	// printf("args ADRS: %p\n", &args);
-	SendResponse(new_headers + body, -1, args.request->getFd());
+	SendResponse(new_headers + body, -1, args.socket_fd);
 	// std::cout << "new_headers: " << new_headers << std::endl;
 	// std::cout << "body: " << body << std::endl;
 	// Response::ready_responses[client_fd] = new_headers + body; //error edit

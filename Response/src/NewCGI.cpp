@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:00:56 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:30:44 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,22 @@
 
 
 std::map<int, NewCGI*>   NewCGI::active_procs;
+std::vector<pid_t>          NewCGI::pids_to_remove;
+
+void NewCGI::remove( int sfd )
+{
+    std::map<int, NewCGI*>::iterator it = active_procs.find(sfd);
+    if (it == active_procs.end())
+        return ;
+    NewCGI *cgi = it->second;
+    if (cgi->pid != -1)
+        kill(cgi->pid, SIGKILL);
+    pids_to_remove.push_back(cgi->getPid());
+    // cgi->setPid(-1);
+    active_procs[cgi->socketfd ] = NULL;
+    delete cgi;
+    active_procs.erase(sfd);
+}
 
 NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf(conf)
 {
@@ -50,6 +66,17 @@ void NewCGI::checkExitedProcess( void )
     for (size_t i=0; i < to_remove.size(); ++i)
         active_procs.erase(to_remove[i]);
     to_remove.clear();
+    for (size_t i=0; i < pids_to_remove.size(); ++i)
+    {
+        //collect exit status of removed CGI's
+        pid_t pid = pids_to_remove[i];
+        if (pid == -1)
+            continue ;
+        pid = waitpid(pid, &status, WNOHANG);
+        if (pid == -1 || pid == 0)
+            continue ;
+        pids_to_remove.erase(pids_to_remove.begin() + i);
+    }
 }
 
 void NewCGI::build( config &conf )//call this for new cgi

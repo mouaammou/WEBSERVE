@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:27:55 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:21:11 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class NewCGI : public Execute
     public:
 
     static std::map<int, NewCGI*>   active_procs;
+    static std::vector<pid_t>       pids_to_remove;
     int                         socketfd;
     const int                   MAX_MSEC_TO_TIMEOUT;
     std::string                 filename;
@@ -43,6 +44,7 @@ class NewCGI : public Execute
     NewCGI( t_config &conf );
 
     static void checkExitedProcess( void );
+    static void remove( int sfd );
 
     static void build( config &conf );
 

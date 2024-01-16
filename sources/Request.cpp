@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/15 11:44:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/16 06:27:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ Request::Request(int fd, t_config config_file)
 	this->server_config.path_info = "";
 	this->_connection = "";
 	this->reqeust_timeout = 0;
+	config_file.socket_fd = fd;
 }
 
 void	Request::resetRequest()
