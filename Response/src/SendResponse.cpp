@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 09:20:10 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 09:43:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,9 @@ bool SendFile::send( int sfd )
 
 SendFile::~SendFile( void )
 {
-	std::cout << "close file" << std::endl;
+	std::ostringstream oss;
+	oss << "temporary/" << sfd << ".output";
+	std::remove(oss.str().c_str());
 	close(filefd);
 }
 
@@ -135,15 +137,9 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 	// call this from Response class
 	// 'ffd = -1' if you don't want to send any file
 	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
-	try{
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << "DDDDDDDDDd" << '\n';
-	}
 }
 
 void SendResponse::remove( int fd )

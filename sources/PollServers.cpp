@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 09:04:07 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 09:54:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ Server*				PollServers::whitchServer(int clientFd)
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
 	std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
+	NewCGI::remove(fd);
 	SendResponse::remove(fd);
 	this->removeFileDescriptor(fd);
 	if (server)
