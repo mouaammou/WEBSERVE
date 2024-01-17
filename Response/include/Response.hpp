@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:01:01 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:35:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "MediaTypes.hpp"
 #include "CacheControl.hpp"
 
-#include "Config.hpp"
+// #include "Config.hpp"
 
 class Response
 {
