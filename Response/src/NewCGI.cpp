@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:33:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/17 23:46:53 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf
     timeout_start = getCurrentTime();
     conf.response_code = "200";
     conf.cgi = false;
+    std::remove(filename.c_str());
 }
 
 void NewCGI::checkExitedProcess( void )
@@ -61,7 +62,11 @@ void NewCGI::checkExitedProcess( void )
             continue ;
         if (WIFSTOPPED(status) || WIFCONTINUED(status))
             continue;
-        cgi->onProcessExit();
+        if (WIFEXITED(status))
+            status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            status = WTERMSIG(status);
+        cgi->onProcessExit(status);
         active_procs[cgi->socketfd ] = NULL;
         delete cgi;
         to_remove.push_back(it->first);
@@ -99,7 +104,7 @@ void NewCGI::build( config &conf )//call this for new cgi
     }
 }
 
-void NewCGI::onProcessExit()
+void NewCGI::onProcessExit( int status )
 {
     // std::cout << "CGI EXITED" << std::endl;
     std::ifstream file(filename.c_str());
@@ -118,7 +123,7 @@ void NewCGI::onProcessExit()
         data.append(line + "\n");
     }
     file.close();
-    ParseCGIOutput().response(0, data, conf);
+    ParseCGIOutput tmp(status, data, conf);
 }
 
 bool NewCGI::execute( void)

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:33:03 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/17 23:52:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,17 @@ void ParseCGIOutput::translateHeaders( void )
 		std::size_t pos = headers.find("\n");
 		std::string	line = headers.substr(0, pos);
 		std::size_t sep = line.find(":");
+		char c = line[line.length() - 1];
 		if (line.substr(0, sep) != "Status")
 		{
-			new_headers.append(line + "\r\n");
+			if (c == '\r')
+				line.append("\n");
+			else
+				line.append("\r\n");
+			new_headers.append(line);
 		}
-		headers = headers.substr(pos + 1);
+		headers.erase(0, pos + 1);
+		// headers = headers.substr(pos + 1);
 	}
 }
 
@@ -82,30 +88,52 @@ void ParseCGIOutput::generateStatusLine( void )
 void ParseCGIOutput::additionalHeaders( void )
 {
 	new_headers.append("Cache-Control: no-store\r\n");
-	new_headers.append("Server: Nginx\r\n");
+	new_headers.append("Server: Webserv/1.0\r\n");
 }
 
-void ParseCGIOutput::response( int status, std::string output, config &args )
+void	ParseCGIOutput::phpResponse( std::string &output, config &args )
+{
+	std::cout  << "<<<<<<<<<<<<<< phpResponse >>>>>>>>>>>>" << std::endl;
+	size_t pos = output.find("\r\n\r\n");
+	if (pos == std::string::npos)
+	{
+		args.response_code = "502";
+		Response resp(args);
+		return;
+	}
+	headers = output.substr(0, pos + 2);
+	output.erase(0, pos + 4);
+	generateStatusLine();
+	std::stringstream str;
+	str << "Content-Length: " << output.length() << "\r\n";
+	new_headers.append(str.str());
+	translateHeaders();
+	additionalHeaders();
+	new_headers.append("\r\n");
+	SendResponse(new_headers + output, -1, args.socket_fd);
+	
+}
+
+ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 {
 	// std::cout << "response is called\n"<< output << std::endl;
-	if (args.response_code == "504")
+	if (args.response_code[0] == '5')
 	{
+		std::cout << "no headers" << std::endl;
 		Response resp(args);
 		return ;
 	}
-	if (status == -1)
+	size_t pos = args.translated_path.rfind(".php");
+	if (pos != std::string::npos && pos == args.translated_path.length() - 4)
 	{
-		// means pipe or fork failed and cgi didnt run
-		args.response_code = "500";//read failed
-		Response resp(args);
+		phpResponse(output, args);
 		return ;
 	}
-	// std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
-	std::size_t pos = output.find("\n\n");
+	pos = output.find("\n\n");
 	if (pos == std::string::npos)
 	{
 		//found no headers
-		// std::cout << "no headers" << std::endl;
+		std::cout << "no headers" << std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
@@ -125,12 +153,14 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 	{
 		//headers is case sensitve
 		//Content-Length is not Content-length
+		std::cout << "no headers" << std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
 	}
 	else if ( ! thereIsContentLength() && status != 0)
 	{
+		std::cout << "no headers" << status <<std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
@@ -142,8 +172,8 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 		str << "Content-Length: " << body.length() << "\r\n";
 		new_headers.append(str.str());
 	}
-	additionalHeaders();
 	translateHeaders();
+	additionalHeaders();
 	new_headers.append("\r\n");
 
 	// printf("REQUST ADRS: %p\n", args.request);

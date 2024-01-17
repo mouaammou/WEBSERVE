@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseCGIOutput.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2023/12/28 23:32:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/17 23:22:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,15 @@ class ParseCGIOutput
 	std::string headers;
 	std::string body;
 
-	std::string getFiled( std::string field );
-	void translateHeaders( void );
-	size_t getContentLength( void );
-	bool thereIsContentLength( void );
-	void generateStatusLine( void );
-	void additionalHeaders( void );
+	std::string	getFiled( std::string field );
+	void	translateHeaders( void );
+	size_t	getContentLength( void );
+	bool	thereIsContentLength( void );
+	void	generateStatusLine( void );
+	void	additionalHeaders( void );
 
 	public:
 
-	void response( int status, std::string output, config &args );
+	ParseCGIOutput(int status,  std::string &output, config &args );
+	void	phpResponse( std::string &output, config &args );
 };

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 06:21:11 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/17 23:38:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class NewCGI : public Execute
 
     static void build( config &conf );
 
-    void onProcessExit();
+    void onProcessExit(int status);
 
     bool execute( void);
 

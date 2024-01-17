@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 12:16:47 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:25:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,29 +116,30 @@ void Response::file( void )
 		error();
 		return ;
 	}
-	CacheControl cache(args, ffd);
-	// if ( ! cache.isModifiedSince())
-	// {
-	// 	args.response_code = "304";
-	// 	statusLine(args.response_code);
-	// 	oss << "Cache-Control: no-cache\r\n";
-	// 	oss << "Date: " << getDate() << "\r\n";
-	// 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-	// 	oss << "Accept-Ranges: none\r\n";
-	// 	oss << "Server: " << "webserv/1.0" << "\r\n";
-	// 	oss << "\r\n";
-	// 	close(ffd);
-	// 	SendResponse(oss.str(), -1, args.request->getFd());
-	// 	return ;
-	// }
+	CacheControl cache(args, ffd);//cache
+	if ( ! cache.isModifiedSince())
+	{
+		args.response_code = "304";
+		statusLine(args.response_code);
+		oss << "Cache-Control: no-cache\r\n";
+		oss << "Date: " << getDate() << "\r\n";
+		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+		oss << "Accept-Ranges: none\r\n";
+		oss << "Accept-Ranges: none\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
+		oss << "\r\n";
+		close(ffd);
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}//cache
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: no-store\r\n";
+	oss << "Cache-Control: no-cache\r\n";
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 	oss << "Accept-Ranges: none\r\n";
-	oss << "Server: " << "webserv/1.0" << "\r\n";
+	oss << "Server: " << "Webserv/1.0" << "\r\n";
 	// oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
 	oss << "\r\n";
 	// std::cout << "RESPONSE::file->" << ffd << std::endl;
@@ -153,6 +154,21 @@ void Response::redirect( void )
 	SendResponse(oss.str(), -1, args.request->getFd());
 }
 
+void Response::allow( void )
+{
+	if (args.response_code.compare(0, 3, "405") != 0)
+		return ;
+	std::string allowed = "Allow: ";
+	std::vector<std::string> methods = args.location.getMethods();
+	for (size_t i = 0; i < methods.size(); i++)
+	{
+		allowed.append(methods[i]);
+		if (i != methods.size() - 1)
+			allowed.append(", ");
+	}
+	oss << allowed << "\r\n";
+}
+
 void Response::error( void )//5xx 4xx
 {
 	int n;
@@ -160,6 +176,7 @@ void Response::error( void )//5xx 4xx
 	num >> n;
 	// args.Server->getHostName();
 	// args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
+
 	args.translated_path = args.Server->getErrorPage(n);
 	// std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
 	if ( ! args.translated_path.empty())
@@ -173,6 +190,9 @@ void Response::error( void )//5xx 4xx
 		oss << "Content-Length: " << error.length() << "\r\n";
 		oss << "Content-Type: " << "text/html" << "\r\n";
 		oss << "Cache-Control: no-store\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
+		allow();
+		oss << "Date: " << getDate() << "\r\n";
 		oss << "\r\n";
 		oss << error;
 		SendResponse(oss.str(), -1, args.request->getFd());
@@ -182,6 +202,9 @@ void Response::error( void )//5xx 4xx
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
+	oss << "Server: " << "Webserv/1.0" << "\r\n";
+	allow();
+	oss << "Date: " << getDate() << "\r\n";
 	oss << "\r\n";
 	SendResponse(oss.str(), ffd, args.request->getFd());
 }

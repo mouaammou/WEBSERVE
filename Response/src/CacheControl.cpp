@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/13 19:57:32 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 20:18:25 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:27:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ std::string CacheControl::getCacheHeader( void )
     std::map <std::string, std::string> &headers = _conf.request->getRequestHeaders();
     if (headers.find("If-Modified-Since:") == headers.end())
         return "";
+    std::cout << "If-Modified-Since: " << headers["If-Modified-Since:"] << std::endl;
     std::string str = headers["If-Modified-Since:"];   
     trimSpaces(str);
     return str;

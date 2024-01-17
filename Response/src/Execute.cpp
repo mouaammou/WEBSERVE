@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:25:37 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/17 23:28:23 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,10 @@ void Execute::addAllEnvVars( void )
 {
 
 	// addEnvVar("AUTH_TYPE", "");
-	if (conf.request->getContentLength() > 0)
-	{
-		std::ostringstream oss;
-		oss << conf.request->getContentLength();
-		addEnvVar("CONTENT_LENGTH", oss.str());//body
-		addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
-	}
+	std::ostringstream oss;
+	oss << conf.request->getContentLength();
+	addEnvVar("CONTENT_LENGTH", oss.str());//body
+	addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
 	addEnvVar("QUERY_STRING", conf.request->getQueryString());//or "" if no query string
 	addEnvVar("PATH_INFO", conf.path_info);
 	addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
