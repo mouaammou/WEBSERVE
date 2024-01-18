@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:23:54 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 11:32:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ void Response::file( void )
 		statusLine(args.response_code);
 		oss << "Content-Length: " << 0 << "\r\n";
 		oss << "Content-Type: " << "text/plain" << "\r\n";
+		oss << "Date: " << getDate() << "\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
 		oss << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
@@ -119,7 +121,6 @@ void Response::file( void )
 		oss << "Cache-Control: public, no-cache\r\n";
 		oss << "Date: " << getDate() << "\r\n";
 		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-		oss << "Accept-Ranges: none\r\n";
 		oss << "Accept-Ranges: none\r\n";
 		oss << "Server: " << "Webserv/1.0" << "\r\n";
 		oss << "\r\n";

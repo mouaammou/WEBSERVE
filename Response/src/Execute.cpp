@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:03:02 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 12:00:05 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
 	addEnvVar("REQUEST_URI", conf.request_url);//full requested path
 	addEnvVar("SCRIPT_NAME", conf.request->getPath());//script path
+	addEnvVar("SCRIPT_FILENAME", conf.translated_path);
 
 	addEnvVar("SERVER_NAME", conf.server_name);
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
 	addEnvVar("SERVER_SOFTWARE", "Webserv/1.0");
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
-	addEnvVar("REDIRECT_STATUS", "200");//vesrion of cgi
-
+	// addEnvVar("REDIRECT_STATUS", "200");//vesrion of cgi
 
 	requestHeaderstToCGIVariables();
 
@@ -82,6 +82,8 @@ void Execute::addAllArgs( void )
 {
 	args.push_back(const_cast<char*>(conf.location.getCgiExe().c_str()));
 	args.push_back(const_cast<char*>(conf.translated_path.c_str()));
+	// std::cout << "arg[0] = " << args[0] << std::endl;
+	// std::cout << "arg[1] = " << args[1] << std::endl;
 	args.push_back(NULL);
 }
 

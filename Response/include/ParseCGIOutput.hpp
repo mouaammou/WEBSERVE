@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:16:56 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 11:20:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ class ParseCGIOutput
 	public:
 
 	ParseCGIOutput(int status,  std::string &output, config &args );
-	void	phpResponse( std::string &output, config &args );
+	void	phpResponse(int status, std::string &output, config &args );
 };
