@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:35:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:16:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <string>
 #include "Codes.hpp"
 #include "Response.hpp"
-// #include "Config.hpp"
 #include "MediaTypes.hpp"
 #include "Response.hpp"
 

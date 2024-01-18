@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 12:16:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:09:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ SendString::SendString( std::string const &data, int sfd )
 
 bool SendString::sendString( void )
 {
-	// std::cout << "==x==>" << write(sfd, 0, 0) << std::endl;
 	ssize_t d = write(sfd, data.c_str(), data.length());
 	if (d == 0 && data.empty())
 		return true;
@@ -90,16 +89,9 @@ bool SendString::send( int sfd )
 {
 	// means cgi is running and we should wait for it
 	if (NewCGI::active_procs.find(sfd) != NewCGI::active_procs.end())
-	{
-		// std::cerr << "Wait CGI RESPONSE    " <<  sfd << std::endl;
 		return false;
-	}
-	// in case of cgi is running, we need to wait for it
 	if (save.find(sfd) == save.end())
-	{
-		// std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
-	}
 	if (save[sfd]->sendString())
 	{
 		delete save[sfd];
@@ -115,8 +107,6 @@ bool SendString::send( int sfd )
 
 bool SendResponse::send( int sfd )
 {
-	(void)sfd;
-	// call this from poll loop
 	if ( ! SendString::send(sfd))
 		return false;
 	if (SendFile::send(sfd))
@@ -126,9 +116,6 @@ bool SendResponse::send( int sfd )
 
 SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
-	// call this from Response class
-	// 'ffd = -1' if you don't want to send any file
-	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
@@ -136,7 +123,6 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 
 void SendResponse::remove( int fd )
 {
-	// std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
 	std::ostringstream oss;

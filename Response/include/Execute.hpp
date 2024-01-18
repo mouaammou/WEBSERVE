@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 06:18:37 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:16:20 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ private:
 	std::vector<char *>	args;
 	std::map<std::string, std::string> headers;
 	config				&conf;
-	// bool				error;
-	
+
 	void addAllEnvVars( void );
 	void addEnvVar( std::string key, std::string value );
 	std::string getRemoteAddr( void );

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:35:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:16:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,7 @@
 #include <signal.h>
 #include <ctime>
 #include <sys/time.h>
-// #include "Response.cpp"
 #include "ParseCGIOutput.hpp"
-// #include "Config.hpp"
 #include "../../includes/Request.hpp"
 #include "Execute.hpp"
 
@@ -45,19 +43,14 @@ class NewCGI : public Execute
 
     static void checkExitedProcess( void );
     static void remove( int sfd );
-
     static void build( config &conf );
 
     void onProcessExit(int status);
-
     bool execute( void);
-
     void child( void );
-
     int64_t getCurrentTime( void );
     void timeout( void );
-
+    
     pid_t getPid( void );
     void setPid( pid_t pid );
-//==============================================================================
 };

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/17 23:52:56 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:07:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void ParseCGIOutput::translateHeaders( void )
 			new_headers.append(line);
 		}
 		headers.erase(0, pos + 1);
-		// headers = headers.substr(pos + 1);
 	}
 }
 
@@ -116,10 +115,8 @@ void	ParseCGIOutput::phpResponse( std::string &output, config &args )
 
 ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 {
-	// std::cout << "response is called\n"<< output << std::endl;
 	if (args.response_code[0] == '5')
 	{
-		std::cout << "no headers" << std::endl;
 		Response resp(args);
 		return ;
 	}
@@ -132,8 +129,6 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 	pos = output.find("\n\n");
 	if (pos == std::string::npos)
 	{
-		//found no headers
-		std::cout << "no headers" << std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
@@ -143,24 +138,14 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 		body = output.substr(pos + 2, getContentLength());
 	else
 		body = output.substr(pos + 2);
-	// if ( ! body.empty() && getFiled("Content-Type").empty())
-	// {
-	// 	args.response_code = "502";
-	// 	Response resp(args);
-	// 	return;
-	// }
 	if (thereIsContentLength() && body.length() < getContentLength())
 	{
-		//headers is case sensitve
-		//Content-Length is not Content-length
-		std::cout << "no headers" << std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
 	}
 	else if ( ! thereIsContentLength() && status != 0)
 	{
-		std::cout << "no headers" << status <<std::endl;
 		args.response_code = "502";
 		Response resp(args);
 		return;
@@ -175,11 +160,5 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 	translateHeaders();
 	additionalHeaders();
 	new_headers.append("\r\n");
-
-	// printf("REQUST ADRS: %p\n", args.request);
-	// printf("args ADRS: %p\n", &args);
 	SendResponse(new_headers + body, -1, args.socket_fd);
-	// std::cout << "new_headers: " << new_headers << std::endl;
-	// std::cout << "body: " << body << std::endl;
-	// Response::ready_responses[client_fd] = new_headers + body; //error edit
 }
