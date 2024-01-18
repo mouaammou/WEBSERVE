@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/13 19:57:32 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:27:42 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:51:46 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ std::string CacheControl::getCacheHeader( void )
     std::map <std::string, std::string> &headers = _conf.request->getRequestHeaders();
     if (headers.find("If-Modified-Since:") == headers.end())
         return "";
-    std::cout << "If-Modified-Since: " << headers["If-Modified-Since:"] << std::endl;
     std::string str = headers["If-Modified-Since:"];   
     trimSpaces(str);
     return str;
@@ -38,7 +37,6 @@ time_t CacheControl::convertToUnixTimestamp( void )
     
     // "Wed, 15 Dec 2021 12:00:00 GMT"
     const char* format = "%a, %d %b %Y %H:%M:%S %Z";
-    std::cout << "tmStruct.tm_year: " << tmStruct.tm_year << std::endl;
     if ( ! strptime(getCacheHeader().c_str(), format, &tmStruct))
         return 0;
     time_t timestamp = mktime(&tmStruct);

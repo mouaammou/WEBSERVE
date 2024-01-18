@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/17 23:28:23 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:03:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,14 @@ void Execute::addAllEnvVars( void )
 {
 
 	// addEnvVar("AUTH_TYPE", "");
+	// addEnvVar("REMOTE_USER", "");
+	// addEnvVar("REMOTE_IDENT", "");
 	std::ostringstream oss;
 	oss << conf.request->getContentLength();
-	addEnvVar("CONTENT_LENGTH", oss.str());//body
-	addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
+	if (conf.request->getContentLength() > 0)
+		addEnvVar("CONTENT_LENGTH", oss.str());
+	if ( ! conf.request->getContentType().empty())
+		addEnvVar("CONTENT_TYPE", conf.request->getContentType());//if content type in headers
 	addEnvVar("QUERY_STRING", conf.request->getQueryString());//or "" if no query string
 	addEnvVar("PATH_INFO", conf.path_info);
 	addEnvVar("PATH_TRANSLATED", conf.path_info_translated);
@@ -27,13 +31,13 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("REMOTE_ADDR", getRemoteAddr()); // ip of client
 	addEnvVar("REMOTE_HOST", ""); //host name of the client -> NULL
 	addEnvVar("REQUEST_METHOD", conf.request->getMethod());
-	addEnvVar("REQUEST_URI", conf.request_url);
+	addEnvVar("REQUEST_URI", conf.request_url);//full requested path
 	addEnvVar("SCRIPT_NAME", conf.request->getPath());//script path
 
 	addEnvVar("SERVER_NAME", conf.server_name);
 	addEnvVar("SERVER_PORT", conf.port);
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
-	addEnvVar("SERVER_SOFTWARE", "Nginx");
+	addEnvVar("SERVER_SOFTWARE", "Webserv/1.0");
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
 	addEnvVar("REDIRECT_STATUS", "200");//vesrion of cgi
 
@@ -53,7 +57,6 @@ void Execute::addEnvVar( std::string key, std::string value )
 	if (pos != std::string::npos)
 		value.erase(0, pos);
 	std::string var = key + "=" + value;
-	// std::cout << "$" << var <<  "$"<< std::endl;
 	env.push_back(strdup(var));
 }
 
@@ -77,8 +80,6 @@ std::string Execute::getServerName( void )
 
 void Execute::addAllArgs( void )
 {
-	// std::cout << "conf.location.getCgiExe(): " << conf.location.getName() << std::endl;
-	// std::cout << "conf.location.getCgiExe(): " << conf.location.getCgiExe() << std::endl;
 	args.push_back(const_cast<char*>(conf.location.getCgiExe().c_str()));
 	args.push_back(const_cast<char*>(conf.translated_path.c_str()));
 	args.push_back(NULL);
@@ -113,7 +114,6 @@ void Execute::requestHeaderstToCGIVariables( void )
 	for (it = hdrs.begin(); it != hdrs.end() ; it++)
 	{
 		std::string key = toUpperCaseVar(it->first);
-		// printf("key: %s\n", key.c_str());
 		if (key == "HTTP_CONTENT_LENGTH" || key == "HTTP_CONTENT_TYPE" || key == "HTTP_TRANSFER_ENCODING" || key == "HTTP_CONNECTION")
 			continue;
 		headers[key] = it->second;
@@ -127,6 +127,7 @@ Execute::Execute( config &args ) : conf(args)
 	addAllEnvVars();
 	addAllArgs();
 }
+
 char**	Execute::getEnv( void )
 {
 	return env.data();
@@ -151,4 +152,3 @@ Execute::~Execute( void )
 	env.clear();
 	args.clear();
 }
-

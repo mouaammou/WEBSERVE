@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:25:28 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:49:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void Response::autoIndex( void )
 {
 	std::string uri = args.request->getPath();
 	std::string root = args.location.getRoot() + uri;
-	AutoIndex autoindex(args.request->getFd(), root, uri); // make sure to pass the right uri
+	AutoIndex autoindex(args.request->getFd(), root, uri);
 	if (autoindex.fail())
 	{
 		args.response_code = "500";
@@ -33,7 +33,6 @@ void Response::autoIndex( void )
 
 void Response::statusLine( std::string code )
 {
-	std::cout << "***** response line -> " << StatusCodes().getStatusLine(code) << std::endl;
 	oss << StatusCodes().getStatusLine(code);
 }
 
@@ -53,17 +52,13 @@ int64_t Response::get_file_size( void )
 Response::Response( config &args ) : args(args)
 {
 	args.socket_fd = args.request->getFd();
-	// args.autoindex = args.location.getAutoindex()? "on" : "off";
-	// std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
 	if (args.cgi)
 	{
-		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
-		runCGI();//
+		runCGI();
 		return ;
 	}
 	else if (args.autoindex == "on")
 	{
-		// std::cout << "autoindex called->>" << args.request->getFd() << std::endl;
 		autoIndex();
 		return ;
 	}
@@ -140,9 +135,7 @@ void Response::file( void )
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 	oss << "Accept-Ranges: none\r\n";
 	oss << "Server: " << "Webserv/1.0" << "\r\n";
-	// oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
 	oss << "\r\n";
-	// std::cout << "RESPONSE::file->" << ffd << std::endl;
 	SendResponse(oss.str(), ffd, args.request->getFd());
 }
 
@@ -150,6 +143,8 @@ void Response::redirect( void )
 {
 	statusLine(args.response_code);
 	oss << "Location: " << args.requested_path << "\r\n";
+	if (args.response_code.compare(0, 3, "301") == 0)
+		oss << "Retry-After: 120\r\n";
 	oss << "\r\n";
 	SendResponse(oss.str(), -1, args.request->getFd());
 }
@@ -174,13 +169,9 @@ void Response::error( void )//5xx 4xx
 	int n;
 	std::stringstream num(args.response_code);
 	num >> n;
-	// args.Server->getHostName();
-	// args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
-
 	args.translated_path = args.Server->getErrorPage(n);
-	// std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
 	if ( ! args.translated_path.empty())
-		ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
+		ffd = open(args.translated_path.c_str(), O_RDONLY);
 	int64_t file_size = get_file_size();
 	if (args.translated_path.empty() || file_size == -1)
 	{
@@ -211,7 +202,6 @@ void Response::error( void )//5xx 4xx
 
 bool Response::onPollout( int sfd )
 {
-	// std::cout << "onPollout " << sfd << std::endl;
 	return SendResponse::send(sfd);
 }
 
@@ -223,6 +213,5 @@ std::string Response::getDate( void )
     std::memset(buffer, 0, sizeof(buffer));
     std::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", utcTime);
     // Date: Tue, 15 Nov 1994 08:12:31 GMT
-    // _date = buffer;
 	return buffer;
 }
