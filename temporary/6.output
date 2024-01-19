@@ -1,0 +1,6 @@
+Set-Cookie: UserID=uio
+Location: welcome.html
+Status: 302 Found
+Content-Type: text/html; charset=utf-8
+
+<html><body>Redirecting...</body></html>
