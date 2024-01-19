@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/13 00:27:42 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/19 01:09:06 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ class Config
 		void check_dup_location(std::vector<Location> locat);
 		void handle_redirection(Location &location, int *indice);
 		unsigned long long int octet_convert(std::string& str);
+		int stop_indice(int indice);
+
 		~Config();
 };
 

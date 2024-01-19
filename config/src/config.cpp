@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/14 21:01:09 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/19 01:53:18 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -525,6 +525,24 @@ void Config::check_server_name_dup(std::string serv_name)
 	}
 }
 
+int Config::stop_indice(int indice)
+{
+	int tmp;
+	for (size_t i = indice; i < ftokens.size(); i++)
+	{
+		if (ftokens[i] == "}" && ftokens[i + 1] == "}")
+		{
+			if (i + 2 < ftokens.size() && ftokens[i + 2].compare("server"))
+			{
+				error_call("error! " + ftokens[i + 2] + " is outside of the server!");
+			}
+			return i + 1;
+		}
+		tmp = i;
+	}
+	return tmp;
+}
+
 void Config::handle_servers(int *indice)
 {
 	Directives server;
@@ -541,7 +559,8 @@ void Config::handle_servers(int *indice)
 	this->count++;
 	server.setServerId(this->count);
 	server.setBodySize(-1);
-	while ((size_t)*indice < ftokens.size() && ftokens[*indice].compare("server"))
+	int stop = stop_indice(*indice);
+	while (*indice <  stop)
 	{
 		if (ftokens[*indice] == "port")
 		{
@@ -570,7 +589,7 @@ void Config::handle_servers(int *indice)
 		(*indice)++;
 	}
 	if (!srv_name)
-		error_call("Server name not set for server ");
+		error_call("Server_name not set for server ");
 	if (port)
 		server.setPorts(ports);
 	else if (server.getServerId() < 2 && !port)
@@ -647,6 +666,7 @@ void Config::fill_directive()
 	{
 		if (ftokens[i] == "server")
 			handle_servers(&i);
+		i++;
 	}
 }
 
