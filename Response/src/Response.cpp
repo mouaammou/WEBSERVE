@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:02:49 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 11:32:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 void Response::runCGI( void )
 {
-	CGI::build( args );
+	NewCGI::build( args );
 }
 
 void Response::autoIndex( void )
 {
 	std::string uri = args.request->getPath();
 	std::string root = args.location.getRoot() + uri;
-	AutoIndex autoindex(args.request->getFd(), root, uri); // make sure to pass the right uri
+	AutoIndex autoindex(args.request->getFd(), root, uri);
 	if (autoindex.fail())
 	{
 		args.response_code = "500";
@@ -33,7 +33,6 @@ void Response::autoIndex( void )
 
 void Response::statusLine( std::string code )
 {
-	std::cout << "***** response line -> " << StatusCodes().getStatusLine(code) << std::endl;
 	oss << StatusCodes().getStatusLine(code);
 }
 
@@ -52,17 +51,14 @@ int64_t Response::get_file_size( void )
 
 Response::Response( config &args ) : args(args)
 {
-	// args.autoindex = args.location.getAutoindex()? "on" : "off";
-	// std::cout << "\nresp called->>" << args.request->getFd() << "\n" << std::endl;
+	args.socket_fd = args.request->getFd();
 	if (args.cgi)
 	{
-		// std::cout << "cgi called->>" << args.request->getFd() << std::endl;
-		runCGI();//
+		runCGI();
 		return ;
 	}
 	else if (args.autoindex == "on")
 	{
-		// std::cout << "autoindex called->>" << args.request->getFd() << std::endl;
 		autoIndex();
 		return ;
 	}
@@ -90,6 +86,8 @@ void Response::file( void )
 		statusLine(args.response_code);
 		oss << "Content-Length: " << 0 << "\r\n";
 		oss << "Content-Type: " << "text/plain" << "\r\n";
+		oss << "Date: " << getDate() << "\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
 		oss << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return ;
@@ -115,32 +113,30 @@ void Response::file( void )
 		error();
 		return ;
 	}
-	CacheControl cache(args, ffd);
-	// if ( ! cache.isModifiedSince())
-	// {
-	// 	args.response_code = "304";
-	// 	statusLine(args.response_code);
-	// 	oss << "Cache-Control: no-cache\r\n";
-	// 	oss << "Date: " << getDate() << "\r\n";
-	// 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-	// 	oss << "Accept-Ranges: none\r\n";
-	// 	oss << "Server: " << "webserv/1.0" << "\r\n";
-	// 	oss << "\r\n";
-	// 	close(ffd);
-	// 	SendResponse(oss.str(), -1, args.request->getFd());
-	// 	return ;
-	// }
+	CacheControl cache(args, ffd);//cache
+	if ( ! cache.isModifiedSince())
+	{
+		args.response_code = "304";
+		statusLine(args.response_code);
+		oss << "Cache-Control: public, no-cache\r\n";
+		oss << "Date: " << getDate() << "\r\n";
+		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
+		oss << "Accept-Ranges: none\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
+		oss << "\r\n";
+		close(ffd);
+		SendResponse(oss.str(), -1, args.request->getFd());
+		return ;
+	}//cache
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: no-cache\r\n";
+	oss << "Cache-Control: public, no-cache\r\n";
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 	oss << "Accept-Ranges: none\r\n";
-	oss << "Server: " << "webserv/1.0" << "\r\n";
-	// oss << "Set-Cookie: " << args.request->getCookies() << "\r\n";
+	oss << "Server: " << "Webserv/1.0" << "\r\n";
 	oss << "\r\n";
-	// std::cout << "RESPONSE::file->" << ffd << std::endl;
 	SendResponse(oss.str(), ffd, args.request->getFd());
 }
 
@@ -148,8 +144,25 @@ void Response::redirect( void )
 {
 	statusLine(args.response_code);
 	oss << "Location: " << args.requested_path << "\r\n";
+	if (args.response_code.compare(0, 3, "301") == 0)
+		oss << "Retry-After: 120\r\n";
 	oss << "\r\n";
 	SendResponse(oss.str(), -1, args.request->getFd());
+}
+
+void Response::allow( void )
+{
+	if (args.response_code.compare(0, 3, "405") != 0)
+		return ;
+	std::string allowed = "Allow: ";
+	std::vector<std::string> methods = args.location.getMethods();
+	for (size_t i = 0; i < methods.size(); i++)
+	{
+		allowed.append(methods[i]);
+		if (i != methods.size() - 1)
+			allowed.append(", ");
+	}
+	oss << allowed << "\r\n";
 }
 
 void Response::error( void )//5xx 4xx
@@ -157,12 +170,9 @@ void Response::error( void )//5xx 4xx
 	int n;
 	std::stringstream num(args.response_code);
 	num >> n;
-	// args.Server->getHostName();
-	// args.translated_path = "/Users/samjaabo/Desktop/server/www/error/404.html";//args.Server->getErrorPage(n);
 	args.translated_path = args.Server->getErrorPage(n);
-	// std::cout << "RESPONSE::error->" << args.translated_path << "$" <<  std::endl;
 	if ( ! args.translated_path.empty())
-		ffd = open(args.translated_path.c_str(), O_RDONLY);//open error page
+		ffd = open(args.translated_path.c_str(), O_RDONLY);
 	int64_t file_size = get_file_size();
 	if (args.translated_path.empty() || file_size == -1)
 	{
@@ -172,6 +182,9 @@ void Response::error( void )//5xx 4xx
 		oss << "Content-Length: " << error.length() << "\r\n";
 		oss << "Content-Type: " << "text/html" << "\r\n";
 		oss << "Cache-Control: no-store\r\n";
+		oss << "Server: " << "Webserv/1.0" << "\r\n";
+		allow();
+		oss << "Date: " << getDate() << "\r\n";
 		oss << "\r\n";
 		oss << error;
 		SendResponse(oss.str(), -1, args.request->getFd());
@@ -181,13 +194,15 @@ void Response::error( void )//5xx 4xx
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
 	oss << "Cache-Control: no-store\r\n";
+	oss << "Server: " << "Webserv/1.0" << "\r\n";
+	allow();
+	oss << "Date: " << getDate() << "\r\n";
 	oss << "\r\n";
 	SendResponse(oss.str(), ffd, args.request->getFd());
 }
 
 bool Response::onPollout( int sfd )
 {
-	// std::cout << "onPollout " << sfd << std::endl;
 	return SendResponse::send(sfd);
 }
 
@@ -199,6 +214,5 @@ std::string Response::getDate( void )
     std::memset(buffer, 0, sizeof(buffer));
     std::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", utcTime);
     // Date: Tue, 15 Nov 1994 08:12:31 GMT
-    // _date = buffer;
 	return buffer;
 }

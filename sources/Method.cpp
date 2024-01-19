@@ -3,21 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 07:04:30 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:14:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
-#include <cstdio>
-
 
 bool Method::hasValidCGI(const std::string& filename)
 {
 	std::string pyExtension = ".py";
 	std::string phpExtension = ".php";
+	// std::string jsExtension = ".js";
 
 	if (filename.length() >= pyExtension.length() &&
 		(filename.compare(filename.length() - pyExtension.length(), pyExtension.length(), pyExtension) == 0))
@@ -25,6 +24,9 @@ bool Method::hasValidCGI(const std::string& filename)
 	if (filename.length() >= phpExtension.length() &&
 		(filename.compare(filename.length() - phpExtension.length(), phpExtension.length(), phpExtension) == 0))
 		return true;
+	// if (filename.length() >= jsExtension.length() &&
+	// 	(filename.compare(filename.length() - jsExtension.length(), jsExtension.length(), jsExtension) == 0))
+	// 	return true;
 	return false;
 }
 
@@ -170,8 +172,6 @@ void Method::deleteMethod()
 
 Method::Method(t_config &config_file): method_config(config_file)
 {
-
-
 }
 
 void Method::getMethod()
@@ -188,6 +188,7 @@ void Method::getMethod()
 		}
 		else if (this->file_type == "dir")
 		{
+			
 			if (method_config.requested_path[method_config.requested_path.length() - 1] != '/')
 			{
 				this->method_config.response_code = "301 Moved Permanently";
@@ -293,7 +294,6 @@ bool			Method::has_cgi()
 {
 	if (hasValidCGI(method_config.translated_path))
 	{
-		// std::cout << "**** CGI FOUND" << std::endl;
 		this->method_config.cgi = true;
 		return (true);
 	}

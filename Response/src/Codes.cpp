@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 18:34:38 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:52:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ const std::string StatusCodes::getStatusLine( std::string const &code ) const
 	}
 	return std::string("HTTP/1.1 ") + code + std::string(" ") + codes.at(code) + "\r\n";
 }
-const std::string StatusCodes::getStatusLine( int code ) const///TODO: remove this function
+
+const std::string StatusCodes::getStatusLine( int code ) const
 {
 	std::ostringstream ss;
 	ss << code;

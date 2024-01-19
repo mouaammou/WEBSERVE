@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 20:16:26 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/16 12:17:06 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,12 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 				HttpClient->reqeust_timeout = current_time_in_milliseconds();
 				if (! clientPollIn(server, fileDescriptor) && HttpClient && HttpClient->read_bytes == 0)
 				{
-					std::cout << COLOR_RED "Client disconnected " << fileDescriptor << COLOR_RESET << std::endl;
 					return (removeFromPoll(server, fileDescriptor), false);
 				}
 				else
 				{
-					// std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
 					HttpClient->reqeust_timeout = current_time_in_milliseconds() - HttpClient->reqeust_timeout;
-					if (HttpClient->reqeust_timeout > 1000 * 60 * 5)
+					if (HttpClient->reqeust_timeout > 1000 * 60)
 					{
 						std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
 						return (removeFromPoll(server, fileDescriptor), false);
@@ -110,7 +108,6 @@ bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Re
 					server->setConfiguration(tmp_config);
 				if (HttpClient->_connection == "close")//connectio: keep-alive, close
 				{
-					std::cout << COLOR_RED "Client CLOSED CONNECTION " << fileDescriptor << COLOR_RESET << std::endl;
 					return (removeFromPoll(server, fileDescriptor), false);
 				}
 				HttpClient->resetRequest();
@@ -141,8 +138,8 @@ void			  PollServers::track_ALL_Clients(void)
 		server = this->whitchServer(fileDescriptor);
 		request = TheClient(server, fileDescriptor);
 
-		if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
-				continue;
+		// if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
+		// 		continue;
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
@@ -156,14 +153,15 @@ void 				PollServers::initPoll()
 {
 	int timeout = 1000 * 60;
 	int pollStatu;
-	this->bindServers();//linten, bind, socket, non-blocking mode
+	this->bindServers();
 	while (true)
 	{
 		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), timeout);
+		// std::cout << COLOR_CYAN "waiting ..." COLOR_RESET<< std::endl;
 		if (pollStatu == -1)
 		{
 			perror ("poll");
-			continue;
+			throw std::runtime_error("poll");
 		}
 		else if (pollStatu == 0)
 			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
@@ -171,7 +169,7 @@ void 				PollServers::initPoll()
 		{
 			this->track_ALL_Clients();
 		}
-		CGI::checkTimeoutAndExitedProcesses();
+		NewCGI::checkExitedProcess();
 	}
 }
 
@@ -207,14 +205,16 @@ Server*				PollServers::whitchServer(int clientFd)
 
 void				PollServers::removeFromPoll(Server *server ,int fd)
 {
+	std::cout << COLOR_RED "Client disconnected " << fd << COLOR_RESET << std::endl;
+	NewCGI::remove(fd);
+	SendResponse::remove(fd);
 	this->removeFileDescriptor(fd);
 	if (server)
 	{
 		server->removeClient(fd);
 	}
-	CGI::remove(fd);
-	PipeStream::remove(fd);
-	SendResponse::remove(fd);
+	// CGI::remove(fd);
+	// PipeStream::remove(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)
@@ -248,7 +248,7 @@ void		PollServers::acceptConnections(int serverfd)
     socklen_t clientAddrLen = sizeof(clientAddr);
     if ((clientSocket = accept(serverfd, &clientAddr, &clientAddrLen)) == -1)
     {
-        perror("accept");
+		throw std::runtime_error("accept");
         return;
     }
 	addFileDescriptor(clientSocket);
@@ -336,7 +336,6 @@ void	PollServers::handleTranslatedPath(Server *server, int fd)
 	std::string path = TheClient(server, fd)->getPath();
 	std::string re_location = server->getRequestedLocation(path);
 
-	std::cout << COLOR_BLUE "re_location :=> " COLOR_RESET<< re_location << std::endl;
 	server->serverConfigFile.translated_path 	= server->getTranslatedPath(re_location, path);
 	server->serverConfigFile.requested_path 	= path;
 	server->serverConfigFile.request 			= TheClient(server, fd);
@@ -364,43 +363,56 @@ void					PollServers::checkProxyMethod(Server *server, std::string re_method)
 		server->setStatusCode("405 Method Not Allowed");
 }
 
+//call the method class
+void 		PollServers::handle_Method(Server *server, int fd)
+{
+	if (server->getStatusCode().find("200") != std::string::npos)
+	{
+		if (TheClient(server, fd)->getMethod() == "GET")
+		{
+			server->pointedMethod = new Method(server->serverConfigFile);
+			server->pointedMethod->getMethod();
+		}
+		else if (TheClient(server, fd)->getMethod() == "DELETE")
+		{
+			server->pointedMethod = new Method(server->serverConfigFile);
+			server->pointedMethod->deleteMethod();
+		}
+		else if (TheClient(server, fd)->getMethod() == "POST")
+		{
+			server->pointedMethod = new Method(server->serverConfigFile);
+			server->pointedMethod->postMethod();
+		}
+		delete server->pointedMethod;
+		server->pointedMethod = NULL;
+	}
+}
+
 bool				PollServers::clientPollIn(Server *server, int fd)
 {
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
+		//check if the config file has multi ports
 		this->handleMultiPorts(server, fd);
 
 		server->serverConfigFile = TheClient(server, fd)->server_config;
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
-		// TheClient(server, fd)->displayRequest();
-
+		TheClient(server, fd)->displayRequest();
+		//get the requested translated path
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
 			this->handlePathInfo(server, server->serverConfigFile.path_info);
+
+		//check if the method is allowed in the config file
 		this->checkProxyMethod(server, TheClient(server, fd)->getMethod());
-		if (server->getStatusCode().find("200") != std::string::npos)
-		{
-			if (TheClient(server, fd)->getMethod() == "GET")
-			{
-				server->pointedMethod = new Method(server->serverConfigFile);
-				server->pointedMethod->getMethod();
-			}
-			else if (TheClient(server, fd)->getMethod() == "DELETE")
-			{
-				server->pointedMethod = new Method(server->serverConfigFile);
-				server->pointedMethod->deleteMethod();
-			}
-			else if (TheClient(server, fd)->getMethod() == "POST")
-			{
-				server->pointedMethod = new Method(server->serverConfigFile);
-				server->pointedMethod->postMethod();
-			}
-			delete server->pointedMethod;
-			server->pointedMethod = NULL;
-		}
+
+		//call the method class
+		handle_Method(server, fd);
+
 		server->printf_t_config(server->serverConfigFile);
+		//generate the response
 		Response response(server->serverConfigFile);
 	}
 	else

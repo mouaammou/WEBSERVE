@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/12 14:54:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:38:30 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include "../includes/webserv.hpp"
 #include "../includes/Server.hpp"
-#include "../Response/include/PipeStream.hpp"
 
 class Server;
 
@@ -63,6 +62,8 @@ class PollServers
 		bool		handle_Poll_Events(Server *server, int i, int fileDescriptor, Request *request);
 		bool		handle_PollIn(Server *server, int i, int fileDescriptor, Request *HttpClient);
 		bool		handle_PollOut(Server *server, int i, int fileDescriptor, Request *HttpClient);
+
+		void 		handle_Method(Server *server, int fd);
 };
 
 Request				*TheClient(Server *server, int fd);

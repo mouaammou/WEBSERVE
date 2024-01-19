@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:36:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:09:28 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,11 @@ bool SendFile::send( int sfd )
 	return false;
 }
 
-
 SendFile::~SendFile( void )
 {
-	std::cout << "close file" << std::endl;
+	std::ostringstream oss;
+	oss << "temporary/" << sfd << ".output";
+	std::remove(oss.str().c_str());
 	close(filefd);
 }
 
@@ -87,17 +88,10 @@ void SendString::build( std::string const &data, int sfd )
 bool SendString::send( int sfd )
 {
 	// means cgi is running and we should wait for it
-	if (CGI::runing_processes.find(sfd) != CGI::runing_processes.end())
-	{
-		// std::cerr << "Wait CGI RESPONSE    " <<  sfd << std::endl;
+	if (NewCGI::active_procs.find(sfd) != NewCGI::active_procs.end())
 		return false;
-	}
-	// in case of cgi is running, we need to wait for it
 	if (save.find(sfd) == save.end())
-	{
-		// std::cerr << "NOTHI9NG	: " << sfd << std::endl;
 		return true;
-	}
 	if (save[sfd]->sendString())
 	{
 		delete save[sfd];
@@ -113,7 +107,6 @@ bool SendString::send( int sfd )
 
 bool SendResponse::send( int sfd )
 {
-	// call this from poll loop
 	if ( ! SendString::send(sfd))
 		return false;
 	if (SendFile::send(sfd))
@@ -123,9 +116,6 @@ bool SendResponse::send( int sfd )
 
 SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
-	// call this from Response class
-	// 'ffd = -1' if you don't want to send any file
-	// std::cout << "\n\n\nHeaders->\n\n\n" << data << std::endl;
 	SendString::build(data, sfd);
 	if (ffd != -1)
 		SendFile::build(ffd, sfd);
@@ -133,9 +123,11 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 
 void SendResponse::remove( int fd )
 {
-	std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
+	std::ostringstream oss;
+	oss << "temporary/" << fd << ".output";
+	std::remove(oss.str().c_str());
 }
 
 void SendString::remove( int fd )

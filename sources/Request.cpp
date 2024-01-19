@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 05:40:01 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:34:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,13 @@ void	Request::resetRequest()
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
 	this->_body_size = -1;
+	this->request_headers.clear();
 }
 
 Request::~Request()
 {
 	delete [] this->buffer;
+	this->server_config.request = NULL;
 }
 
 std::string Request::getMethod() const
@@ -422,14 +424,10 @@ bool			Request::storeChunkedRequestBody()
 
 bool 		Request::checkEssentialHeaders(const std::map<std::string, std::string>& request_headers)
 {
-	std::string essentialHeaders[3] = {"Host:", "User-Agent:", "Accept:"};
-	for (size_t i = 0; i < 3; i++)
+	std::map<std::string, std::string>::const_iterator it = request_headers.find("Host:");
+	if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
 	{
-		std::map<std::string, std::string>::const_iterator it = request_headers.find(essentialHeaders[i]);
-		if (it == request_headers.end() || it->second.empty() || it->second == " \r\n")
-		{
-			return false;
-		}
+		return false;
 	}
 	return true;
 }
@@ -480,5 +478,12 @@ bool	Request::receiveRequest()//must read the request
 
 bool   Request::sendResponse()
 {
+	try{
 	return (Response::onPollout(this->fd));
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what()<<"sdfsdfdsfdsfdsfdsfdsfdsfdsfdsfadsfdsfsfdsfdsfdsfdsfdsfds" << '\n';
+	}
+	return (false);
 }

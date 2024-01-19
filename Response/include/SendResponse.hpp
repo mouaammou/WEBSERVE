@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 11:53:25 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:16:41 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:24:49 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <sys/uio.h>
 # include <fcntl.h>
 # include <sys/stat.h>
-# include "CGI.hpp"
+# include "NewCGI.hpp"
 
 class SendFile
 {

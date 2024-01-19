@@ -2,6 +2,19 @@
 from http import cookies
 import os
 import cgi
+
+# manage session cookies
+def get_session():
+    if 'HTTP_COOKIE' in os.environ:
+         cookies = os.environ['HTTP_COOKIE']
+         cookies = cookies.split('; ')
+         for cookie in cookies:
+              (_name, _value) = cookie.split('=')
+              if 'session' == _name.lower():
+                return _value
+    return ''
+
+# manage cookies
 def get_cookie(match):
    if 'HTTP_COOKIE' in os.environ:
        cookies = os.environ['HTTP_COOKIE']
@@ -13,7 +26,7 @@ def get_cookie(match):
    return ''
 
 def login_form():
-    if 'HTTP_COOKIE' in os.environ:
+    if get_cookie('UserID') != '' and get_session() != '':
         print('Location: welcome.html')
         print('Status: 302 Found')
         print('Content-Type: text/html; charset=utf-8')
@@ -45,6 +58,7 @@ if __name__ == "__main__":
         if username is not None and password is not None:
             if check_login(username, password):
                 C = cookies.SimpleCookie()
+                C["session"] = os.urandom(16).hex()
                 C["UserID"] = username
                 print(C)
                 print('Location: welcome.html')
