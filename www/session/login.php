@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Perform authentication (in a real scenario, you'd check against a database)
     // For simplicity, let's assume username is "admin" and password is "password"
-    if ($username == "admin" && $password == "password") {
+    if ($username && $password) {
         // Set session variable
         $_SESSION["user"] = $username;
 

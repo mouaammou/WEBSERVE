@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:06:20 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/19 22:44:13 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void NewCGI::remove( int sfd )
 
 NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf(conf)
 {
+    one_time_kill = false;
     socketfd = conf.request->getFd();
     std::ostringstream ss;
     ss << "temporary/" << socketfd << ".output";
@@ -180,10 +181,11 @@ int64_t NewCGI::getCurrentTime( void )
 
 void NewCGI::timeout( void )
 {
-    static bool one_time_kill = false;
     if (one_time_kill || pid == -1)
-        return ;
+        return ; 
+    
     int64_t now = getCurrentTime() - timeout_start;
+    // std::cout << "now: " << now  << "|"<< pid << std::endl;
     if (now >= MAX_MSEC_TO_TIMEOUT)
     {
         kill(pid, SIGKILL);
