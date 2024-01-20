@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 11:42:41 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/19 03:55:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 		return ;
 	}
 	size_t pos = output.find("\r\n\r\n");
-	if (pos == std::string::npos)
+	if (pos == std::string::npos )
 	{
 		args.response_code = "502";
 		Response resp(args);

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:16:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/19 04:06:56 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class NewCGI : public Execute
     t_config                    &conf;
     pid_t                       pid;
     int64_t                     timeout_start;
+    bool one_time_kill;
 
     NewCGI( t_config &conf );
 
