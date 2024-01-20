@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/19 03:55:21 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/20 06:41:03 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,20 @@ void ParseCGIOutput::generateStatusLine( void )
 
 void ParseCGIOutput::additionalHeaders( void )
 {
-	new_headers.append("Date: ").append(Response::getDate()).append("\r\n");
-	new_headers.append("Cache-Control: no-store\r\n");
-	new_headers.append("Server: Webserv/1.0\r\n");
+	size_t pos1 = headers.find("Date:");
+	size_t pos2 = headers.find("\r\nDate:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Date: ").append(Response::getDate()).append("\r\n");
+	
+	pos1 = headers.find("Cache-Control:");
+	pos2 = headers.find("\r\nCache-Control:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Cache-Control: no-store\r\n");
+	
+	pos1 = headers.find("Server:");
+	pos2 = headers.find("\r\nServer:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Server: Webserv/1.0\r\n");
 }
 
 ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
@@ -125,8 +136,8 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 	std::stringstream str;
 	str << "Content-Length: " << output.length() << "\r\n";
 	new_headers.append(str.str());
-	translateHeaders();
 	additionalHeaders();
+	translateHeaders();
 	new_headers.append("\r\n");
 	SendResponse(new_headers + output, -1, args.socket_fd);
 	

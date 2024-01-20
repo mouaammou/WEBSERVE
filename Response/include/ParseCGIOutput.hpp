@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 11:20:18 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/20 06:36:31 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class ParseCGIOutput
 	void	additionalHeaders( void );
 
 	public:
-
+	
 	ParseCGIOutput(int status,  std::string &output, config &args );
-	void	phpResponse(int status, std::string &output, config &args );
 };

@@ -1,8 +1,6 @@
-X-Powered-By: PHP/5.2.17
-Expires: Thu, 19 Nov 1981 08:52:00 GMT
-Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
-Pragma: no-cache
-Set-Cookie: user=samjaabo; expires=Sat, 20-Jan-2024 02:18:31 GMT; path=/
-Content-type: text/html
 
-Login successful! Welcome, samjaabo!
+<html><head><title>Test CGI</title></head><body>
+<h1 align=center>Test CGI</h1>
+<hr/>
+</body>
+</html>
