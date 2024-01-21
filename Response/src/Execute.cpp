@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 02:19:39 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/16 05:25:37 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,14 +138,19 @@ char**	Execute::getArgs( void )
 {
 	return args.data();
 }
+
 char* Execute::getInterpreterPath( void )
 {
 	return args[0];
 }
+
 Execute::~Execute( void )
 {
 	for (size_t i = 0; i < env.size(); i++)
+	{
 		delete [] env[i];
+		env[i] = NULL;
+	}
 	env.clear();
 	args.clear();
 }

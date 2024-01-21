@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 01:00:28 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:33:03 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void ParseCGIOutput::additionalHeaders( void )
 
 void ParseCGIOutput::response( int status, std::string output, config &args )
 {
+	// std::cout << "response is called\n"<< output << std::endl;
 	if (args.response_code == "504")
 	{
 		Response resp(args);
@@ -147,7 +148,7 @@ void ParseCGIOutput::response( int status, std::string output, config &args )
 
 	// printf("REQUST ADRS: %p\n", args.request);
 	// printf("args ADRS: %p\n", &args);
-	SendResponse(new_headers + body, -1, args.request->getFd());
+	SendResponse(new_headers + body, -1, args.socket_fd);
 	// std::cout << "new_headers: " << new_headers << std::endl;
 	// std::cout << "body: " << body << std::endl;
 	// Response::ready_responses[client_fd] = new_headers + body; //error edit

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/15 19:16:51 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:48:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,16 @@ bool Method::hasValidCGI(const std::string& filename)
 {
 	std::string pyExtension = ".py";
 	std::string phpExtension = ".php";
+	std::string jsExtension = ".js";
 
 	if (filename.length() >= pyExtension.length() &&
 		(filename.compare(filename.length() - pyExtension.length(), pyExtension.length(), pyExtension) == 0))
 		return true;
 	if (filename.length() >= phpExtension.length() &&
 		(filename.compare(filename.length() - phpExtension.length(), phpExtension.length(), phpExtension) == 0))
+		return true;
+	if (filename.length() >= jsExtension.length() &&
+		(filename.compare(filename.length() - jsExtension.length(), jsExtension.length(), jsExtension) == 0))
 		return true;
 	return false;
 }

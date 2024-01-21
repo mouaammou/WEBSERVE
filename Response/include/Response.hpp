@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/13 20:00:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 05:10:43 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "../../includes/webserv.hpp"
 #include "SendResponse.hpp"
 #include "AutoIndex.hpp"
-#include "CGI.hpp"
+#include "NewCGI.hpp"
 #include "Codes.hpp"
 #include "MediaTypes.hpp"
 #include "CacheControl.hpp"

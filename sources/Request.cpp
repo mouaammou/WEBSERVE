@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/15 11:44:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/16 07:53:04 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void	Request::resetRequest()
 Request::~Request()
 {
 	delete [] this->buffer;
+	this->server_config.request = NULL;
 }
 
 std::string Request::getMethod() const
@@ -476,5 +477,12 @@ bool	Request::receiveRequest()//must read the request
 
 bool   Request::sendResponse()
 {
+	try{
 	return (Response::onPollout(this->fd));
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what()<<"sdfsdfdsfdsfdsfdsfdsfdsfdsfdsfadsfdsfsfdsfdsfdsfdsfdsfds" << '\n';
+	}
+	return (false);
 }

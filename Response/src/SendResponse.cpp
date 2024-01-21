@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 04:36:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/16 12:16:15 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,11 @@ bool SendFile::send( int sfd )
 	return false;
 }
 
-
 SendFile::~SendFile( void )
 {
-	std::cout << "close file" << std::endl;
+	std::ostringstream oss;
+	oss << "temporary/" << sfd << ".output";
+	std::remove(oss.str().c_str());
 	close(filefd);
 }
 
@@ -71,6 +72,7 @@ SendString::SendString( std::string const &data, int sfd )
 
 bool SendString::sendString( void )
 {
+	// std::cout << "==x==>" << write(sfd, 0, 0) << std::endl;
 	ssize_t d = write(sfd, data.c_str(), data.length());
 	if (d == 0 && data.empty())
 		return true;
@@ -87,7 +89,7 @@ void SendString::build( std::string const &data, int sfd )
 bool SendString::send( int sfd )
 {
 	// means cgi is running and we should wait for it
-	if (CGI::runing_processes.find(sfd) != CGI::runing_processes.end())
+	if (NewCGI::active_procs.find(sfd) != NewCGI::active_procs.end())
 	{
 		// std::cerr << "Wait CGI RESPONSE    " <<  sfd << std::endl;
 		return false;
@@ -113,6 +115,7 @@ bool SendString::send( int sfd )
 
 bool SendResponse::send( int sfd )
 {
+	(void)sfd;
 	// call this from poll loop
 	if ( ! SendString::send(sfd))
 		return false;
@@ -133,9 +136,12 @@ SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 
 void SendResponse::remove( int fd )
 {
-	std::cout << "remove send response" << std::endl;
+	// std::cout << "remove send response" << std::endl;
 	SendString::remove(fd);
 	SendFile::remove(fd);
+	std::ostringstream oss;
+	oss << "temporary/" << fd << ".output";
+	std::remove(oss.str().c_str());
 }
 
 void SendString::remove( int fd )

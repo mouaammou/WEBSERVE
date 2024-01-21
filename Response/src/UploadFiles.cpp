@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/14 02:47:16 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/16 08:06:08 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,7 +300,7 @@ void FilesUpload::writeToFile( std::string &body )
 
 bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 {
-	std::cout << "headers->" << std::endl;
+	// std::cout << "headers->" << std::endl;
 	size_t pos = headers.find("Content-Disposition:");
 	if (pos == std::string::npos)
 	{
