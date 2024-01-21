@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 12:00:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/21 06:41:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,6 @@
 
 void Execute::addAllEnvVars( void )
 {
-
-	// addEnvVar("AUTH_TYPE", "");
-	// addEnvVar("REMOTE_USER", "");
-	// addEnvVar("REMOTE_IDENT", "");
 	std::ostringstream oss;
 	oss << conf.request->getContentLength();
 	if (conf.request->getContentLength() > 0)
@@ -40,7 +36,6 @@ void Execute::addAllEnvVars( void )
 	addEnvVar("SERVER_PROTOCOL", "HTTP/1.1");
 	addEnvVar("SERVER_SOFTWARE", "Webserv/1.0");
 	addEnvVar("GATEWAY_INTERFACE", "CGI/1.1");//vesrion of cgi
-	// addEnvVar("REDIRECT_STATUS", "200");//vesrion of cgi
 
 	requestHeaderstToCGIVariables();
 
