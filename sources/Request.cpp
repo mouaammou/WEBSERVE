@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 07:53:04 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 01:34:38 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	Request::resetRequest()
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
 	this->_body_size = -1;
+	this->request_headers.clear();
 }
 
 Request::~Request()

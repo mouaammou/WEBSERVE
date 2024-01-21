@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:33:03 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/21 03:58:00 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,33 @@ std::string ParseCGIOutput::getFiled( std::string field )
 
 void ParseCGIOutput::translateHeaders( void )
 {
+	// std::stringstream  header(headers);
+	// std::string line;
+	// while (std::getline(header, line))
+	// {
+	// 	if (line.compare(0, 7, "Status:") == 0)
+	// 		continue;
+	// 	char c = line[line.length() - 1];
+	// 	if (c != '\r')
+			
+	// 	new_headers.append(line + '\n');
+	// 	// headers.erase(0, pos + 1);
+	// }
 	for (;headers.length();)
 	{
 		std::size_t pos = headers.find("\n");
 		std::string	line = headers.substr(0, pos);
 		std::size_t sep = line.find(":");
+		char c = line[line.length() - 1];
 		if (line.substr(0, sep) != "Status")
 		{
-			new_headers.append(line + "\r\n");
+			if (c == '\r')
+				line.append("\n");
+			else
+				line.append("\r\n");
+			new_headers.append(line);
 		}
-		headers = headers.substr(pos + 1);
+		headers.erase(0, pos + 1);
 	}
 }
 
@@ -81,75 +98,97 @@ void ParseCGIOutput::generateStatusLine( void )
 
 void ParseCGIOutput::additionalHeaders( void )
 {
-	new_headers.append("Cache-Control: no-store\r\n");
-	new_headers.append("Server: Nginx\r\n");
+	size_t pos1 = headers.find("Date:");
+	size_t pos2 = headers.find("\r\nDate:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Date: ").append(Response::getDate()).append("\r\n");
+	
+	pos1 = headers.find("Cache-Control:");
+	pos2 = headers.find("\r\nCache-Control:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Cache-Control: no-store\r\n");
+	
+	pos1 = headers.find("Server:");
+	pos2 = headers.find("\r\nServer:");
+	if (pos2 == std::string::npos && pos1 != 0)
+		new_headers.append("Server: Webserv/1.0\r\n");
 }
 
-void ParseCGIOutput::response( int status, std::string output, config &args )
+ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 {
-	// std::cout << "response is called\n"<< output << std::endl;
-	if (args.response_code == "504")
+	(void)status;
+	// std::cout  << "<<<<<<<<<<<<<< CGI Response >>>>>>>>>>>>" << output << std::endl;
+	if (args.response_code[0] == '5')
 	{
 		Response resp(args);
 		return ;
 	}
-	if (status == -1)
-	{
-		// means pipe or fork failed and cgi didnt run
-		args.response_code = "500";//read failed
-		Response resp(args);
-		return ;
-	}
-	// std::cout << "!!!!!! output: " << args.request->getFd() << std::endl;
-	std::size_t pos = output.find("\n\n");
-	if (pos == std::string::npos)
-	{
-		//found no headers
-		// std::cout << "no headers" << std::endl;
-		args.response_code = "502";
-		Response resp(args);
-		return;
-	}
-	headers = output.substr(0, pos + 1);
-	if (thereIsContentLength())
-		body = output.substr(pos + 2, getContentLength());
-	else
-		body = output.substr(pos + 2);
-	// if ( ! body.empty() && getFiled("Content-Type").empty())
-	// {
-	// 	args.response_code = "502";
-	// 	Response resp(args);
-	// 	return;
-	// }
-	if (thereIsContentLength() && body.length() < getContentLength())
-	{
-		//headers is case sensitve
-		//Content-Length is not Content-length
-		args.response_code = "502";
-		Response resp(args);
-		return;
-	}
-	else if ( ! thereIsContentLength() && status != 0)
+	size_t pos = output.find("\r\n\r\n");
+	if (pos == std::string::npos )
 	{
 		args.response_code = "502";
 		Response resp(args);
 		return;
 	}
+	headers = output.substr(0, pos + 2);
+	output.erase(0, pos + 4);
 	generateStatusLine();
-	if ( ! thereIsContentLength() && body.length() > 0)
-	{
-		std::stringstream str;
-		str << "Content-Length: " << body.length() << "\r\n";
-		new_headers.append(str.str());
-	}
+	std::stringstream str;
+	str << "Content-Length: " << output.length() << "\r\n";
+	new_headers.append(str.str());
 	additionalHeaders();
 	translateHeaders();
 	new_headers.append("\r\n");
-
-	// printf("REQUST ADRS: %p\n", args.request);
-	// printf("args ADRS: %p\n", &args);
-	SendResponse(new_headers + body, -1, args.socket_fd);
-	// std::cout << "new_headers: " << new_headers << std::endl;
-	// std::cout << "body: " << body << std::endl;
-	// Response::ready_responses[client_fd] = new_headers + body; //error edit
+	SendResponse(new_headers + output, -1, args.socket_fd);
+	
 }
+
+// ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
+// {
+// 	if (args.response_code[0] == '5')
+// 	{
+// 		Response resp(args);
+// 		return ;
+// 	}
+// 	size_t pos = args.translated_path.rfind(".php");
+// 	if (pos != std::string::npos && pos == args.translated_path.length() - 4)
+// 	{
+// 		phpResponse(output, args);
+// 		return ;
+// 	}
+// 	pos = output.find("\r\n\r\n");
+// 	if (pos == std::string::npos)
+// 	{
+// 		args.response_code = "502";
+// 		Response resp(args);
+// 		return;
+// 	}
+// 	headers = output.substr(0, pos + 1);
+// 	if (thereIsContentLength())
+// 		body = output.substr(pos + 2, getContentLength());
+// 	else
+// 		body = output.substr(pos + 2);
+// 	if (thereIsContentLength() && body.length() < getContentLength())
+// 	{
+// 		args.response_code = "502";
+// 		Response resp(args);
+// 		return;
+// 	}
+// 	else if ( ! thereIsContentLength() && status != 0)
+// 	{
+// 		args.response_code = "502";
+// 		Response resp(args);
+// 		return;
+// 	}
+// 	generateStatusLine();
+// 	if ( ! thereIsContentLength() && body.length() > 0)
+// 	{
+// 		std::stringstream str;
+// 		str << "Content-Length: " << body.length() << "\r\n";
+// 		new_headers.append(str.str());
+// 	}
+// 	translateHeaders();
+// 	additionalHeaders();
+// 	new_headers.append("\r\n");
+// 	SendResponse(new_headers + body, -1, args.socket_fd);
+// }

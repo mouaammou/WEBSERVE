@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 20:33:19 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/21 17:30:53 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,11 +242,9 @@ void		PollServers::removeFileDescriptor(int fd)
 
 void		PollServers::acceptConnections(int serverfd)
 {
-    struct sockaddr		clientAddr;
     int					clientSocket;
 
-    socklen_t clientAddrLen = sizeof(clientAddr);
-    if ((clientSocket = accept(serverfd, &clientAddr, &clientAddrLen)) == -1)
+    if ((clientSocket = accept(serverfd, NULL, NULL)) == -1)
     {
 		throw std::runtime_error("accept");
         return;
@@ -257,6 +255,8 @@ void		PollServers::acceptConnections(int serverfd)
 	if (server)
 		server->addClient(clientSocket);
 }
+
+
 
 Request				*TheClient(Server *server, int fd)
 {

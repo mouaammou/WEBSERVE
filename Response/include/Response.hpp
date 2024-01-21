@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 01:08:15 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 05:10:43 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/18 11:34:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "Codes.hpp"
 #include "MediaTypes.hpp"
 #include "CacheControl.hpp"
-
-#include "Config.hpp"
 
 class Response
 {
@@ -35,9 +33,11 @@ class Response
 
 	void statusLine( std::string code );
 	int64_t get_file_size( void );
-	std::string getDate( void );
+	void allow( void );
 
 	public:
+
+	static std::string getDate( void );
 
 	Response( config &args );
 	void runCGI( void );

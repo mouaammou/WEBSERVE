@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:33:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/19 22:44:13 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void NewCGI::remove( int sfd )
     if (cgi->pid != -1)
         kill(cgi->pid, SIGKILL);
     pids_to_remove.push_back(cgi->getPid());
-    // cgi->setPid(-1);
     active_procs[cgi->socketfd ] = NULL;
     delete cgi;
     active_procs.erase(sfd);
@@ -34,6 +33,7 @@ void NewCGI::remove( int sfd )
 
 NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf(conf)
 {
+    one_time_kill = false;
     socketfd = conf.request->getFd();
     std::ostringstream ss;
     ss << "temporary/" << socketfd << ".output";
@@ -42,12 +42,11 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf
     timeout_start = getCurrentTime();
     conf.response_code = "200";
     conf.cgi = false;
+    std::remove(filename.c_str());
 }
 
 void NewCGI::checkExitedProcess( void )
 {
-    // ALWAYS AFTER POLL RETURN CHECK FOR ANY EXUTED PROCESSES
-    // std::cout << "CHECK EXITED CGI" << std::endl;
     std::vector<int> to_remove;
     int status = 0;
     std::map<int, NewCGI*>::iterator it;
@@ -61,7 +60,11 @@ void NewCGI::checkExitedProcess( void )
             continue ;
         if (WIFSTOPPED(status) || WIFCONTINUED(status))
             continue;
-        cgi->onProcessExit();
+        if (WIFEXITED(status))
+            status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            status = WTERMSIG(status);
+        cgi->onProcessExit(status);
         active_procs[cgi->socketfd ] = NULL;
         delete cgi;
         to_remove.push_back(it->first);
@@ -71,8 +74,6 @@ void NewCGI::checkExitedProcess( void )
     to_remove.clear();
     for (size_t i=0; i < pids_to_remove.size(); ++i)
     {
-        //collect exit status of removed CGI's
-        // std::cout << "WAIT FOR PID: " << pids_to_remove[i] << std::endl;
         pid_t pid = pids_to_remove[i];
         if (pid == -1)
             continue ;
@@ -83,9 +84,8 @@ void NewCGI::checkExitedProcess( void )
     }
 }
 
-void NewCGI::build( config &conf )//call this for new cgi
+void NewCGI::build( config &conf )
 {
-    // std::cout << "BUILD CGI <=====>" << conf.socket_fd  << std::endl;
     remove(conf.server_fd);
     NewCGI *cgi = new NewCGI(conf);
     active_procs[conf.request->getFd()] = cgi;
@@ -99,9 +99,8 @@ void NewCGI::build( config &conf )//call this for new cgi
     }
 }
 
-void NewCGI::onProcessExit()
+void NewCGI::onProcessExit( int status )
 {
-    // std::cout << "CGI EXITED" << std::endl;
     std::ifstream file(filename.c_str());
     if ( ! file.is_open())
     {
@@ -114,11 +113,10 @@ void NewCGI::onProcessExit()
 
     while (std::getline(file, line))
     {
-        // std::cout << line;
         data.append(line + "\n");
     }
     file.close();
-    ParseCGIOutput().response(0, data, conf);
+    ParseCGIOutput tmp(status, data, conf);
 }
 
 bool NewCGI::execute( void)
@@ -130,12 +128,10 @@ bool NewCGI::execute( void)
     {
 
         child();
-        // std::cerr << "EXECUTE CGI USING: " <<  conf.location.getCgiExe() << "<|" << std::endl;
         std::string dir = conf.translated_path.substr(0, conf.translated_path.find_last_of('/'));
         if (chdir(dir.c_str()) == -1)
             std::exit(EXIT_FAILURE);
         execve(conf.location.getCgiExe().c_str(), getArgs(), getEnv());
-        std::cerr << "Error: execve() failed to exec " << conf.translated_path << std::endl;
         std::exit(EXIT_FAILURE);
         return false;
     }
@@ -167,7 +163,6 @@ void NewCGI::child( void )
     close(fds[0]);
     if (write(fds[1], conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length()) == -1)
     {
-        std::cerr << "Error: while writing request body to cgi stdin" << std::endl;
         close(STDIN_FILENO);
         close(fds[1]);
         std::exit(EXIT_FAILURE);
@@ -180,21 +175,17 @@ int64_t NewCGI::getCurrentTime( void )
 {
     struct timeval tv;
     if (gettimeofday(&tv, NULL))
-    {
-        //internal server error when it fails because the timeout will kill it
         return (0);
-    }
     return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
+
 void NewCGI::timeout( void )
 {
-    static bool one_time_kill = false;
     if (one_time_kill || pid == -1)
-        return ;
+        return ; 
+    
     int64_t now = getCurrentTime() - timeout_start;
-    // std::cout << "timeout_counter: " << now << std::endl;
-    // if (now < 0)
-    // 	exit(0);
+    // std::cout << "now: " << now  << "|"<< pid << std::endl;
     if (now >= MAX_MSEC_TO_TIMEOUT)
     {
         kill(pid, SIGKILL);

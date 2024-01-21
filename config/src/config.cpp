@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/14 21:01:09 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/20 03:18:52 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,7 +324,8 @@ void Config::handle_proxy_methode(Location &location, int *indice)
 void Config::handle_inside_locations(Directives& server, int *indice)
 {
 	Location locat(ftokens[*indice]);
-	int root = 0;
+	int retur, autoindex, upload_path, exe, index, proxy_method, root;
+	retur = autoindex = upload_path = exe = index = proxy_method = root = 0;
 	locat.setReturnInt(0);
 	(*indice)++;
 	while (ftokens[*indice].compare("}") && *indice < (int)ftokens.size())
@@ -332,26 +333,48 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 		if (ftokens[*indice] == "root")
 		{
 			locat.setRoot(next_str_arg(indice));
-			root = 1;
+			root++;
 		}
 		else if (ftokens[*indice] == "return")
+		{
 			handle_redirection(locat, indice);
+			retur++;
+		}
 		else if (ftokens[*indice] == "autoindex")
+		{
 			locat.setAutoindex(handle_autodx(indice));
+			autoindex++;
+		}
 		else if (ftokens[*indice] == "upload_path")
+		{
 			locat.setUploadPath(next_str_arg(indice));
+			upload_path++;
+		}
 		else if (ftokens[*indice] == "exe")
+		{
 			locat.setCgiExe(next_str_arg(indice));
+			exe++;
+		}
 		else if (ftokens[*indice] == "proxy_method")
+		{
 			handle_proxy_methode(locat, indice);
+			proxy_method++;
+		}
 		else if (ftokens[*indice] == "index")
+		{
 			locat.setIndex(next_str_arg(indice));
+			index++;
+		}
 		else if (!is_token(indice))
 			error_call(ftokens[*indice] + " not refer to any arg inside location!");
 		(*indice)++;
 	}
 	if (!locat.getReturnInt() && !root)
-		error_call("root must be present in location section : " + locat.getName());
+		error_call("root or redirection must be present in location section : " + locat.getName());
+	if (retur > 1 || autoindex > 1 || upload_path > 1 || exe > 1 || index > 1 || proxy_method > 1)
+		error_call("directive must not be duplicated!");
+	if (!autoindex && !index)
+		error_call("autoindex or index must be set in location : " + locat.getName());
 	server.server_locations.push_back(locat);
 }
 
@@ -525,6 +548,24 @@ void Config::check_server_name_dup(std::string serv_name)
 	}
 }
 
+int Config::stop_indice(int indice)
+{
+	int tmp;
+	for (size_t i = indice; i < ftokens.size(); i++)
+	{
+		if (ftokens[i] == "}" && ftokens[i + 1] == "}")
+		{
+			if (i + 2 < ftokens.size() && ftokens[i + 2].compare("server"))
+			{
+				error_call("error! " + ftokens[i + 2] + " is outside of the server!");
+			}
+			return i + 1;
+		}
+		tmp = i;
+	}
+	return tmp;
+}
+
 void Config::handle_servers(int *indice)
 {
 	Directives server;
@@ -532,6 +573,8 @@ void Config::handle_servers(int *indice)
 	int size;
 	int port = 0;
 	int srv_name = 0;
+	int body_size = 0;
+	int host_name = 0;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
 		error_call("server not set!");
@@ -541,23 +584,30 @@ void Config::handle_servers(int *indice)
 	this->count++;
 	server.setServerId(this->count);
 	server.setBodySize(-1);
-	while ((size_t)*indice < ftokens.size() && ftokens[*indice].compare("server"))
+	int stop = stop_indice(*indice);
+	while (*indice <  stop)
 	{
 		if (ftokens[*indice] == "port")
 		{
 			handle_port(server, ports, indice);
-			port = 1;
+			port = 1;//port is set
 		}
 		else if (ftokens[*indice] == "server_name")
 		{
 			server.setServerName(next_str_arg(indice));
 			check_server_name_dup(server.getServerName());
-			srv_name = 1;
+			srv_name++;
 		}
 		else if (ftokens[*indice] == "client_max_body_size")
+		{
 			server.setBodySize(max_body_size(indice));
+			body_size++;
+		}
 		else if (ftokens[*indice] == "hostname")
+		{
 			server.setHostName(next_str_arg(indice));
+			host_name++;
+		}
 		else if (ftokens[*indice] == "error_page")
 			handle_error_page(server, indice);
 		else if (ftokens[*indice] == "location")
@@ -570,16 +620,26 @@ void Config::handle_servers(int *indice)
 		(*indice)++;
 	}
 	if (!srv_name)
-		error_call("Server name not set for server ");
+		error_call("Server_name not set for server ");
 	if (port)
 		server.setPorts(ports);
-	else if (server.getServerId() < 2 && !port)
+	else if ((server.getServerId() < 2 && !port))
 		error_call("port not set in the first server!");
+	// if ((server.getServerId() < 2 && !port) || port > 1)
+	// 	error_call("error port!");
+	// else if (port)
+	// 	server.setPorts(ports);
 	else if (server.getServerId() > 1 && !port)
 	{
 		ports = this->directs[0].getPorts();
 		server.setPorts(ports);
 	}
+	if(!srv_name || srv_name > 1)
+		error_call("server_name must be set and not duplicated!");
+	if (body_size > 1)
+		error_call("client_max_body_size must not be duplicated!");
+	if (host_name > 1)//!host_name ||
+		error_call("hostname must be set and not duplicated!");
 	server.server_locations = sort_location(server.getLocations());
 	this->directs.push_back(server);
 }
@@ -647,6 +707,7 @@ void Config::fill_directive()
 	{
 		if (ftokens[i] == "server")
 			handle_servers(&i);
+		i++;
 	}
 }
 

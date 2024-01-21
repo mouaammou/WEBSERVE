@@ -10,6 +10,8 @@ const BOT_MSGS = [
   "I feel sleepy! :("
 ];
 
+
+
 // Icons made by Freepik from www.flaticon.com
 const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
 const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
@@ -27,6 +29,8 @@ msgerForm.addEventListener("submit", event => {
 
   botResponse();
 });
+
+
 
 function appendMessage(name, img, side, text) {
   //   Simple solution for small apps
