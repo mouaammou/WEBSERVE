@@ -50,16 +50,16 @@ Content-type: text/html
     <header class="header_section">
       <div class="container-fluid">
         <nav class="navbar navbar-expand-lg custom_nav-container">
-          <a class="navbar-brand" href="">
+          <a class="navbar-brand" href="index.html">
             <span>
-              Guest
+              Delfood
             </span>
           </a>
           <div class="" id="">
             <div class="User_option">
-              <a href="/login.php">
+              <a href="/cgi/login.php">
                 <i class="fa fa-user" aria-hidden="true"></i>
-                <span>Login</span>
+                </span>Welcome samjaabo</span>
               </a>
               <form class="form-inline ">
                 <input type="search" placeholder="Search" />
@@ -75,11 +75,10 @@ Content-type: text/html
             </div>
             <div id="myNav" class="overlay">
               <div class="overlay-content">
-                <a href="/index.php">Home</a>
-                <a href="/about.php">About</a>
-                <a href="/blog.php">Blog</a>
-                <a href="/testimonial.php">Testimonial</a>
-                
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="blog.html">Blog</a>
+                <a href="testimonial.html">Testimonial</a>
               </div>
             </div>
           </div>

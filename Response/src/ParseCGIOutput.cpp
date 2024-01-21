@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/20 06:41:03 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/21 03:58:00 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void ParseCGIOutput::additionalHeaders( void )
 ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 {
 	(void)status;
-	std::cout  << "<<<<<<<<<<<<<< CGI Response >>>>>>>>>>>>" << output << std::endl;
+	// std::cout  << "<<<<<<<<<<<<<< CGI Response >>>>>>>>>>>>" << output << std::endl;
 	if (args.response_code[0] == '5')
 	{
 		Response resp(args);
