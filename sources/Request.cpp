@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 20:47:21 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:26:18 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,9 @@ bool 				   Request::isLocationHasRedirection()
 			if (locations[i].getReturnInt())
 			{
 				this->path = locations[i].getReturnString();
-				this->_status_code = "301 Moved Permanently";
+				std::stringstream ss;
+				ss << locations[i].get_return_status();
+				this->_status_code = ss.str();//"config file redirection";
 				return (true);
 			}
 		}
