@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:09:28 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 13:41:50 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@ SendFile::SendFile( int ffd, int sfd )
 bool SendFile::sendString( void )
 {
 	short d = sendfile(filefd, sfd, offset, &length, NULL, 0);
+	if (d == -1)
+	{
+		close(sfd);
+		return (true);
+	}
 	offset += length;
 	length = 0;
 	if (d == 0)
@@ -73,7 +78,12 @@ SendString::SendString( std::string const &data, int sfd )
 bool SendString::sendString( void )
 {
 	ssize_t d = write(sfd, data.c_str(), data.length());
-	if (d == 0 && data.empty())
+	if (d == -1)
+	{
+		close(sfd);
+		return true;
+	}
+	if (d == 0)
 		return true;
 	data.erase(0, d);
 	return false;

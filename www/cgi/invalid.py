@@ -1,0 +1,1 @@
+Invalid Python script

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/21 03:58:00 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:54:48 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,18 +35,6 @@ std::string ParseCGIOutput::getFiled( std::string field )
 
 void ParseCGIOutput::translateHeaders( void )
 {
-	// std::stringstream  header(headers);
-	// std::string line;
-	// while (std::getline(header, line))
-	// {
-	// 	if (line.compare(0, 7, "Status:") == 0)
-	// 		continue;
-	// 	char c = line[line.length() - 1];
-	// 	if (c != '\r')
-			
-	// 	new_headers.append(line + '\n');
-	// 	// headers.erase(0, pos + 1);
-	// }
 	for (;headers.length();)
 	{
 		std::size_t pos = headers.find("\n");
@@ -65,22 +53,6 @@ void ParseCGIOutput::translateHeaders( void )
 	}
 }
 
-size_t ParseCGIOutput::getContentLength( void )
-{
-	try
-	{
-		return std::stoull(getFiled("Content-Length"));
-	}
-	catch(const std::exception& e)
-	{
-	}
-	return 0;
-}
-
-bool ParseCGIOutput::thereIsContentLength( void )
-{
-	return getFiled("Content-Length").empty() ? false : true;
-}
 
 void ParseCGIOutput::generateStatusLine( void )
 {
@@ -116,8 +88,6 @@ void ParseCGIOutput::additionalHeaders( void )
 
 ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 {
-	(void)status;
-	// std::cout  << "<<<<<<<<<<<<<< CGI Response >>>>>>>>>>>>" << output << std::endl;
 	if (args.response_code[0] == '5')
 	{
 		Response resp(args);
@@ -126,7 +96,10 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 	size_t pos = output.find("\r\n\r\n");
 	if (pos == std::string::npos )
 	{
-		args.response_code = "502";
+		if (status == SIGKILL)
+			args.response_code = "504";
+		else
+			args.response_code = "502";
 		Response resp(args);
 		return;
 	}
@@ -142,53 +115,3 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 	SendResponse(new_headers + output, -1, args.socket_fd);
 	
 }
-
-// ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
-// {
-// 	if (args.response_code[0] == '5')
-// 	{
-// 		Response resp(args);
-// 		return ;
-// 	}
-// 	size_t pos = args.translated_path.rfind(".php");
-// 	if (pos != std::string::npos && pos == args.translated_path.length() - 4)
-// 	{
-// 		phpResponse(output, args);
-// 		return ;
-// 	}
-// 	pos = output.find("\r\n\r\n");
-// 	if (pos == std::string::npos)
-// 	{
-// 		args.response_code = "502";
-// 		Response resp(args);
-// 		return;
-// 	}
-// 	headers = output.substr(0, pos + 1);
-// 	if (thereIsContentLength())
-// 		body = output.substr(pos + 2, getContentLength());
-// 	else
-// 		body = output.substr(pos + 2);
-// 	if (thereIsContentLength() && body.length() < getContentLength())
-// 	{
-// 		args.response_code = "502";
-// 		Response resp(args);
-// 		return;
-// 	}
-// 	else if ( ! thereIsContentLength() && status != 0)
-// 	{
-// 		args.response_code = "502";
-// 		Response resp(args);
-// 		return;
-// 	}
-// 	generateStatusLine();
-// 	if ( ! thereIsContentLength() && body.length() > 0)
-// 	{
-// 		std::stringstream str;
-// 		str << "Content-Length: " << body.length() << "\r\n";
-// 		new_headers.append(str.str());
-// 	}
-// 	translateHeaders();
-// 	additionalHeaders();
-// 	new_headers.append("\r\n");
-// 	SendResponse(new_headers + body, -1, args.socket_fd);
-// }

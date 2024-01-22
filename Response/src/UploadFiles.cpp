@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:14:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 13:43:17 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,12 @@ void FilesUpload::writeToFile( std::string &body )
 	}
 
 	file->write(body.c_str(), body.length());
+	if (file->fail())
+	{
+		conf.response_code = "500";
+		delete file;
+		return ;
+	}
 	file->close();
 	_uploaded_files.push_back(_filename);
 	if (conf.uploaded_file_path.empty())

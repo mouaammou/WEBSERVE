@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/21 20:20:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:15:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	Server::setServerSocket()
 	hints.ai_socktype = SOCK_STREAM; //TCP
 	hints.ai_flags = AI_PASSIVE;    // fill it with local IP address
 
-	if (getaddrinfo(NULL, this->severPort.c_str(), &hints, &result) != 0)
+	if (getaddrinfo("0.0.0.0", this->severPort.c_str(), &hints, &result) != 0)
 	{
 		throw std::runtime_error("getaddrinfo");
 	}

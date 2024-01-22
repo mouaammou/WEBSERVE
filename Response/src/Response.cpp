@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 11:32:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:01:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void Response::file( void )
 	{
 		args.response_code = "304";
 		statusLine(args.response_code);
-		oss << "Cache-Control: public, no-cache\r\n";
+		oss << "Cache-Control: public, max-age=1, no-cache, must-revalidate\r\n";
 		oss << "Date: " << getDate() << "\r\n";
 		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 		oss << "Accept-Ranges: none\r\n";
@@ -131,7 +131,7 @@ void Response::file( void )
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: public, no-cache\r\n";
+	oss << "Cache-Control: public, max-age=1, no-cache, must-revalidate\r\n";
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
 	oss << "Accept-Ranges: none\r\n";

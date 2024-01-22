@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/20 06:36:31 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:51:27 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@ class ParseCGIOutput
 
 	std::string	getFiled( std::string field );
 	void	translateHeaders( void );
-	size_t	getContentLength( void );
-	bool	thereIsContentLength( void );
 	void	generateStatusLine( void );
 	void	additionalHeaders( void );
 

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:14:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:06:27 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ void Method::getMethod()
 			}
 			else
 			{
-				this->method_config.response_code = "403 Forbidden no index file";
+				this->method_config.response_code = "403 Forbidden";
 				return ;
 			}
 		}

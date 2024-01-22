@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/18 00:52:18 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:44:52 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ StatusCodes::StatusCodes(void)
 	codes["400"] = "Bad Request";
 	codes["401"] = "Unauthorized";
 	codes["402"] = "Payment Required";
-	codes["403"] = "Forbidde";
+	codes["403"] = "Forbidden";
 	codes["404"] = "Not Found";
 	codes["405"] = "Method Not Allowed";
 	codes["406"] = "Not Acceptable";
@@ -51,6 +51,7 @@ StatusCodes::StatusCodes(void)
 	codes["411"] = "Lengh Required";
 	codes["412"] = "Precondition Failed";
 	codes["413"] = "Reqeust Entity Too Large";
+	codes["414"] = "Request-URI Too Long";
 	codes["415"] = "Unsupported Media Type";
 	codes["416"] = "Request Range Not Satisfiable";
 	codes["417"] = "Expectation Failed";

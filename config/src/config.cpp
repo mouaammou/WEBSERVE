@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/20 03:18:52 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/22 15:29:46 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,6 +373,8 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 		error_call("root or redirection must be present in location section : " + locat.getName());
 	if (retur > 1 || autoindex > 1 || upload_path > 1 || exe > 1 || index > 1 || proxy_method > 1)
 		error_call("directive must not be duplicated!");
+	if ( ! proxy_method )
+		error_call("proxy_method must be set for any location!");
 	if (!autoindex && !index)
 		error_call("autoindex or index must be set in location : " + locat.getName());
 	server.server_locations.push_back(locat);
@@ -625,10 +627,6 @@ void Config::handle_servers(int *indice)
 		server.setPorts(ports);
 	else if ((server.getServerId() < 2 && !port))
 		error_call("port not set in the first server!");
-	// if ((server.getServerId() < 2 && !port) || port > 1)
-	// 	error_call("error port!");
-	// else if (port)
-	// 	server.setPorts(ports);
 	else if (server.getServerId() > 1 && !port)
 	{
 		ports = this->directs[0].getPorts();
@@ -736,81 +734,3 @@ Config::~Config()
 {
 	this->ftokens.clear();
 }
-// const server_data Config::search_uri(int serverId, std::string uri)
-// {
-// 	for (size_t i = 0; i < this->directs.size(); i++)
-// 	{
-// 		if (directs[i].getServerId() == serverId)
-// 		{
-// 			return directs[i].my_lct[i];
-// 			directs[i].getBodySize();
-// 		}
-// 	}
-
-// }
-
-// int main(int argc, char *argv[])
-// {
-// 	if (argc == 2)
-// 	{
-// 		// directives dir;
-// 		std::string file;
-// 		file = argv[1];
-// 		Config conf(file);
-// 		conf.summarize();
-// 		// conf.print_file2(conf);
-// 		std::vector<Directives> directs;
-// 		directs = conf.get_directives();
-// 		size_t j = 0;
-// 		std::vector<int> ports;
-// 		while (j < directs.size())
-// 		{
-// 			std::cout << "Server : " << j << std::endl;
-// 			std::cout << directs[j].getServerId() << std::endl;
-// 			ports = directs[j].getPorts();
-// 			for (size_t i = 0; i < ports.size() ; i++)
-// 			{
-// 				std::cout << "port " << i << " " << ports[i] << std::endl;
-// 			}
-// 			std::cout << "server name    "<< directs[j].getServerName() << std::endl;
-// 			std::cout << "Error pages:" << std::endl;
-// 			std::cout << "400 " << directs[j].getErrorPage(400)<< std::endl;
-// 			std::cout << "101 " << directs[j].getErrorPage(101)<< std::endl;
-// 			std::cout << "403 " << directs[j].getErrorPage(403)<< std::endl;
-// 			std::cout << "404 " << directs[j].getErrorPage(404)<< std::endl;
-// 			std::cout << "413 " << directs[j].getErrorPage(413)<< std::endl;
-// 			std::cout << "202 " << directs[j].getErrorPage(202)<< std::endl;
-// 			std::cout << "205 " << directs[j].getErrorPage(205)<< std::endl;
-// 			std::cout << "504 " << directs[j].getErrorPage(504)<< std::endl;
-// 			std::cout << "502 " << directs[j].getErrorPage(502)<< std::endl;
-// 			std::cout << "503 " << directs[j].getErrorPage(503)<< std::endl;
-// 			std::cout << "body_size    "<< directs[j].getBodySize() << std::endl;
-// 			std::cout << "host_name    "<< directs[j].getHostName() << std::endl;
-// 			std::cout << "Locations for server "<< j << std::endl;
-// 			for (size_t i = 0; i < directs[j].server_locations.size(); i++)
-// 			{
-// 				std::cout<<"Slashes " << directs[j].server_locations[i].getSlash() << std::endl;
-// 				std::cout<<"name " << directs[j].server_locations[i].getName() << std::endl;
-// 				std::cout<<"root " << directs[j].server_locations[i].getRoot() << std::endl;
-// 				std::cout<<"-----Upload file " << directs[j].server_locations[i].getUploadPath() << std::endl;
-// 				std::cout<<"auto index " << directs[j].server_locations[i].getAutoindex() << std::endl;
-// 				std::cout<<"index " << directs[j].server_locations[i].getIndex() << std::endl;
-// 				if (directs[j].server_locations[i].getReturnInt())
-// 					std::cout<<"return " << directs[j].server_locations[i].getReturnString() << std::endl;
-// 				if (!directs[j].server_locations[i].getCgiExe().empty())
-// 				std::cout<<"------- CGIII -->:  " << directs[j].server_locations[i].getCgiExe() << std::endl;
-// 				std::cout << "Methodes ";
-// 				std::vector<std::string> methods;
-// 				methods = directs[j].server_locations[i].getMethods();
-// 				for (size_t k = 0; k < methods.size(); k++)
-// 				{
-// 					std::cout << methods[k] << "   ";
-// 				}
-// 				std::cout << std::endl;
-// 			}
-// 			j++;
-// 		}
-// 		return 0;
-// 	}
-// 	std::cout << "Error usage: <./webserv config_file>" << std::endl;
-// }
