@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 14:15:47 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:27:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)//
 
 void			Server::printf_t_config(t_config config_file)
 {
-	std::cout << "configuration : \n";
+	std::cout << "		configuration : \n";
 	printf("		server_name: %s\n", config_file.server_name.c_str());
 	printf("		port: %s\n", config_file.port.c_str());
 	printf("		translated_path: %s\n", config_file.translated_path.c_str());

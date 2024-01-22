@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 17:06:11 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 22:24:39 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 		{
 			if (server && HttpClient)
 			{
-				if (! clientPollIn(server, fileDescriptor) && HttpClient && HttpClient->read_bytes == 0)
+				if (! clientPollIn(server, fileDescriptor) && HttpClient->read_bytes == 0)
 				{
 					return (removeFromPoll(server, fileDescriptor), false);
 				}
@@ -132,7 +132,7 @@ void			  PollServers::track_ALL_Clients(void)
 		// 		continue;
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
-		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR))
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
 		}
