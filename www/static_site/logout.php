@@ -16,6 +16,6 @@ session_destroy();
 
 // Unset and expire the session cookie (if it exists)
 // Redirect to the login page or any desired destination
-header('Location: /');
+header('Location: /login.php');
 exit();
 ?>

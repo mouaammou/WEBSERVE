@@ -24,10 +24,10 @@
   <!-- font awesome style -->
   <link href="css/font-awesome.min.css" rel="stylesheet" />
   <!-- nice select -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha256-mLBIhmBvigTFWPSCtvdu6a76T+3Xyt+K571hupeFLg4=" crossorigin="anonymous" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha256-mLBIhmBvigTFWPSCtvdu6a76T+3Xyt+K571hupeFLg4=" crossorigin="anonymous" /> -->
   <!-- slidck slider -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" integrity="sha256-UK1EiopXIL+KVhfbFa8xrmAWPeBjMVdvYMYkTAEv/HI=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css.map" integrity="undefined" crossorigin="anonymous" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" integrity="sha256-UK1EiopXIL+KVhfbFa8xrmAWPeBjMVdvYMYkTAEv/HI=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css.map" integrity="undefined" crossorigin="anonymous" /> -->
 
 
   <!-- Custom styles for this template -->
@@ -88,9 +88,9 @@
         <div class="row">
           <div class="col-lg-10 mx-auto">
             <div class="detail-box">
-              <h1>
-                Profile Info
-              </h1>
+              <h2>
+                Login or Register
+              </h2>
               <!-- <p>
                 Login or Register
               </p> -->
@@ -98,22 +98,31 @@
             <div class="find_container ">
               <div class="container">
                 <div class="row">
-                  <div class="col detail-box">
+                  <div class="col">
+                    <form method="POST" action="/login.php">
                       <div class="form-row ">
                         <div class="form-group col-lg-5">
-                            <h3>username</h3>
+                          <input type="text" class="form-control" name="username" id="inputHotel" placeholder="username" required>
                         </div>
                       </div>
                       <div class="form-row ">
                         <div class="form-group col-lg-5">
-                          <h3>firstname</h3>
+                          <input type="text" class="form-control" name="firstname" id="inputHotel" placeholder="first name" required>
                         </div>
                       </div>
                       <div class="form-row ">
                         <div class="form-group col-lg-5">
-                            <h3>lastname</h3>
+                          <input type="text" class="form-control" name="lastname" id="inputHotel" placeholder="last name" required>
                         </div>
                       </div>
+                      <div class="form-row ">
+                        <div class="form-group col-lg-5">
+                          <div class="btn-box">
+                            <button type="submit" class="btn ">Login</button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -130,9 +139,9 @@
   <!-- bootstrap js -->
   <script src="js/bootstrap.js"></script>
   <!-- slick  slider -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.js"></script> -->
   <!-- nice select -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js" integrity="sha256-Zr3vByTlMGQhvMfgkQ5BtWRSKBGa2QlspKYJnkjZTmo=" crossorigin="anonymous"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js" integrity="sha256-Zr3vByTlMGQhvMfgkQ5BtWRSKBGa2QlspKYJnkjZTmo=" crossorigin="anonymous"></script> -->
   <!-- custom js -->
   <script src="js/custom.js"></script>
 
