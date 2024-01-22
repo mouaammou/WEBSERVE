@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 14:06:27 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:07:23 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,8 +254,6 @@ bool		Method::get_method_file_type()
 	}
 	else
 	{
-		printf("translated_path: %s\n", this->method_config.translated_path.c_str());
-		puts("not found");
 		this->method_config.response_code = "404 Not Found";
 		return (false);
 	}

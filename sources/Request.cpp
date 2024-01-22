@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 15:48:29 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:47:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,28 +35,25 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size;
 	this->server_config.path_info = "";
 	this->_connection = "";
-	this->reqeust_timeout = 0;
 }
 
 void	Request::resetRequest()
 {
-	this->reqeust_timeout = 0;
 	this->request_string = "";
 	this->_connection = "";
 	this->method = "";
 	this->path = "";
 	this->version = "";
 	this->request_body = "";
+	this->transfer_encoding = "";
 	this->content_length = 0;
 	this->_has_headers = false;
 	this->_has_body = false;
-	this->transfer_encoding = "";
 	this->content_type = "";
 	this->request_received = false;
 	this->query_string = "";
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
-	this->_body_size = -1;
 	this->request_headers.clear();
 }
 
@@ -182,7 +179,7 @@ void Request::displayRequest()
 		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 			std::cout << it->first << "=>" << it->second;
 		// std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
-		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
+		// std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
 }
 
@@ -266,17 +263,17 @@ void       Request::handlePathInfo()
 {
 	if (this->path.find(".php") != std::string::npos || this->path.find(".py") != std::string::npos)
 	{
-		if (this->path.find(".php") != std::string::npos)
+		if (this->path.find(".php/") != std::string::npos)
 		{
-			if (this->path.find(".php") + 4 < this->path.length())
+			if (this->path.find(".php/") + 5 < this->path.length())
 			{
 				this->server_config.path_info = this->path.substr(this->path.find(".php") + 4);
 				this->path = this->path.substr(0, this->path.find(".php") + 4);
 			}
 		}
-		else if (this->path.find(".py") != std::string::npos)
+		else if (this->path.find(".py/") != std::string::npos)
 		{
-			if (this->path.find(".py") + 3 < this->path.length())
+			if (this->path.find(".py/") + 4 < this->path.length())
 			{
 				this->server_config.path_info = this->path.substr(this->path.find(".py") + 3);
 				this->path = this->path.substr(0, this->path.find(".py") + 3);
@@ -438,10 +435,10 @@ bool   		Request::handleRequestBody()
 	{
 		if (this->_body_size != -1 && (long long)this->request_body.length() > this->_body_size)
 			return (this->_status_code = "413 Request Entity Too Large", true);
-		if (this->hasHeaders() && this->content_length > 0)
+		else if (this->hasHeaders() && this->content_length > 0)
 			return (this->storeRequestBody());
 		else if (this->hasHeaders() && this->transfer_encoding == "chunked")
-			return (this->storeChunkedRequestBody(), true);
+			return (this->storeChunkedRequestBody());
 	}
 	if ((this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "") || ! this->request_body.length())
 		return (true);
@@ -454,7 +451,7 @@ bool	Request::receiveRequest()//must read the request
 	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
 	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
-		return (this->read_bytes = 0, false);
+		return (perror("Read::"), this->read_bytes = 0, false);
 	this->read_bytes += readStatus;
 	this->request_body.append(this->buffer, readStatus);
 	if ( ! this->hasHeaders())

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 14:54:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:32:07 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,13 +93,17 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args )
 		Response resp(args);
 		return ;
 	}
-	size_t pos = output.find("\r\n\r\n");
-	if (pos == std::string::npos )
+	if ( status == SIGKILL )
 	{
-		if (status == SIGKILL)
-			args.response_code = "504";
-		else
-			args.response_code = "502";
+		args.response_code = "504";
+		Response resp(args);
+		return;
+	}
+	size_t pos = output.find("\r\n\r\n");
+	if ((args.translated_path.substr(args.translated_path.length() - 3) == ".py" && status != 0)
+	|| (status != 0 && status != 255) || pos == std::string::npos)
+	{
+		args.response_code = "502";
 		Response resp(args);
 		return;
 	}

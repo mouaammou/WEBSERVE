@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/14 03:52:41 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:05:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,9 @@ class Request
 		bool	_has_body;
 		bool	request_received;
 		long long		_body_size;
-
 		std::string 	 _status_code;
+
 	public:
-		size_t 				reqeust_timeout;
 		std::string      	_connection;
 		int   				read_bytes;
 

@@ -6,7 +6,7 @@ session_start();
 if (isset($_COOKIE[session_name()]))
 {
     unset($_COOKIE[session_name()]);
-    setcookie(session_name(), '', time() - 3600, '/'); 
+    setcookie(session_name(), '', time() - 3600);
 }
 
 session_unset();

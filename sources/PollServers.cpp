@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 08:03:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:06:11 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,19 +75,9 @@ bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Req
 		{
 			if (server && HttpClient)
 			{
-				HttpClient->reqeust_timeout = current_time_in_milliseconds();
 				if (! clientPollIn(server, fileDescriptor) && HttpClient && HttpClient->read_bytes == 0)
 				{
 					return (removeFromPoll(server, fileDescriptor), false);
-				}
-				else
-				{
-					HttpClient->reqeust_timeout = current_time_in_milliseconds() - HttpClient->reqeust_timeout;
-					if (HttpClient->reqeust_timeout > 1000 * 60)
-					{
-						std::cout << COLOR_RED "Client TIMEOUT " << fileDescriptor << COLOR_RESET << std::endl;
-						return (removeFromPoll(server, fileDescriptor), false);
-					}
 				}
 			}
 		}
@@ -389,6 +379,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 {
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
+
 		//check if the config file has multi ports
 		this->handleMultiPorts(server, fd);
 
@@ -396,7 +387,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
-		TheClient(server, fd)->displayRequest();
+		// TheClient(server, fd)->displayRequest();
 		//get the requested translated path
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")

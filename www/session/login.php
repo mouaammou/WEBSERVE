@@ -21,6 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     // Redirect back to the login form if accessed directly
     header("Location: index.html");
-    exit();
+    exit(255);
 }
 ?>

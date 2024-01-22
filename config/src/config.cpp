@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/22 15:29:46 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 18:07:52 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,38 +89,39 @@ void Config::print_file2(Config &conf)
 	{
 		std::cout << "Server : " << j << std::endl;
 		std::cout << conf.directs[j].getServerId() << std::endl;
-		ports = conf.directs[j].getPorts();
-		for (size_t i = 0; i < ports.size() ; i++)
-		{
-			std::cout << "port " << i << " " << ports[i] << std::endl;
-		}
-		std::cout << "server name    "<< conf.directs[j].getServerName() << std::endl;
-		std::cout << "Error pages:" << std::endl;
-		std::cout << "400 " << conf.directs[j].getErrorPage(400)<< std::endl;
-		std::cout << "403 " << conf.directs[j].getErrorPage(403)<< std::endl;
-		std::cout << "201 " << conf.directs[j].getErrorPage(201)<< std::endl;
-		std::cout << "500 " << conf.directs[j].getErrorPage(500)<< std::endl;
-		std::cout << "504 " << conf.directs[j].getErrorPage(504)<< std::endl;
-		std::cout << "body_size    "<< conf.directs[j].getBodySize() << std::endl;
-		std::cout << "host_name    "<< conf.directs[j].getHostName() << std::endl;
+		// ports = conf.directs[j].getPorts();
+		// for (size_t i = 0; i < ports.size() ; i++)
+		// {
+		// 	std::cout << "port " << i << " " << ports[i] << std::endl;
+		// }
+		// std::cout << "server name    "<< conf.directs[j].getServerName() << std::endl;
+		// std::cout << "Error pages:" << std::endl;
+		// std::cout << "400 " << conf.directs[j].getErrorPage(400)<< std::endl;
+		// std::cout << "403 " << conf.directs[j].getErrorPage(403)<< std::endl;
+		// std::cout << "201 " << conf.directs[j].getErrorPage(201)<< std::endl;
+		// std::cout << "500 " << conf.directs[j].getErrorPage(500)<< std::endl;
+		// std::cout << "504 " << conf.directs[j].getErrorPage(504)<< std::endl;
+		// std::cout << "body_size    "<< conf.directs[j].getBodySize() << std::endl;
+		// std::cout << "host_name    "<< conf.directs[j].getHostName() << std::endl;
 		std::cout << "Locations for server "<< j << std::endl;
 		for (size_t i = 0; i < conf.directs[j].server_locations.size(); i++)
 		{
-			std::cout<<"name " << conf.directs[j].server_locations[i].getName() << std::endl;
-			std::cout<<"root " << conf.directs[j].server_locations[i].getRoot() << std::endl;
-			std::cout<<"auto index " << conf.directs[j].server_locations[i].getAutoindex() << std::endl;
-			std::cout<<"index " << conf.directs[j].server_locations[i].getIndex() << std::endl;
-			if (conf.directs[j].server_locations[i].getReturnInt())
-				std::cout<<"return " << conf.directs[j].server_locations[i].getReturnString() << std::endl;
-			if (!conf.directs[j].server_locations[i].getCgiExe().empty())
-			std::cout<<"exec " << conf.directs[j].server_locations[i].getCgiExe() << std::endl;
-			std::cout << "Methodes ";
-			std::vector<std::string> methods;
-			methods = conf.directs[j].server_locations[i].getMethods();
-			for (size_t k = 0; k < methods.size(); k++)
-			{
-				std::cout << methods[k] << "   ";
-			}
+			std::cout << "uploade path " << conf.directs[j].server_locations[i].getUploadPath() << std::endl;
+			// std::cout<<"name " << conf.directs[j].server_locations[i].getName() << std::endl;
+			// std::cout<<"root " << conf.directs[j].server_locations[i].getRoot() << std::endl;
+			// std::cout<<"auto index " << conf.directs[j].server_locations[i].getAutoindex() << std::endl;
+			// std::cout<<"index " << conf.directs[j].server_locations[i].getIndex() << std::endl;
+			// if (conf.directs[j].server_locations[i].getReturnInt())
+			// 	std::cout<<"return " << conf.directs[j].server_locations[i].getReturnString() << std::endl;
+			// if (!conf.directs[j].server_locations[i].getCgiExe().empty())
+			// std::cout<<"exec " << conf.directs[j].server_locations[i].getCgiExe() << std::endl;
+			// std::cout << "Methodes ";
+			// std::vector<std::string> methods;
+			// methods = conf.directs[j].server_locations[i].getMethods();
+			// for (size_t k = 0; k < methods.size(); k++)
+			// {
+			// 	std::cout << methods[k] << "   ";
+			// }
 			std::cout << std::endl;
 		}
 		j++;
@@ -471,7 +472,6 @@ unsigned long long Config::max_body_size(int *indice)
 	int size;
 	unsigned long long max;
 	size = this->ftokens.size();
-	printf("ftokens[*indice] = %s\n", ftokens[*indice].c_str());
 	if (size == *indice + 1)
 		error_call(this->ftokens[*indice] + " not set!");
 	if (this->ftokens[*indice + 1] == ";")
@@ -727,6 +727,7 @@ void Config::summarize()
 	remove_spces();
 	handle_brackets();
 	fill_directive();
+	// print_file2(*this);
 }
 
 
@@ -734,3 +735,15 @@ Config::~Config()
 {
 	this->ftokens.clear();
 }
+
+// int main(int argc, char **argv)
+// {
+// 	if (argc != 2)
+// 	{
+// 		std::cerr << "Usage: ./config <config_file>" << std::endl;
+// 		return (1);
+// 	}
+// 	Config conf(argv[1]);
+// 	conf.summarize();
+// 	return (0);
+// }

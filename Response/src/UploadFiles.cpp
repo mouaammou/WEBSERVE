@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 13:43:17 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 18:20:42 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 FilesUpload::FilesUpload( t_config &conf ) : conf(conf)
 {
+	if ( ! isUploadRequest())
+		return ;
 	this->_filename = "";
 	this->_boundary = "";
 	this->_end_boundary = "";
