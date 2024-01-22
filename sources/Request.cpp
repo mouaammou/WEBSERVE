@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 13:44:24 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 15:48:29 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -471,19 +471,11 @@ bool	Request::receiveRequest()//must read the request
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
-		return (true);
 	return (this->handleRequestBody());
 }
 
 
 bool   Request::sendResponse()
 {
-	try{
 	return (Response::onPollout(this->fd));
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what()<<"sdfsdfdsfdsfdsfdsfdsfdsfdsfdsfadsfdsfsfdsfdsfdsfdsfdsfds" << '\n';
-	}
-	return (false);
 }
