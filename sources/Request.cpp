@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/18 01:34:38 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/22 08:43:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -468,10 +468,10 @@ bool	Request::receiveRequest()//must read the request
 		this->handleRequestHeaders(this->request_string);
 		if (this->hasHeaders() && ! this->checkEssentialHeaders(this->request_headers))
 			this->_status_code = "400 Bad Request";
-
 		if (this->handleBadRequest() == false)
 			return (true);
 	}
+		return (true);
 	return (this->handleRequestBody());
 }
 

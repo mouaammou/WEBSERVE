@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/16 11:32:16 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/21 20:20:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,6 @@ void			Server::printf_t_config(t_config config_file)
 	printf("		method: %s\n", config_file.request->getMethod().c_str());
 	//  std::cout << COLOR_GREEN "PATH_INFO :=> " COLOR_RESET << config_file.path_info << std::endl;
 	//  std::cout << COLOR_GREEN "PATH_INFO_TRANSLATED :=> " COLOR_RESET << config_file.path_info_translated << std::endl;
-		// std::
 }
 
 Method* 		Server::getPointedMethod() const

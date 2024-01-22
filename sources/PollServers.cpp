@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/21 17:30:53 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/01/22 08:03:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,8 +160,7 @@ void 				PollServers::initPoll()
 		// std::cout << COLOR_CYAN "waiting ..." COLOR_RESET<< std::endl;
 		if (pollStatu == -1)
 		{
-			perror ("poll");
-			throw std::runtime_error("poll");
+			throw std::runtime_error("poll failed");
 		}
 		else if (pollStatu == 0)
 			std::cout << COLOR_YELLOW "waiting for connections ..." COLOR_RESET<< std::endl;
@@ -242,7 +241,7 @@ void		PollServers::removeFileDescriptor(int fd)
 
 void		PollServers::acceptConnections(int serverfd)
 {
-    int					clientSocket;
+    int		clientSocket;
 
     if ((clientSocket = accept(serverfd, NULL, NULL)) == -1)
     {
@@ -255,8 +254,6 @@ void		PollServers::acceptConnections(int serverfd)
 	if (server)
 		server->addClient(clientSocket);
 }
-
-
 
 Request				*TheClient(Server *server, int fd)
 {
@@ -417,5 +414,5 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	}
 	else
 		return (false);
-	return true;
+	return (true);
 }
