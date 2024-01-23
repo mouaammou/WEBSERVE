@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/23 15:41:53 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:37:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ Request::Request(int fd, t_config config_file)
 	this->server_config.path_info = "";
 	this->_connection = "";
 	this->_chunked_body = "";
+	this->_chunk_size = -1;
+	this->_last_chunk_pos = 0;
 }
 
 void	Request::resetRequest()
@@ -58,6 +60,8 @@ void	Request::resetRequest()
 	this->_status_code = "200 OK";
 	this->server_config.path_info = "";
 	this->request_headers.clear();
+	this->_chunk_size = -1;
+	this->_last_chunk_pos = 0;
 }
 
 Request::~Request()
@@ -305,13 +309,11 @@ bool 	Request::checkPath()
 	this->server_config.request_url = this->path;
 	this->handleQueryString();
 	this->handlePathInfo();
-	printf("path: %s\n", this->path.c_str());
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";
 		return (true);
 	}
-	printf("path: %s\n", this->path.c_str());
 
 	if (this->path.length() > 2048)
 	{
@@ -391,39 +393,69 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 }
 
 // Function to extract and concatenate the chunks from a chunked request
-std::string			Request::extractChunks(const std::string& request)
+bool 	Request::extractChunks(std::string& request)
 {
-	std::stringstream stream(request);
-	std::stringstream chunks;
-	std::string line;
+    std::string delimiter = "\r\n";
+    size_t pos = 0;
+    std::string chunk;
 
-	while (std::getline(stream, line))
-	{
-		size_t chunkSize = strtoul(line.c_str(), NULL, 16);
-		if (chunkSize == 0) {
-			break; // End of chunks
-		}
-
-		while (chunkSize > 0 && std::getline(stream, line))
-		{
-			line += "\n";
-			size_t bytesRead = std::min(line.length(), chunkSize);
-			chunks.write(line.c_str(), bytesRead);//write the chunk to the stream
-			chunkSize -= bytesRead;
-		}
-	}
-	return chunks.str();
+    while ((pos = request.find(delimiter)) != std::string::npos)
+    {
+        //hex to decimal
+        chunk = request.substr(0, pos);
+        int decimal = 1;
+        std::stringstream ss(chunk);
+        ss >> std::hex >> decimal;
+        if (chunk == "0")
+        {
+            this->request_body = this->_chunked_body;
+            return true;
+        }
+        this->_chunked_body.append(request.substr(pos + 2, decimal));
+        // Remove the chunk from the request
+        request.erase(0, pos + 2 + decimal + 2);
+    }
+    return (false);
 }
 
 bool			Request::storeChunkedRequestBody()
 {
-	this->_chunked_body += extractChunks(this->request_body);
-	if (this->request_body.find("0\r\n\r\n") != std::string::npos)
+	if (this->_chunk_size == -1)
 	{
+		size_t pos = this->request_body.find("\r\n");
+		if (pos != std::string::npos)
+		{
+			// std::string chunk_size = this->request_body.substr(0, pos);
+			std::stringstream ss;
+			ss << std::hex << this->request_body.substr(0, pos);
+			ss >> this->_chunk_size;
+			// std::cout << "********CHUNK SIZE: " << this->_chunk_size <<"|"<<this->request_body.substr(0, pos) << std::endl;
+			this->request_body.erase(0, pos + 2);
+		}
+	}
+	if (this->_chunk_size > 0 && (long long)this->request_body.length() >= this->_chunk_size)
+	{
+		_chunked_body.append(this->request_body.substr(0, this->_chunk_size));
+		this->request_body.erase(0, this->_chunk_size + 2);
+		this->_chunk_size = -1;
+		return storeChunkedRequestBody();
+	}
+	if (this->_chunk_size == 0)
+	{
+		// std::cout << "CHUNKED BODY:*****************finished**********************" << std::endl;
 		this->request_body = this->_chunked_body;
+		this->read_bytes = this->request_body.length();
+		// std::cout << "CHUNKED BODY:*******************************\n" << this->_chunked_body << "<<**************" << std::endl;
+		this->_chunked_body.clear();
+		this->_chunk_size = -1;
 		this->_has_body = true;
 		return (true);
 	}
+	// if (extractChunks(this->request_body))
+	// {
+	// 	this->_has_body = true;
+	// 	return (true);
+	// }
 	return (false);
 }
 

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/23 15:40:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:45:04 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ class Request
 		long long		_body_size;
 		std::string 	 _status_code;
 		std::string 	_chunked_body;
+		int _chunk_size;
+		int _last_chunk_pos;
 
 	public:
 		std::string      	_connection;
@@ -94,5 +96,5 @@ class Request
 
 		void	resetRequest();
 
-		std::string		extractChunks(const std::string& request);
+		bool		extractChunks(std::string &request);
 };

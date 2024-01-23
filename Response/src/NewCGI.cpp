@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 19:39:05 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:32:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void NewCGI::remove( int sfd )
     SendResponse::remove(sfd);
 }
 
-NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(800), conf(conf)
+NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(60000), conf(conf)
 {
     one_time_kill = false;
     socketfd = conf.request->getFd();
@@ -161,12 +161,14 @@ void NewCGI::child( void )
         std::exit(EXIT_FAILURE);
     }
     close(fds[0]);
+    std::cerr << "write *******start*********"<< std::endl;
     if (write(fds[1], conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length()) == -1)
     {
         close(STDIN_FILENO);
         close(fds[1]);
         std::exit(EXIT_FAILURE);
     }
+     std::cerr << "write ******end**********"<< std::endl;
     if (close(fds[1]) == -1)
         std::exit(EXIT_FAILURE);
 }
