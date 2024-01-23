@@ -1,0 +1,159 @@
+Content-type: text/html
+
+
+<H3>Current Working Directory:</H3>
+/Users/samjaabo/Desktop/www/cgi
+
+
+<H3>Command Line Arguments:</H3>
+
+['/Users/samjaabo/Desktop/www/cgi/test.py']
+
+
+<H3>Form Contents:</H3>
+<P>No form fields.
+<DL>
+</DL>
+
+
+<H3>Shell Environment:</H3>
+<DL>
+<DT> GATEWAY_INTERFACE <DD> CGI/1.1
+<DT> HTTP_ACCEPT <DD> text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+<DT> HTTP_ACCEPT_ENCODING <DD> gzip, deflate, br
+<DT> HTTP_ACCEPT_LANGUAGE <DD> en-US,en;q=0.9,ar-EG;q=0.8,ar;q=0.7,fr;q=0.6
+<DT> HTTP_CACHE_CONTROL <DD> max-age=0
+<DT> HTTP_COOKIE <DD> PHPSESSID=2785c935f452b68d38be0e572a3eef7c
+<DT> HTTP_HOST <DD> localhost
+<DT> HTTP_SEC_CH_UA <DD> &quot;Not_A Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;120&quot;, &quot;Google Chrome&quot;;v=&quot;120&quot;
+<DT> HTTP_SEC_CH_UA_MOBILE <DD> ?0
+<DT> HTTP_SEC_CH_UA_PLATFORM <DD> &quot;macOS&quot;
+<DT> HTTP_SEC_FETCH_DEST <DD> document
+<DT> HTTP_SEC_FETCH_MODE <DD> navigate
+<DT> HTTP_SEC_FETCH_SITE <DD> none
+<DT> HTTP_SEC_FETCH_USER <DD> ?1
+<DT> HTTP_UPGRADE_INSECURE_REQUESTS <DD> 1
+<DT> HTTP_USER_AGENT <DD> Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+<DT> LC_CTYPE <DD> UTF-8
+<DT> PATH_INFO <DD> 
+<DT> PATH_TRANSLATED <DD> 
+<DT> QUERY_STRING <DD> 
+<DT> REMOTE_ADDR <DD> 127.0.0.1
+<DT> REMOTE_HOST <DD> 
+<DT> REQUEST_METHOD <DD> GET
+<DT> REQUEST_URI <DD> /cgi/test.py
+<DT> SCRIPT_FILENAME <DD> /Users/samjaabo/Desktop/www/cgi/test.py
+<DT> SCRIPT_NAME <DD> /cgi/test.py
+<DT> SERVER_NAME <DD> example1.com
+<DT> SERVER_PORT <DD> 80
+<DT> SERVER_PROTOCOL <DD> HTTP/1.1
+<DT> SERVER_SOFTWARE <DD> Webserv/1.0
+<DT> __CF_USER_TEXT_ENCODING <DD> 0x18F1C:0x0:0x0
+</DL>
+
+
+<H3>These environment variables could have been set:</H3>
+<UL>
+<LI>AUTH_TYPE
+<LI>CONTENT_LENGTH
+<LI>CONTENT_TYPE
+<LI>DATE_GMT
+<LI>DATE_LOCAL
+<LI>DOCUMENT_NAME
+<LI>DOCUMENT_ROOT
+<LI>DOCUMENT_URI
+<LI>GATEWAY_INTERFACE
+<LI>LAST_MODIFIED
+<LI>PATH
+<LI>PATH_INFO
+<LI>PATH_TRANSLATED
+<LI>QUERY_STRING
+<LI>REMOTE_ADDR
+<LI>REMOTE_HOST
+<LI>REMOTE_IDENT
+<LI>REMOTE_USER
+<LI>REQUEST_METHOD
+<LI>SCRIPT_NAME
+<LI>SERVER_NAME
+<LI>SERVER_PORT
+<LI>SERVER_PROTOCOL
+<LI>SERVER_ROOT
+<LI>SERVER_SOFTWARE
+</UL>
+In addition, HTTP headers sent by the server may be passed in the
+environment as well.  Here are some common variable names:
+<UL>
+<LI>HTTP_ACCEPT
+<LI>HTTP_CONNECTION
+<LI>HTTP_HOST
+<LI>HTTP_PRAGMA
+<LI>HTTP_REFERER
+<LI>HTTP_USER_AGENT
+</UL>
+
+<H3>What follows is a test, not an actual exception:</H3>
+
+<H3>Traceback (most recent call last):</H3>
+<PRE>  File &quot;/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/cgi.py&quot;, line 864, in test
+    g()
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/cgi.py&quot;, line 862, in g
+    f()
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/cgi.py&quot;, line 860, in f
+    exec(&quot;testing print_exception() -- &lt;I&gt;italics?&lt;/I&gt;&quot;)
+  File &quot;&lt;string&gt;&quot;, line 1
+    testing print_exception() -- &lt;I&gt;italics?&lt;/I&gt;
+            ^
+<B>SyntaxError: invalid syntax
+</B></PRE>
+<H1>Second try with a small maxlen...</H1>
+
+<H3>Current Working Directory:</H3>
+/Users/samjaabo/Desktop/www/cgi
+
+
+<H3>Command Line Arguments:</H3>
+
+['/Users/samjaabo/Desktop/www/cgi/test.py']
+
+
+<H3>Form Contents:</H3>
+<P>No form fields.
+<DL>
+</DL>
+
+
+<H3>Shell Environment:</H3>
+<DL>
+<DT> GATEWAY_INTERFACE <DD> CGI/1.1
+<DT> HTTP_ACCEPT <DD> text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+<DT> HTTP_ACCEPT_ENCODING <DD> gzip, deflate, br
+<DT> HTTP_ACCEPT_LANGUAGE <DD> en-US,en;q=0.9,ar-EG;q=0.8,ar;q=0.7,fr;q=0.6
+<DT> HTTP_CACHE_CONTROL <DD> max-age=0
+<DT> HTTP_COOKIE <DD> PHPSESSID=2785c935f452b68d38be0e572a3eef7c
+<DT> HTTP_HOST <DD> localhost
+<DT> HTTP_SEC_CH_UA <DD> &quot;Not_A Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;120&quot;, &quot;Google Chrome&quot;;v=&quot;120&quot;
+<DT> HTTP_SEC_CH_UA_MOBILE <DD> ?0
+<DT> HTTP_SEC_CH_UA_PLATFORM <DD> &quot;macOS&quot;
+<DT> HTTP_SEC_FETCH_DEST <DD> document
+<DT> HTTP_SEC_FETCH_MODE <DD> navigate
+<DT> HTTP_SEC_FETCH_SITE <DD> none
+<DT> HTTP_SEC_FETCH_USER <DD> ?1
+<DT> HTTP_UPGRADE_INSECURE_REQUESTS <DD> 1
+<DT> HTTP_USER_AGENT <DD> Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+<DT> LC_CTYPE <DD> UTF-8
+<DT> PATH_INFO <DD> 
+<DT> PATH_TRANSLATED <DD> 
+<DT> QUERY_STRING <DD> 
+<DT> REMOTE_ADDR <DD> 127.0.0.1
+<DT> REMOTE_HOST <DD> 
+<DT> REQUEST_METHOD <DD> GET
+<DT> REQUEST_URI <DD> /cgi/test.py
+<DT> SCRIPT_FILENAME <DD> /Users/samjaabo/Desktop/www/cgi/test.py
+<DT> SCRIPT_NAME <DD> /cgi/test.py
+<DT> SERVER_NAME <DD> example1.com
+<DT> SERVER_PORT <DD> 80
+<DT> SERVER_PROTOCOL <DD> HTTP/1.1
+<DT> SERVER_SOFTWARE <DD> Webserv/1.0
+<DT> __CF_USER_TEXT_ENCODING <DD> 0x18F1C:0x0:0x0
+</DL>
+

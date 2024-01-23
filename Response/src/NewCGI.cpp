@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/23 18:32:09 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:22:48 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@ void NewCGI::remove( int sfd )
         kill(cgi->pid, SIGKILL);
     pids_to_remove.push_back(cgi->getPid());
     active_procs[cgi->socketfd ] = NULL;
+    cgi->closeFiles();
     delete cgi;
     active_procs.erase(sfd);
     SendResponse::remove(sfd);
 }
 
-NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(60000), conf(conf)
+NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(10000), conf(conf)
 {
     one_time_kill = false;
     socketfd = conf.request->getFd();
@@ -39,10 +40,22 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(60000), co
     ss << "temporary/" << socketfd << ".output";
     filename = ss.str();
     pid = -1;
-    timeout_start = getCurrentTime();
     conf.response_code = "200";
     conf.cgi = false;
+    conf.autoindex = "off";
     std::remove(filename.c_str());
+    ss.str("");
+    ss << "temporary/" << socketfd << ".input";
+    ifilename = ss.str();
+    std::ofstream  inputf(ifilename, std::ios::out | std::ios::trunc | std::ios::binary);
+    if ( ! inputf.is_open())
+        conf.response_code = "500";
+    else
+        inputf.write(conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length());
+    if (inputf.fail())
+        conf.response_code = "500";
+    inputf.close();
+    timeout_start = getCurrentTime();
 }
 
 void NewCGI::checkExitedProcess( void )
@@ -89,7 +102,7 @@ void NewCGI::build( config &conf )
     remove(conf.server_fd);
     NewCGI *cgi = new NewCGI(conf);
     active_procs[conf.request->getFd()] = cgi;
-    if ( ! cgi->execute())
+    if ( ! cgi->execute() || conf.response_code != "200")
     {
         active_procs.erase(conf.request->getFd());
         conf.response_code = "500";//fork failed
@@ -101,6 +114,7 @@ void NewCGI::build( config &conf )
 
 void NewCGI::onProcessExit( int status )
 {
+    std::remove(ifilename.c_str());
     std::ifstream file(filename.c_str());
     if ( ! file.is_open())
     {
@@ -161,14 +175,20 @@ void NewCGI::child( void )
         std::exit(EXIT_FAILURE);
     }
     close(fds[0]);
-    std::cerr << "write *******start*********"<< std::endl;
-    if (write(fds[1], conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length()) == -1)
+    fd = open(ifilename.c_str(), O_RDONLY);
+    if (fd == -1)
     {
         close(STDIN_FILENO);
         close(fds[1]);
         std::exit(EXIT_FAILURE);
     }
-     std::cerr << "write ******end**********"<< std::endl;
+    if (dup2(fd, STDIN_FILENO) == -1)
+    {
+        close(fd);
+        close(STDIN_FILENO);
+        close(fds[1]);
+        std::exit(EXIT_FAILURE);
+    }
     if (close(fds[1]) == -1)
         std::exit(EXIT_FAILURE);
 }
@@ -203,4 +223,12 @@ pid_t NewCGI::getPid( void )
 void NewCGI::setPid( pid_t pid )
 {
     this->pid = pid;
+}
+
+void NewCGI::closeFiles( void )
+{
+    if ( ! filename.empty())
+        std::remove(filename.c_str());
+    if ( ! ifilename.empty())
+        std::remove(ifilename.c_str());
 }

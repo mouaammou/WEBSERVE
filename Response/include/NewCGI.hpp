@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 14:52:23 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:11:23 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class NewCGI : public Execute
     int                         socketfd;
     const int                   MAX_MSEC_TO_TIMEOUT;
     std::string                 filename;
+    std::string                 ifilename;
     t_config                    &conf;
     pid_t                       pid;
     int64_t                     timeout_start;
@@ -53,4 +54,5 @@ class NewCGI : public Execute
     
     pid_t getPid( void );
     void setPid( pid_t pid );
+    void closeFiles( void );
 };
