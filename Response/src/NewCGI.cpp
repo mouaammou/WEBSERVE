@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/23 20:22:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:55:19 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void NewCGI::remove( int sfd )
     SendResponse::remove(sfd);
 }
 
-NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(10000), conf(conf)
+NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(3000), conf(conf)
 {
     one_time_kill = false;
     socketfd = conf.request->getFd();
@@ -128,6 +128,12 @@ void NewCGI::onProcessExit( int status )
     while (std::getline(file, line))
     {
         data.append(line + "\n");
+    }
+    if (file.bad())
+    {
+        conf.response_code = "500";
+        Response tmp(conf);
+        return ;
     }
     file.close();
     ParseCGIOutput tmp(status, data, conf);
