@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 22:00:55 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 13:08:58 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@
 #define COLOR_CYAN    "\033[0;36m"
 
 #define PERMISSION_CHECK 0644
-#define MAX_REQUEST_SIZE 2048
+#define MAX_REQUEST_SIZE 50000
 
 class Config;
 class Location;

@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 17:05:29 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 15:40:09 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Request
 		bool	request_received;
 		long long		_body_size;
 		std::string 	 _status_code;
+		std::string 	_chunked_body;
 
 	public:
 		std::string      	_connection;

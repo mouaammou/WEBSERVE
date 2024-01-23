@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 22:06:07 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 15:41:53 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,12 @@ Request::Request(int fd, t_config config_file)
 	this->_body_size  = this->server_config.body_size;
 	this->server_config.path_info = "";
 	this->_connection = "";
+	this->_chunked_body = "";
 }
 
 void	Request::resetRequest()
 {
+	this->_chunked_body = "";
 	this->request_string = "";
 	this->_connection = "";
 	this->method = "";
@@ -181,18 +183,18 @@ void Request::displayRequest()
 		std::cout << COLOR_GREEN << "Request Headers: " << COLOR_RESET << std::endl;
 		for (std::map<std::string, std::string>::const_iterator it = this->request_headers.begin(); it != this->request_headers.end(); ++it)
 			std::cout << it->first << "=>" << it->second;
-		// std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
-		// std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
+		std::cout << "****** CGI ----: " <<this->server_config.location.getCgiExe() << std::endl;
+		std::cout << COLOR_GREEN << "Request Body: {{"  << this->request_body << "}}" << COLOR_RESET << std::endl;
 	}
 }
 
 bool	Request::allowedURIchars(std::string& str)
 {
-	std::string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+	std::string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]%@!$&'()*+,;= ";
 	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n')
-			return (false);
+		// if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n')
+		// 	return (false);
 		if (allowedChars.find(str[i]) == std::string::npos)
 			return (false);
 	}
@@ -303,11 +305,14 @@ bool 	Request::checkPath()
 	this->server_config.request_url = this->path;
 	this->handleQueryString();
 	this->handlePathInfo();
+	printf("path: %s\n", this->path.c_str());
 	if (this->allowedURIchars(this->path) == false)
 	{
 		this->_status_code = "400 Bad Request";
 		return (true);
 	}
+	printf("path: %s\n", this->path.c_str());
+
 	if (this->path.length() > 2048)
 	{
 		this->_status_code = "414 Request-URI Too Long";
@@ -412,10 +417,10 @@ std::string			Request::extractChunks(const std::string& request)
 
 bool			Request::storeChunkedRequestBody()
 {
-	std::string chunks = extractChunks(this->request_body);
+	this->_chunked_body += extractChunks(this->request_body);
 	if (this->request_body.find("0\r\n\r\n") != std::string::npos)
 	{
-		this->request_body = chunks;
+		this->request_body = this->_chunked_body;
 		this->_has_body = true;
 		return (true);
 	}

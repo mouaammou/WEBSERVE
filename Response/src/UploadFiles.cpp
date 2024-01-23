@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 18:20:42 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 11:07:02 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,8 +134,11 @@ bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 	_filename.erase(pos);
 	if (_filename.empty())
 	{
-		conf.response_code = "400";
-		return false;
+		//generate random number
+		int random_variable = std::time(0);
+		std::stringstream ss;
+		ss << random_variable;
+		_filename = "empty" + ss.str();
 	}
 	return true;
 }

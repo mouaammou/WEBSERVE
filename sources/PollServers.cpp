@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/22 22:24:39 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/23 15:21:21 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,7 +387,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
-		// TheClient(server, fd)->displayRequest();
+		TheClient(server, fd)->displayRequest();
 		//get the requested translated path
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
@@ -402,6 +402,7 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		server->printf_t_config(server->serverConfigFile);
 		//generate the response
 		Response response(server->serverConfigFile);
+		printf("status code res :=> %s\n", server->serverConfigFile.response_code.c_str());
 	}
 	else
 		return (false);
