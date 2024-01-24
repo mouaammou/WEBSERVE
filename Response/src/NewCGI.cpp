@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 09:22:26 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 10:17:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ void NewCGI::timeout( void )
     
     int64_t now = std::time(NULL) - timeout_start;
     // std::cout << "now: " << now  << "|"<< pid << std::endl;
-    if (now >= MAX_MSEC_TO_TIMEOUT)
+    if (now >= MAX_SEC_TO_TIMEOUT)
     {
         kill(pid, SIGKILL);
         one_time_kill = true;
