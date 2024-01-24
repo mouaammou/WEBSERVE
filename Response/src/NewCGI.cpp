@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/23 20:55:19 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 09:22:26 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void NewCGI::remove( int sfd )
     SendResponse::remove(sfd);
 }
 
-NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(3000), conf(conf)
+NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_SEC_TO_TIMEOUT(4), conf(conf)
 {
     one_time_kill = false;
     socketfd = conf.request->getFd();
@@ -55,7 +55,7 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_MSEC_TO_TIMEOUT(3000), con
     if (inputf.fail())
         conf.response_code = "500";
     inputf.close();
-    timeout_start = getCurrentTime();
+    timeout_start = std::time(NULL);
 }
 
 void NewCGI::checkExitedProcess( void )
@@ -212,7 +212,7 @@ void NewCGI::timeout( void )
     if (one_time_kill || pid == -1)
         return ; 
     
-    int64_t now = getCurrentTime() - timeout_start;
+    int64_t now = std::time(NULL) - timeout_start;
     // std::cout << "now: " << now  << "|"<< pid << std::endl;
     if (now >= MAX_MSEC_TO_TIMEOUT)
     {
