@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/13 19:57:32 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 14:04:44 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 14:24:45 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ std::string CacheControl::getCacheHeader( void )
     std::map <std::string, std::string> &headers = _conf.request->getRequestHeaders();
     if (headers.find("If-Modified-Since:") == headers.end())
         return "";
-    std::string str = headers["If-Modified-Since:"];   
+    std::string str = headers["If-Modified-Since:"]; 
     trimSpaces(str);
     return str;
 }
@@ -39,7 +39,7 @@ time_t CacheControl::convertToUnixTimestamp( void )
     const char* format = "%a, %d %b %Y %H:%M:%S %Z";
     if ( ! strptime(getCacheHeader().c_str(), format, &tmStruct))
         return 0;
-    time_t timestamp = mktime(&tmStruct);
+    time_t timestamp = std::mktime(&tmStruct);
     return timestamp;
 }
 

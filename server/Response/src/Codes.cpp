@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:43:07 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 14:25:25 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ StatusCodes::StatusCodes(void)
 	codes["408"] = "Request Timeout";
 	codes["409"] = "Conflict";
 	codes["410"] = "Gone";
-	codes["411"] = "Lengh Required";
+	codes["411"] = "Length Required";
 	codes["412"] = "Precondition Failed";
 	codes["413"] = "Reqeust Entity Too Large";
 	codes["414"] = "Request-URI Too Long";
@@ -65,9 +65,7 @@ StatusCodes::StatusCodes(void)
 const std::string StatusCodes::getStatusLine( std::string const &code ) const
 {
 	if (codes.find(code) == codes.end())
-	{
 		return std::string("HTTP/1.1 ") + code + "\r\n";
-	}
 	return std::string("HTTP/1.1 ") + code + std::string(" ") + codes.at(code) + "\r\n";
 }
 

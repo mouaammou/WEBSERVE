@@ -1,0 +1,61 @@
+
+733
+This is the first chunk.
+This is the second chunk.
+This is the third chunk.
+https://www.bootdey.com/snippets/view/chat-app
+
+
+allow
+content-language
+content-location
+content-type
+date
+Last-modified
+location
+Retry-after
+Server
+transtfer-encoding
+www-Authenticte
+
+
+$_SERVER['USER'] | www-data
+$_SERVER['HOME'] | /var/www
+$_SERVER['HTTP_ACCEPT_LANGUAGE'] | en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7
+$_SERVER['HTTP_ACCEPT_ENCODING'] | gzip, deflate, br
+$_SERVER['HTTP_ACCEPT'] | text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+$_SERVER['HTTP_USER_AGENT'] | Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36
+$_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'] | 1
+$_SERVER['HTTP_CACHE_CONTROL'] | max-age=0
+$_SERVER['HTTP_HOST'] | api.camigo.info
+$_SERVER['SCRIPT_FILENAME'] | /var/www/camigo-web-app/web/app.php
+$_SERVER['SERVER_PROT'] | 443
+$_SERVER['HTTP_X_FORWARDED_PROTO'] | https
+$_SERVER['REDIRECT_STATUS'] | 200
+$_SERVER['SERVER_NAME'] | api.camigo.info
+$_SERVER['SERVER_PORT'] | 443
+$_SERVER['SERVER_ADDR'] | 195.201.114.103
+$_SERVER['REMOTE_PORT'] | 63306
+$_SERVER['REMOTE_ADDR'] | 93.201.1.229
+$_SERVER['SERVER_SOFTWARE'] | nginx/1.10.3
+$_SERVER['GATEWAY_INTERFACE'] | CGI/1.1
+$_SERVER['HTTPS'] | on
+$_SERVER['REQUEST_SCHEME'] | https
+$_SERVER['SERVER_PROTOCOL'] | HTTP/2.0
+$_SERVER['DOCUMENT_ROOT'] | /var/www/camigo-web-app/web
+$_SERVER['DOCUMENT_URI'] | /app.php
+$_SERVER['REQUEST_URI'] | /
+$_SERVER['SCRIPT_NAME'] | /app.php
+$_SERVER['CONTENT_LENGTH'] | no value
+$_SERVER['CONTENT_TYPE'] | no value
+$_SERVER['REQUEST_METHOD'] | GET
+$_SERVER['QUERY_STRING'] | no value
+$_SERVER['FCGI_ROLE'] | RESPONDER
+$_SERVER['PHP_SELF'] | /app.php
+$_SERVER['REQUEST_TIME_FLOAT'] | 1522746397.2312
+$_SERVER['REQUEST_TIME'] | 1522746397
+
+
+ADD ALLOW HEADER
+3a
+

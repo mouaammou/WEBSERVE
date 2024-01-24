@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/01 06:13:45 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 14:18:10 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void AutoIndex::files( std::ostringstream &oss )
 		if (entry->d_name[0] != '.')
 		{
 			std::string filepath = dir_path + entry->d_name;
-			if ( isValid(filepath) == false )//allow only files and directories
+			if ( isValid(filepath) == false ) // allow only files and directories
 				continue;
 
 			std::string uri_name(entry->d_name);
@@ -161,7 +161,6 @@ std::string AutoIndex::fileLastModificationDate( std::string const filePath )
 	// std::cerr << filePath << std::endl;
 	if (stat(filePath.c_str(), &fileStat) == 0)
 	{
-		
 		char date[256];
 		std::strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", std::gmtime(&fileStat.st_mtime));
 		return date;
