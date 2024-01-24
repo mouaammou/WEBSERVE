@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+         #
+#    By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/24 11:47:49 by samjaabo         ###   ########.fr        #
+#    Updated: 2024/01/24 18:53:55 by moouaamm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,20 +31,20 @@ RES_HEADERS = $(addprefix server/Response/include/, AutoIndex.hpp Codes.hpp  Med
 
 HEADER_FILES 	= $(RES_HEADERS) $(addprefix server/Request/includes/, Request.hpp Method.hpp) \
 					 $(addprefix server/config/include/, config.hpp directives.hpp location.hpp)
-					 
+
 HEADER_FILES 		+=  $(addprefix server/cgi/include/, NewCGI.hpp Execute.hpp ParseCGIOutput.hpp )
 
 HEADER_FILES 	+=  $(addprefix server/socket/include/, Server.hpp PollServers.hpp webserv.hpp)
 
 OBJECT_FILES = $(FILES:%.cpp=%.o)
 
-all: clean_screen $(NAME)
+all: $(NAME)
 
 $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
-	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
+	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME) 
 	@echo "\033[35mWEBSEVER IS READY\033[0m";
 
-%.o : %.cpp $(HEADER_FILES) Makefile
+%.o : %.cpp $(HEADER_FILES)
 	@$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
 	@printf "\033[1;36m Compiling \033[0m $< \033[1;36m√\033[0m\n";
 
@@ -57,8 +57,5 @@ fclean: clean
 	@echo "\033[31mEXECUTABLE DELETED\033[0m"
 
 re: fclean all
-
-clean_screen:
-	@echo "\033c";
 
 .PHONY: all fclean clean re

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 13:56:36 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 18:52:38 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,11 @@ bool			PollServers::handle_PollOut(Server *server, int i, int fileDescriptor, Re
 		{
 			if (HttpClient->sendResponse())
 			{
-				std::cout << COLOR_GREEN "response sent to client :=> " COLOR_RESET<< fileDescriptor << std::endl;
 				if (multi_ports == true)
+				{
 					server->setConfiguration(tmp_config);
+					multi_ports = false;
+				}
 				if (HttpClient->_connection == "close")//connection: keep-alive, close
 				{
 					return (removeFromPoll(server, fileDescriptor), false);
@@ -204,8 +206,6 @@ void				PollServers::removeFromPoll(Server *server ,int fd)
 	{
 		server->removeClient(fd);
 	}
-	// CGI::remove(fd);
-	// PipeStream::remove(fd);
 }
 
 void	PollServers::addFileDescriptor(int fd)
@@ -381,11 +381,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 {
 	if (TheClient(server, fd)->receiveRequest())//status code generated
 	{
-		std::cout << COLOR_GREEN "request received from client :=> " COLOR_RESET<< fd << std::endl;
 		//check if the config file has multi ports
 		this->handleMultiPorts(server, fd);
 
-		server->serverConfigFile = TheClient(server, fd)->server_config;
+		// server->serverConfigFile = TheClient(server, fd)->server_config;
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
@@ -404,7 +403,6 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		server->printf_t_config(server->serverConfigFile);
 		//generate the response
 		Response response(server->serverConfigFile);
-		// printf("status code res :=> %s\n", server->serverConfigFile.response_code.c_str());
 	}
 	else
 		return (false);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:37:34 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 18:08:43 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,20 +140,13 @@ std::string		Server::getTranslatedPath(std::string location, std::string path)//
 
 void			Server::printf_t_config(t_config config_file)
 {
-	std::cout << "		configuration : \n";
-	printf("		server_name: %s\n", config_file.server_name.c_str());
-	printf("		port: %s\n", config_file.port.c_str());
-	printf("		translated_path: %s\n", config_file.translated_path.c_str());
-	printf("		response_code: %s\n", config_file.response_code.c_str());
-	printf("		req_location: %s\n", config_file.requested_path.c_str());
-	printf("		autoindex: %s\n", config_file.autoindex.c_str());
-	printf("		server_fd: %d\n", config_file.server_fd);
-	printf("		body_size: %d\n", config_file.body_size);
-	printf("		Location: %s\n", config_file.location.getName().c_str());
-	printf("		iscgi: %s\n", config_file.cgi ? "true" : "false");
-	printf("		method: %s\n", config_file.request->getMethod().c_str());
-	//  std::cout << COLOR_GREEN "PATH_INFO :=> " COLOR_RESET << config_file.path_info << std::endl;
-	//  std::cout << COLOR_GREEN "PATH_INFO_TRANSLATED :=> " COLOR_RESET << config_file.path_info_translated << std::endl;
+	std::cout << COLOR_MAGENTA "==============Request===[" << config_file.request->getFd()<<"]=============== " COLOR_RESET <<  std::endl;
+	std::cout << "	name:     [" << config_file.server_name << "]" << std::endl;
+	std::cout << "	port:     [" << config_file.port << "]" << std::endl;
+	std::cout << "	path:     [" << config_file.translated_path << "]" << std::endl;
+	std::cout << "	location: [" << config_file.location.getName() << "]" << std::endl;
+	std::cout << "	CGI:      [" << (config_file.cgi ? "true" : "false") << "]" << std::endl;
+	std::cout << "	method:   [" << config_file.request->getMethod() << "]" << std::endl;
 }
 
 Method* 		Server::getPointedMethod() const

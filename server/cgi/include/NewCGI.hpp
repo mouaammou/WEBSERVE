@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   NewCGI.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:09:52 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 18:54:11 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#include <iostream>
+#include <iostream> 
 #include <string>
 #include <fstream>
 #include <map>
@@ -51,7 +51,7 @@ class NewCGI : public Execute
     void child( void );
     int64_t getCurrentTime( void );
     void timeout( void );
-    
+
     pid_t getPid( void );
     void setPid( pid_t pid );
     void closeFiles( void );

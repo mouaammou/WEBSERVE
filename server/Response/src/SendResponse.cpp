@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   SendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 13:41:50 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/24 18:54:07 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/SendResponse.hpp"
 
 std::map<int, SendFile*>	SendFile::files;
-
 
 SendFile::SendFile( int ffd, int sfd )
 {
