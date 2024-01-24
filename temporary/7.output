@@ -1,0 +1,9 @@
+Status: 302 Moved Temporarily
+X-Powered-By: PHP/5.2.17
+Set-Cookie: PHPSESSID=e43e6652eafa5bf70ad9098e76592e91; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Location: /login.html
+Content-type: text/html
+

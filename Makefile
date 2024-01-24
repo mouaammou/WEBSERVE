@@ -6,29 +6,39 @@
 #    By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/18 12:35:10 by samjaabo         ###   ########.fr        #
+#    Updated: 2024/01/24 11:47:49 by samjaabo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FLAGS 		= -Wall -Wextra -Werror #-g -fsanitize=address
 VERSION 	= -std=c++98
-NAME 		= webserver
+NAME 		= webserv
 CCPP 		= c++
 RM 			= rm -fr
 
-RES_FILES 	= $(addprefix Response/src/, AutoIndex.cpp NewCGI.cpp Codes.cpp MediaTypes.cpp  ParseCGIOutput.cpp CacheControl.cpp  \
-				Response.cpp  SendResponse.cpp Execute.cpp UploadFiles.cpp )
-RES_HEADERS = $(addprefix Response/include/, AutoIndex.hpp NewCGI.hpp  Codes.hpp  MediaTypes.hpp  ParseCGIOutput.hpp  CacheControl.hpp \
-				Response.hpp  SendResponse.hpp Execute.hpp UploadFiles.hpp )
+RES_FILES 	= $(addprefix server/Response/src/, AutoIndex.cpp Codes.cpp MediaTypes.cpp CacheControl.cpp  \
+				Response.cpp  SendResponse.cpp UploadFiles.cpp )
 
-FILES 		=  $(RES_FILES) $(addprefix sources/, Server.cpp Request.cpp PollServers.cpp Method.cpp) \
-				main.cpp $(addprefix config/src/, config.cpp directives.cpp location.cpp)
-HEADER_FILES 	= $(RES_HEADERS) $(addprefix includes/, Server.hpp Request.hpp PollServers.hpp webserv.hpp Method.hpp) \
-					 $(addprefix config/include/, config.hpp directives.hpp location.hpp)
+FILES 		=  $(RES_FILES) $(addprefix server/Request/sources/, Request.cpp Method.cpp) \
+				main.cpp $(addprefix server/config/src/, config.cpp directives.cpp location.cpp)
+FILES 		+=  $(addprefix server/cgi/src/, NewCGI.cpp Execute.cpp ParseCGIOutput.cpp )
+
+FILES 		+=  $(addprefix server/socket/src/, Server.cpp PollServers.cpp )
+
+
+RES_HEADERS = $(addprefix server/Response/include/, AutoIndex.hpp Codes.hpp  MediaTypes.hpp  CacheControl.hpp \
+				Response.hpp  SendResponse.hpp UploadFiles.hpp )
+
+HEADER_FILES 	= $(RES_HEADERS) $(addprefix server/Request/includes/, Request.hpp Method.hpp) \
+					 $(addprefix server/config/include/, config.hpp directives.hpp location.hpp)
+					 
+HEADER_FILES 		+=  $(addprefix server/cgi/include/, NewCGI.hpp Execute.hpp ParseCGIOutput.hpp )
+
+HEADER_FILES 	+=  $(addprefix server/socket/include/, Server.hpp PollServers.hpp webserv.hpp)
 
 OBJECT_FILES = $(FILES:%.cpp=%.o)
 
-all: clean_screen $(NAME) run
+all: clean_screen $(NAME)
 
 $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
 	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
@@ -47,10 +57,6 @@ fclean: clean
 	@echo "\033[31mEXECUTABLE DELETED\033[0m"
 
 re: fclean all
-
-
-run:
-	@./$(NAME) config/configfile.conf
 
 clean_screen:
 	@echo "\033c";
