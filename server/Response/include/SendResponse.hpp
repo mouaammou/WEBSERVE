@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 11:53:25 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:48:22 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/25 19:57:04 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <sys/uio.h>
 # include <fcntl.h>
 # include <sys/stat.h>
+#include "../../socket/include/pollServers.hpp"
 # include "../../cgi/include/NewCGI.hpp"
 
 class SendFile
@@ -36,17 +37,33 @@ class SendFile
 	int		sfd;
 	off_t	offset;
 	off_t	length;
+	
+	size_t		READ_SIZE; //read buffer size
+	size_t		DATA_LIMIT;//if read reads this limit wait until data increased
+	bool		eof;//if file reached eof -> true
+	std::string data;//file data
+	config		&conf;
+	char		*buffer;
+	int sizee;
 
 	SendFile( int ffd, int sfd );
+	SendFile( int ffd, int sfd, config &conf);
 
 	public:
 
 	static void remove( int fd );
-	bool sendString( void );
-	static void build( int ffd, int sfd );
+	bool sendFile( void );
+	static void build( int ffd, int sfd, config &conf);
 	static bool send( int sfd );
 
 	~SendFile( void );
+	
+	static bool isSendFileFd( pollfd pfd );
+	static int getSocketFdWithThisFileFd( int ffd );
+	void removeFileFdFromPoll( void  );
+	void readfromFile( void );
+	
+	int getFileFd();
 };
 
 
@@ -76,5 +93,5 @@ class SendResponse
 
 	static void remove( int fd );
 	static bool send( int sfd );
-	SendResponse( std::string const &data, int ffd, int sfd );
+	SendResponse( std::string const &data, int ffd, int sfd, config &conf );
 };

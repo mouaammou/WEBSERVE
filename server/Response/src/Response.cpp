@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 18:27:16 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/25 23:37:57 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,14 @@ void Response::runCGI(void)
 
 void Response::autoIndex(void)
 {
-	std::string uri = args.request->getPath();
-	std::string root = args.location.getRoot() + uri;
-	AutoIndex autoindex(args.request->getFd(), root, uri);
+	AutoIndex autoindex(args.request->getFd(), args);
 	if (autoindex.fail())
 	{
 		args.response_code = "500";
 		error();
 		return;
 	}
-	SendResponse(autoindex.getOutput(), -1, args.request->getFd());
+	SendResponse(autoindex.getOutput(), -1, args.request->getFd(), args);
 }
 
 void Response::statusLine(std::string code)
@@ -94,21 +92,19 @@ void Response::file(void)
 			<< "Webserv/1.0"
 			<< "\r\n";
 		oss << "\r\n";
-		SendResponse(oss.str(), -1, args.request->getFd());
+		SendResponse(oss.str(), -1, args.request->getFd(), args);
 		return;
 	}
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
 		oss << "Location: " << args.translated_path << "\r\n";
-		oss << "Content-Length: " << args.location.getUploadPath().length() + 57 << "\r\n";
-		oss << "Content-Type: "
-			<< "text/plain"
-			<< "\r\n";
+		oss << "Content-Length: " << args.location.getUploadPath().length() + 139 << "\r\n";
+		oss << "Content-Type: text/html\r\n";
 		oss << "\r\n";
-		oss << "Resource(s) created successfully. you can access it at \r\n";
-		oss << args.location.getUploadPath() << "\r\n";
-		SendResponse(oss.str(), -1, args.request->getFd());
+		oss << "";
+		oss << "<!DOCTYPE html>\n<html>\n<body>\n\t<h1>Resource(s) created successfully. you can access it at \r\n<br>\n\t\t<a href=\"" << args.location.getUploadPath() << "\">Go-Uploads </a>\t</h1>\n</body>\n</html>" << "\r\n";
+		SendResponse(oss.str(), -1, args.request->getFd(), args);
 		return;
 	}
 	ffd = open(args.translated_path.c_str(), O_RDONLY);
@@ -121,7 +117,7 @@ void Response::file(void)
 		return;
 	}
 	CacheControl cache(args, ffd); // cache
-	if (!cache.isModifiedSince())
+	if ( ! cache.isModifiedSince())
 	{
 		args.response_code = "304";
 		statusLine(args.response_code);
@@ -134,7 +130,7 @@ void Response::file(void)
 			<< "\r\n";
 		oss << "\r\n";
 		close(ffd);
-		SendResponse(oss.str(), -1, args.request->getFd());
+		SendResponse(oss.str(), -1, args.request->getFd(), args);
 		return;
 	} // cache
 	statusLine(args.response_code);
@@ -148,7 +144,7 @@ void Response::file(void)
 		<< "Webserv/1.0"
 		<< "\r\n";
 	oss << "\r\n";
-	SendResponse(oss.str(), ffd, args.request->getFd());
+	SendResponse(oss.str(), ffd, args.request->getFd(), args);
 }
 
 void Response::redirect(void)
@@ -158,7 +154,7 @@ void Response::redirect(void)
 	if (args.response_code.compare(0, 3, "301") == 0)
 		oss << "Retry-After: 120\r\n";
 	oss << "\r\n";
-	SendResponse(oss.str(), -1, args.request->getFd());
+	SendResponse(oss.str(), -1, args.request->getFd(), args);
 }
 
 void Response::allow(void)
@@ -202,7 +198,7 @@ void Response::error(void) // 5xx 4xx
 		oss << "Date: " << getDate() << "\r\n";
 		oss << "\r\n";
 		oss << error;
-		SendResponse(oss.str(), -1, args.request->getFd());
+		SendResponse(oss.str(), -1, args.request->getFd(), args);
 		return;
 	}
 	statusLine(args.response_code);
@@ -215,7 +211,7 @@ void Response::error(void) // 5xx 4xx
 	allow();
 	oss << "Date: " << getDate() << "\r\n";
 	oss << "\r\n";
-	SendResponse(oss.str(), ffd, args.request->getFd());
+	SendResponse(oss.str(), ffd, args.request->getFd(), args);
 }
 
 bool Response::onPollout(int sfd)

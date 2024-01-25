@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 14:18:10 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/25 19:27:59 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,13 +179,13 @@ int64_t AutoIndex::fileSize( std::string const filePath )
 	return -1;
 }
 
-AutoIndex::AutoIndex( int sfd, std::string const &path, std::string const &uri )
+AutoIndex::AutoIndex( int sfd, config &conf)
 {
-	this->dir_path = path;
-	this->uri = uri;
+	this->uri = conf.request->getPath();
+	this->dir_path = conf.location.getRoot() + uri;
 	error = false;
 	generate();
-	SendResponse(fin.str(), -1, sfd);
+	SendResponse(fin.str(), -1, sfd, conf);
 }
 
 bool AutoIndex::fail( void ) const

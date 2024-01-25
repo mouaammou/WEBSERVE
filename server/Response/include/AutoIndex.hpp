@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AutoIndex.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/09 11:33:08 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/25 19:27:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class AutoIndex
 
 	public:
 
-	AutoIndex( int sfd, std::string const &path, std::string const &uri );//
+	AutoIndex( int sfd, config &conf );//
 	bool fail( void ) const;
 	std::string const getOutput( void ) const;
 };

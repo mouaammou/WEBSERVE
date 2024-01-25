@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 10:23:04 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:26:20 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void NewCGI::checkExitedProcess( void )
 
 void NewCGI::build( config &conf )
 {
-    remove(conf.server_fd);
+    remove(conf.socket_fd);
     NewCGI *cgi = new NewCGI(conf);
     active_procs[conf.request->getFd()] = cgi;
     if ( ! cgi->execute() || conf.response_code != "200")

@@ -6,11 +6,21 @@ Location::Location() {
 }
 
 Location::Location(std::string str) {
+	if (str[0] != '/')
+	{
+		std::cerr << "\033[0;31m" << "THE LOCATION NAME : " + str + " MUST BEGIN WITH /" << "\033[0m" << std::endl;
+		exit(1);
+	}
 	numOfSlash = 0;
     setAutoindex(-1);
 	this->setName(str);
 	if (this->getName().find("/") != std::string::npos)
 		this->count_slash();
+	if (str.find("//") != std::string::npos)
+	{
+		std::cerr << "\033[0;31m" << "TWO SLASHES IN A ROW ARE NOT ALLOWED IN LOCATION NAME" << "\033[0m" << std::endl;
+		exit(1);
+	}
 }
 
 Location::~Location() {
@@ -70,6 +80,11 @@ const std::string& Location::getIndex() const {
 }
 
 void Location::setIndex(const std::string& index) {
+	if (index.find("/") != std::string::npos)
+	{
+		std::cerr << "\033[0;31m" << "INDEX FILE MUST NOT CONTAIN A /" << "\033[0m" << std::endl;
+		exit(1);
+	}
     this->index = index;
 }
 
@@ -92,6 +107,11 @@ const std::string& Location::getRoot() const {
 }
 
 void Location::setRoot(const std::string& root) {
+	if (root[root.length() - 1] == '/')
+	{
+		std::cerr << "\033[0;31m" << "THE ROOT PATH : " + root + " MUST NOT END WITH /" << "\033[0m" << std::endl;
+		exit(1);
+	}
     this->root = root;
 }
 

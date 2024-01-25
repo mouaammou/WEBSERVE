@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 18:52:38 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/25 19:30:52 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,8 +132,8 @@ void			  PollServers::track_ALL_Clients(void)
 		server = this->whitchServer(fileDescriptor);
 		request = TheClient(server, fileDescriptor);
 
-		// if (PipeStream::isIsPipeStream(this->poll_Fds[i]))
-		// 		continue;
+		if (SendFile::isSendFileFd(this->poll_Fds[i]))
+			continue;
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))

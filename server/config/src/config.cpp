@@ -6,7 +6,7 @@
 /*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/24 12:00:55 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/25 23:02:36 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,8 @@ void Config::handle_brackets(void)
 	std::string brackets;
 	for (size_t i = 0; i < this->ftokens.size(); i++)
 	{
+		if (this->ftokens[i] == "{" && i  + 1 < this->ftokens.size() - 1 && this->ftokens[i + 1] == "}")
+			error_call("brackets error, empty brackets are not accepted!");
 		if (this->ftokens[i] == "{")
 		{
 			brackets += "{";
@@ -425,7 +427,7 @@ void Config::handle_port(Directives& server,std::vector<int> &ports, int *indice
 		error_call("port must be digit!");
 	int port;
 	port = atoi(ftokens[*indice].c_str());
-	if (port < 0 || port > 65535)
+	if (port <= 0 || port > 65535)
 		error_call("use a port between 1 and 65535!");
 	if (containsElement(ports, port))
 		error_call("port is duplicated!");
