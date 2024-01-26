@@ -12,7 +12,7 @@ class Directives
 		std::map<int, std::string> error_page;
 		std::vector<int> port;
 		int server_id;
-		unsigned long long body_size;
+		unsigned long long body_size; 
 	public:
 		Directives();
 		~Directives();
