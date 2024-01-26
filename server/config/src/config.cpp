@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/25 23:02:36 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 10:02:19 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,17 @@ void Config::print_file2(Config &conf)
 void Config::handle_brackets(void)
 {
 	std::string brackets;
+	for (size_t i = 0; i < this->ftokens.size(); i++)
+	{
+		if (this->ftokens[i] == "{")
+		{
+			i++;
+			while (this->ftokens[i] == ";")
+				i++;
+			if ( i < this->ftokens.size() - 1 && this->ftokens[i] == "}")
+				error_call("brackets error, empty brackets are not accepted!");
+		}
+	}
 	for (size_t i = 0; i < this->ftokens.size(); i++)
 	{
 		if (this->ftokens[i] == "{" && i  + 1 < this->ftokens.size() - 1 && this->ftokens[i + 1] == "}")
