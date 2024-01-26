@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/26 10:02:19 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:06:20 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,52 +80,6 @@ void Config::print_file()
 		i++;
 	}
 	std::cout << this->ftokens.size() << std::endl;
-}
-void Config::print_file2(Config &conf)
-{
-	size_t j = 0;
-	std::vector<int> ports;
-	while (j < conf.directs.size())
-	{
-		std::cout << "Server : " << j << std::endl;
-		std::cout << conf.directs[j].getServerId() << std::endl;
-		// ports = conf.directs[j].getPorts();
-		// for (size_t i = 0; i < ports.size() ; i++)
-		// {
-		// 	std::cout << "port " << i << " " << ports[i] << std::endl;
-		// }
-		// std::cout << "server name    "<< conf.directs[j].getServerName() << std::endl;
-		// std::cout << "Error pages:" << std::endl;
-		// std::cout << "400 " << conf.directs[j].getErrorPage(400)<< std::endl;
-		// std::cout << "403 " << conf.directs[j].getErrorPage(403)<< std::endl;
-		// std::cout << "201 " << conf.directs[j].getErrorPage(201)<< std::endl;
-		// std::cout << "500 " << conf.directs[j].getErrorPage(500)<< std::endl;
-		// std::cout << "504 " << conf.directs[j].getErrorPage(504)<< std::endl;
-		// std::cout << "body_size    "<< conf.directs[j].getBodySize() << std::endl;
-		// std::cout << "host_name    "<< conf.directs[j].getHostName() << std::endl;
-		std::cout << "Locations for server "<< j << std::endl;
-		for (size_t i = 0; i < conf.directs[j].server_locations.size(); i++)
-		{
-			std::cout << "uploade path " << conf.directs[j].server_locations[i].getUploadPath() << std::endl;
-			// std::cout<<"name " << conf.directs[j].server_locations[i].getName() << std::endl;
-			// std::cout<<"root " << conf.directs[j].server_locations[i].getRoot() << std::endl;
-			// std::cout<<"auto index " << conf.directs[j].server_locations[i].getAutoindex() << std::endl;
-			// std::cout<<"index " << conf.directs[j].server_locations[i].getIndex() << std::endl;
-			// if (conf.directs[j].server_locations[i].getReturnInt())
-			// 	std::cout<<"return " << conf.directs[j].server_locations[i].getReturnString() << std::endl;
-			// if (!conf.directs[j].server_locations[i].getCgiExe().empty())
-			// std::cout<<"exec " << conf.directs[j].server_locations[i].getCgiExe() << std::endl;
-			// std::cout << "Methodes ";
-			// std::vector<std::string> methods;
-			// methods = conf.directs[j].server_locations[i].getMethods();
-			// for (size_t k = 0; k < methods.size(); k++)
-			// {
-			// 	std::cout << methods[k] << "   ";
-			// }
-			std::cout << std::endl;
-		}
-		j++;
-	}
 }
 
 void Config::handle_brackets(void)

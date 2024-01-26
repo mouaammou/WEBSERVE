@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:36:52 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:12:52 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class PollServers
 
 		bool				clientPollIn(Server *server, int fd);
 		void				handleMultiPorts(Server *server, int fd);
-		
+
 		void	handleTranslatedPath(Server *server, int fd);
 		void	handlePathInfo(Server *server, std::string path_info);
 
@@ -67,4 +67,3 @@ class PollServers
 };
 
 Request				*TheClient(Server *server, int fd);
-long long 			current_time_in_milliseconds();

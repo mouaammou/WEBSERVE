@@ -6,7 +6,7 @@
 #    By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/24 18:53:55 by moouaamm         ###   ########.fr        #
+#    Updated: 2024/01/26 12:17:59 by moouaamm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,12 +41,12 @@ OBJECT_FILES = $(FILES:%.cpp=%.o)
 all: $(NAME)
 
 $(NAME): $(OBJECT_FILES) $(HEADER_FILES)
-	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME) 
+	@$(CCPP) $(VERSION) $(FLAGS)  $(OBJECT_FILES) -o $(NAME)
 	@echo "\033[35mWEBSEVER IS READY\033[0m";
 
 %.o : %.cpp $(HEADER_FILES)
 	@$(CCPP) $(VERSION) $(FLAGS) -c $< -o $@
-	@printf "\033[1;36m Compiling \033[0m $< \033[1;36m√\033[0m\n";
+	@echo "\033[1;36m Compiling \033[0m $< \033[1;36m√\033[0m";
 
 clean:
 	@$(RM) $(OBJECT_FILES)

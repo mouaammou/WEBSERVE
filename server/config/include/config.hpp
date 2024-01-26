@@ -6,11 +6,11 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 23:57:01 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/26 10:04:16 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:08:06 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream> 
+#include <iostream>
 #include <string>
 #include <map>
 #include <fstream>
@@ -40,7 +40,6 @@ class Config
 		bool str_digit(std::string str);
 		void remove_spces();
 		void print_file();
-		void print_file2(Config &conf);
 		void server_count();
 		void fill_directive();
 		void handle_servers(int *indice);
@@ -71,14 +70,3 @@ class Config
 
 #endif
 
-typedef struct s_server_data
-{
-	Location my_location;
-	std::string server_name;
-	std::string host_name;
-	std::vector<std::string> def_method;
-	std::map<int, std::string> error_page;
-	std::vector<int> port;
-	int server_id;
-	int body_size;
-}server_data;

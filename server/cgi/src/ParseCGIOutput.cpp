@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseCGIOutput.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/25 19:20:34 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 11:57:45 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,5 +117,5 @@ ParseCGIOutput::ParseCGIOutput(int status, std::string &output, config &args)
 	additionalHeaders();
 	translateHeaders();
 	new_headers.append("\r\n");
-	SendResponse(new_headers + output, -1, args.socket_fd, args);
+	SendResponse(new_headers + output, -1, args.socket_fd);
 }

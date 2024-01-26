@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:08:29 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:13:06 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,11 @@ typedef struct config
 	std::string 		port;
 	Directives 			*Server;
 	Location 			location;
-	std::string 		translated_path;
+	std::string 		translated_path;//physical ==> root + requested_path
 	std::string 		path_info;
-	std::string 		path_info_translated;
+	std::string 		path_info_translated;// physical ==> root + path_info
 	std::string 		response_code;
-	std::string 		requested_path;
+	std::string 		requested_path;//location
 	std::string autoindex;//on or off
 	Request		*request;
 	PollServers	*poll;
@@ -79,4 +79,3 @@ typedef struct config
 }		t_config;
 
 void				stringTrim(std::string &str);
-long long 			current_time_in_milliseconds();

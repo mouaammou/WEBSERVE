@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 18:19:24 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:10:45 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,8 +197,6 @@ bool	Request::allowedURIchars(std::string& str)
 	std::string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]%@!$&'()*+,;= ";
 	for (size_t i = 0; i < str.length(); i++)
 	{
-		// if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n')
-		// 	return (false);
 		if (allowedChars.find(str[i]) == std::string::npos)
 			return (false);
 	}
@@ -425,11 +423,9 @@ bool			Request::storeChunkedRequestBody()
 		size_t pos = this->request_body.find("\r\n");
 		if (pos != std::string::npos)
 		{
-			// std::string chunk_size = this->request_body.substr(0, pos);
 			std::stringstream ss;
 			ss << std::hex << this->request_body.substr(0, pos);
 			ss >> this->_chunk_size;
-			// std::cout << "********CHUNK SIZE: " << this->_chunk_size <<"|"<<this->request_body.substr(0, pos) << std::endl;
 			this->request_body.erase(0, pos + 2);
 		}
 	}
@@ -442,20 +438,13 @@ bool			Request::storeChunkedRequestBody()
 	}
 	if (this->_chunk_size == 0)
 	{
-		// std::cout << "CHUNKED BODY:*****************finished**********************" << std::endl;
 		this->request_body = this->_chunked_body;
 		this->read_bytes = this->request_body.length();
-		// std::cout << "CHUNKED BODY:*******************************\n" << this->_chunked_body << "<<**************" << std::endl;
 		this->_chunked_body.clear();
 		this->_chunk_size = -1;
 		this->_has_body = true;
 		return (true);
 	}
-	// if (extractChunks(this->request_body))
-	// {
-	// 	this->_has_body = true;
-	// 	return (true);
-	// }
 	return (false);
 }
 

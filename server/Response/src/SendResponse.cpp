@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/17 01:14:01 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/25 23:38:57 by samjaabo         ###   ########.fr       */
+/*   Created: 2023/12/18 11:53:25 by samjaabo          #+#    #+#             */
+/*   Updated: 2024/01/26 12:03:31 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,125 +14,35 @@
 
 std::map<int, SendFile*>	SendFile::files;
 
-////////////////////////////////////////
-
-SendFile::SendFile( int ffd, int sfd, config &conf) : conf(conf)
+SendFile::SendFile( int ffd, int sfd )
 {
+	filefd = ffd;
 	offset = 0;
 	length = 0;
-	
-	filefd = ffd;
 	this->sfd = sfd;
-	READ_SIZE = 100000000;//32KB
-	DATA_LIMIT = 100000000;//
-	eof = false;
-	buffer = new char[READ_SIZE + 1];
-	std::memset(buffer, 0, READ_SIZE + 1);
-	conf.poll->addFileDescriptor(filefd);
-	sizee = 0;
 }
 
-void SendFile::removeFileFdFromPoll( void )
+bool SendFile::sendString( void )
 {
-	conf.poll->removeFileDescriptor(filefd);
-	eof = true;
-}
-
-void SendFile::readfromFile( void )
-{
-	if (data.length() >= DATA_LIMIT)
-		return ;
-	ssize_t d = read(filefd, buffer, READ_SIZE);
-	if (d == -1)
-	{
-		// std::cout << "*** error reading file ***" << std::endl;
-		close(sfd);
-		return ;
-	}
-	if (d == 0)
-	{
-		// std::cout << "*** eof reached ***" << std::endl;
-		removeFileFdFromPoll();
-		eof = true;
-		return ;
-	}
-	buffer[d] = '\0';
-	data.append(buffer, d);
-}
-
-bool	SendFile::isSendFileFd( pollfd pfd )
-{
-	int ssfd = SendFile::getSocketFdWithThisFileFd(pfd.fd);
-	if (ssfd == -1)
-		return false;
-	SendFile *obj = SendFile::files[ssfd];
-	if (pfd.revents & (POLLOUT))
-		obj->readfromFile();
-	else if (pfd.revents & (POLLHUP))
-		obj->removeFileFdFromPoll();
-	return true;
-}
-
-int	SendFile::getSocketFdWithThisFileFd( int ffd )
-{
-	std::map<int, SendFile*>::iterator it = files.begin();
-	for (; it != files.end(); ++it)
-	{
-		if (it->second->getFileFd() == ffd)
-			return it->first;
-	}
-	return -1;
-}
-
-int SendFile::getFileFd()
-{
-	return filefd;
-}
-
-////////////////////////////////////////
-
-// SendFile::SendFile( int ffd, int sfd )
-// {
-// 	filefd = ffd;
-// 	offset = 0;
-// 	length = 0;
-// 	this->sfd = sfd;
-// }
-
-bool SendFile::sendFile( void )
-{
-	ssize_t d = -2; // nothing sent to do with this value
-	if ( ! data.empty())
-		d = write(sfd, data.c_str(), data.length());
-	if (d == -1)
-	{
-		// std::cout << "*** error sending file ***" << std::endl;
-		close(sfd);
-		return (true);
-	}
+	short d = sendfile(filefd, sfd, offset, &length, NULL, 0);
+	offset += length;
+	length = 0;
 	if (d == 0)
 		return (true);
-	if (d != -2)
-		data.erase(0, d);
-	if (d != -2)
-		sizee += d;
-	if (data.empty() && eof)
-		return (true);
-	// std::cout << "sizee = " << sizee << "|" << d << std::endl;
 	return false;
 }
 
-void SendFile::build( int ffd, int sfd, config &conf)
+void SendFile::build( int ffd, int sfd )
 {
 	delete files[sfd];
-	files[sfd] = new SendFile(ffd, sfd, conf);
+	files[sfd] = new SendFile(ffd, sfd);
 }
 
 bool SendFile::send( int sfd )
 {
 	if (files.find(sfd) == files.end())
 		return true;
-	if (files[sfd]->sendFile())
+	if (files[sfd]->sendString())
 	{
 		delete files[sfd];
 		files.erase(sfd);
@@ -141,15 +51,12 @@ bool SendFile::send( int sfd )
 	return false;
 }
 
-//////destructors
 SendFile::~SendFile( void )
 {
 	std::ostringstream oss;
 	oss << "temporary/" << sfd << ".output";
 	std::remove(oss.str().c_str());
-	removeFileFdFromPoll();
 	close(filefd);
-	delete[] buffer;
 }
 
 // ---------------------------------------------
@@ -211,11 +118,11 @@ bool SendResponse::send( int sfd )
 	return false;
 }
 
-SendResponse::SendResponse( std::string const &data, int ffd, int sfd, config &conf )
+SendResponse::SendResponse( std::string const &data, int ffd, int sfd )
 {
 	SendString::build(data, sfd);
 	if (ffd != -1)
-		SendFile::build(ffd, sfd, conf);
+		SendFile::build(ffd, sfd);
 }
 
 void SendResponse::remove( int fd )

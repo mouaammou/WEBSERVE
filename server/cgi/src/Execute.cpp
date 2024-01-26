@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Execute.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 18:31:05 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/22 19:22:24 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:07:02 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,6 @@ void Execute::addAllArgs( void )
 {
 	args.push_back(const_cast<char*>(conf.location.getCgiExe().c_str()));
 	args.push_back(const_cast<char*>(conf.translated_path.c_str()));
-	// std::cout << "arg[0] = " << args[0] << std::endl;
-	// std::cout << "arg[1] = " << args[1] << std::endl;
 	args.push_back(NULL);
 }
 

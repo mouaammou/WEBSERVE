@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/23 10:43:32 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 11:00:43 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ bool Method::hasValidCGI(const std::string& filename)
 {
 	std::string pyExtension = ".py";
 	std::string phpExtension = ".php";
-	// std::string jsExtension = ".js";
 
 	if (filename.length() >= pyExtension.length() &&
 		(filename.compare(filename.length() - pyExtension.length(), pyExtension.length(), pyExtension) == 0))
@@ -24,9 +23,6 @@ bool Method::hasValidCGI(const std::string& filename)
 	if (filename.length() >= phpExtension.length() &&
 		(filename.compare(filename.length() - phpExtension.length(), phpExtension.length(), phpExtension) == 0))
 		return true;
-	// if (filename.length() >= jsExtension.length() &&
-	// 	(filename.compare(filename.length() - jsExtension.length(), jsExtension.length(), jsExtension) == 0))
-	// 	return true;
 	return false;
 }
 
@@ -188,7 +184,7 @@ void Method::getMethod()
 		}
 		else if (this->file_type == "dir")
 		{
-			
+
 			if (method_config.requested_path[method_config.requested_path.length() - 1] != '/')
 			{
 				this->method_config.response_code = "301 Moved Permanently";
@@ -225,7 +221,7 @@ bool			Method::hasIndexFiles()
 {
 	for (size_t i = 0; i < this->method_config.server_locations.size(); i++)
 	{
-		if (method_config.requested_path == this->method_config.server_locations[i].getName())// post path http
+		if (method_config.requested_path == this->method_config.server_locations[i].getName())
 		{
 			if (this->method_config.server_locations[i].getIndex() != "")
 			{
@@ -245,7 +241,7 @@ std::string			Method::get_method_location()
 bool		Method::get_method_file_type()
 {
 	struct stat info;
-	if (stat(this->method_config.translated_path.c_str(), &info) == 0)//check permission
+	if (stat(this->method_config.translated_path.c_str(), &info) == 0)
 	{
 		if (S_ISDIR(info.st_mode))
 			this->file_type = "dir";
@@ -269,7 +265,7 @@ bool	Method::has_autoindex()
 		{
 			if (this->method_config.server_locations[i].getAutoindex() == 1)
 				return (true);
-			else if (this->method_config.server_locations[i].getAutoindex() == 0 
+			else if (this->method_config.server_locations[i].getAutoindex() == 0
 			|| this->method_config.server_locations[i].getAutoindex() == -1)
 			{
 				return (false);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AutoIndex.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/25 19:27:59 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 11:56:51 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ AutoIndex::AutoIndex( int sfd, config &conf)
 	this->dir_path = conf.location.getRoot() + uri;
 	error = false;
 	generate();
-	SendResponse(fin.str(), -1, sfd, conf);
+	SendResponse(fin.str(), -1, sfd);
 }
 
 bool AutoIndex::fail( void ) const

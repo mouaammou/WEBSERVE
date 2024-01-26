@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/25 19:30:52 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:13:30 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,6 @@ void	PollServers::bindServers()
 
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
 	}
-}
-
-long long 	current_time_in_milliseconds()
-{
-    struct timeval te;
-    gettimeofday(&te, NULL);
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-    return milliseconds;
 }
 
 bool			PollServers::handle_PollIn(Server *server, int i, int fileDescriptor, Request *HttpClient)
@@ -132,8 +124,6 @@ void			  PollServers::track_ALL_Clients(void)
 		server = this->whitchServer(fileDescriptor);
 		request = TheClient(server, fileDescriptor);
 
-		if (SendFile::isSendFileFd(this->poll_Fds[i]))
-			continue;
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
 		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
@@ -237,7 +227,7 @@ void		PollServers::acceptConnections(int serverfd)
 
     if ((clientSocket = accept(serverfd, NULL, NULL)) == -1)
     {
-		throw std::runtime_error("accept");
+		std::cout << COLOR_RED "accept failed" COLOR_RESET<< std::endl;
         return;
     }
 	addFileDescriptor(clientSocket);
@@ -384,7 +374,6 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 		//check if the config file has multi ports
 		this->handleMultiPorts(server, fd);
 
-		// server->serverConfigFile = TheClient(server, fd)->server_config;
 		TheClient(server, fd)->setRequestReceived(true);
 		server->setStatusCode(TheClient(server, fd)->getStatusCode());
 
