@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/02/14 18:23:32 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/14 18:26:03 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -519,6 +519,7 @@ void Config::check_server_name_dup(std::string serv_name)
 int Config::stop_indice(int indice)
 {
 	int tmp;
+    tmp = 0;
 	for (size_t i = indice; i < ftokens.size(); i++)
 	{
 		if (ftokens[i] == "}" && i + 1 < ftokens.size() && ftokens[i + 1] == "}")
