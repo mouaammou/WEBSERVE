@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Codes.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 18:04:23 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/24 14:25:25 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:33:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ StatusCodes::StatusCodes(void)
 	codes["415"] = "Unsupported Media Type";
 	codes["416"] = "Request Range Not Satisfiable";
 	codes["417"] = "Expectation Failed";
+	codes["422"] = "Unprocessable Content";
 
 	codes["500"] = "Internal Server Error";
 	codes["501"] = "Not Implemented";

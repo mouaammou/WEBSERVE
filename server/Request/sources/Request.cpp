@@ -252,7 +252,10 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 				return (this->_status_code = "501 Not Implemented", true);
 		}
 		if (key.compare("Content-Type:") == 0)//if the key is Content-Type
-			this->content_type = value;
+        {
+			stringTrim(value);
+            this->content_type = value;
+        }
 		this->request_headers[key] = value;
 	}
 	return (true);
@@ -302,6 +305,27 @@ void	Request::handleQueryString()
 	}
 }
 
+void    Request::urlencoded(std::string &str)
+{
+    std::string decoded;
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (str[i] == '+') {
+            decoded += ' ';
+        } else if (str[i] == '%') {
+            int decimal;
+            char mychar;
+            std::string tmp = str.substr(i + 1, 2);
+            std::sscanf(tmp.c_str(), "%x", &decimal);
+            mychar = static_cast<char>(decimal);
+            decoded += mychar;
+            i += 2;
+        } else {
+            decoded += str[i];
+        }
+    }
+    str = decoded;
+}
+
 bool 	Request::checkPath()
 {
 	if (this->path.find("..") != std::string::npos)
@@ -320,17 +344,7 @@ bool 	Request::checkPath()
 		this->_status_code = "414 Request-URI Too Long";
 		return (true);
 	}
-	while (this->path.find("%") != std::string::npos)
-	{
-		int decimal;
-		char mychar;
-		std::string tmp =  this->path.substr(this->path.find("%") + 1, 2);
-		std::stringstream ss(tmp);
-
-		ss >> std::hex >> decimal;
-		mychar = static_cast<char>(decimal);
-		this->path.replace(this->path.find("%"), 3, 1, mychar);
-	}
+	urlencoded(this->path);
 	return (true);
 }
 

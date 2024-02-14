@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/14 16:03:24 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:07:56 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,6 +364,10 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	if (http_request->receiveRequest())//status code generated
 	{
 		//check if the config file has multi ports
+        if(http_request->getContentType() == "application/x-www-form-urlencoded")
+        {
+            http_request->urlencoded(http_request->getRequestBody());
+        }
 		this->handleMultiPorts(server, fd);
 
 		http_request->setRequestReceived(true);

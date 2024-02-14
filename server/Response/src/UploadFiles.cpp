@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:33:27 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,13 +133,7 @@ bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 		return false;
 	_filename.erase(pos);
 	if (_filename.empty())
-	{
-		//generate random number
-		int random_variable = std::time(0);
-		std::stringstream ss;
-		ss << random_variable;
-		_filename = "empty" + ss.str();
-	}
+        return false;
 	return true;
 }
 

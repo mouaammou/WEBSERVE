@@ -25,12 +25,12 @@ class Request
 		std::string 	path;
 		std::string 	version;
 		std::map<std::string, std::string> request_headers;
-		std::string 						request_body;
 
 		size_t			content_length;
 		std::string 	transfer_encoding;
 		std::string 	content_type;
 		std::string     query_string;//?name=ferret&color=purple
+		std::string 						request_body;
 
 		bool	_has_headers;
 		bool	_has_body;
@@ -59,6 +59,8 @@ class Request
 		std::string 		 getTransferEncoding() const;
 		std::string 			getContentType() const;
 		int				      getFd() const;
+
+        void    urlencoded(std::string &str);
 
 		std::string 		   getStatusCode() const;
 		std::string 			 getQueryString() const;
