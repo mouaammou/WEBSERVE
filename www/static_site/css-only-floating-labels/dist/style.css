@@ -1,0 +1,196 @@
+@charset "UTF-8";
+/* #################### ################################ #################### */
+/* #################### RELEVANT CODE STARTS AT LINE 145 #################### */
+/* #################### ################################ #################### */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+/* Global Styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+html {
+  position: relative;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  background-color: #EDEEE9;
+  /* #################### ########################### #################### */
+  /* #################### All form-related CSS below. #################### */
+  /* #################### ########################### #################### */
+}
+html body {
+  background-color: #EDEEE9;
+  color: #303030;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  width: 100%;
+  padding: 2.5vh 10vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+html body h1 {
+  font-size: clamp(1rem, 6vw, 10rem);
+  margin: 15vh 0 2rem;
+}
+html body a {
+  text-decoration: underline;
+  color: #303030;
+}
+html body code {
+  font-size: 1rem;
+  padding: 0 0.5rem;
+  background-color: #D8DBCE;
+}
+html body .explanation {
+  width: 100%;
+  margin-bottom: 15vh;
+}
+html body .explanation p {
+  font-size: 1rem;
+  max-width: 75ch;
+  margin: 2rem 0;
+}
+html body .explanation ul:last-child {
+  margin-bottom: 2rem;
+}
+html body .explanation ul {
+  display: flex;
+  flex-direction: column;
+}
+html body .explanation ul li {
+  list-style: none;
+  position: relative;
+  margin: 0.5rem 0;
+}
+html body .explanation ul li::before {
+  content: "👉";
+  position: absolute;
+  top: -0.25rem;
+  left: -2rem;
+}
+html body .container {
+  width: 100%;
+  max-width: 768px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 2rem 1.5rem;
+  background-color: #D8DBCE;
+}
+@media (min-width: 768px) {
+  html body .container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+html body .container .cta-form {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  html body .container .cta-form {
+    margin-bottom: 0;
+    margin-right: 2rem;
+    text-align: left;
+  }
+}
+html body .container .cta-form h2 {
+  font-size: 1.5rem;
+  width: 100%;
+  max-width: 25ch;
+  margin: 0 auto;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  html body .container .cta-form h2 {
+    text-align: left;
+    margin: 0;
+  }
+}
+html body .container .cta-form p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 24ch;
+}
+html .form {
+  align-self: center;
+}
+html .form__input {
+  width: clamp(120px, 50vw, 420px);
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  border: 1px solid #303030;
+  border-radius: 2px;
+  margin: 0.625rem auto;
+  transition: all 250ms;
+  /* When the input field (.form__input) is in focus, 
+     transform the .form__label and change colors*/
+  /* ALSO, if the input field's placeholder is NOT shown (when the input field has content),
+     transform the .form__label and change colors. */
+  /* THIS PART IS IMPORTANT!! */
+  /* The block below hides the placeholder entirely. */
+  /* For all intents and purposes, the placeholder no longer exists. */
+  /* What shows on the input field is only the label*. */
+  /* HOWEVER, the input fields still recognizes that the placeholder exists!*/
+  /* The placeholder is just invisible. We need the placeholder to exist for
+     some weird CSS stuff. If we skip this, we can't make it CSS-only. */
+  /* When the placeholder is NOT shown,
+     style the top border. */
+  /* This makes the top border fade-out when the placeholder disappears. */
+}
+@media (min-width: 768px) {
+  html .form__input {
+    width: clamp(120px, 35vw, 420px);
+  }
+}
+html .form__input:focus {
+  outline: none;
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+html .form__input:focus + .form__label, html .form__input:not(:placeholder-shown) + .form__label {
+  transform: translateY(-4.5rem) scale(1);
+  color: #303030;
+}
+html .form__input::placeholder {
+  display: none;
+  color: transparent;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+html .form__input:not(:placeholder-shown) {
+  border-top-color: rgba(0, 0, 0, 0.5);
+}
+html .form__label {
+  font-size: 1rem;
+  color: #909090;
+  display: block;
+  /* Moves the label on TOP of the placeholder */
+  /* You'll need to change this as needed */
+  transform: translate(1.25rem, -2.5rem);
+  transform-origin: 0 0;
+  /* Used later for transitions */
+  transition: all 500ms;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  /* THIS PART IS IMPORTANT! */
+  /* This line prevents the label from being selected.*/
+  /* This is crucial because if this line doesn't exist, users can
+     click on the label, instead of the input field. That's bad UX! */
+  pointer-events: none;
+}
