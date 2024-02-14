@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NewCGI.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/25 21:26:20 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ bool NewCGI::execute( void)
         return false;
     else if (pid == 0)
     {
-
         child();
         std::string dir = conf.translated_path.substr(0, conf.translated_path.find_last_of('/'));
         if (chdir(dir.c_str()) == -1)
@@ -210,7 +209,7 @@ int64_t NewCGI::getCurrentTime( void )
 void NewCGI::timeout( void )
 {
     if (one_time_kill || pid == -1)
-        return ; 
+        return ;
     int64_t now = std::time(NULL) - timeout_start;
     if (now >= MAX_SEC_TO_TIMEOUT)
     {

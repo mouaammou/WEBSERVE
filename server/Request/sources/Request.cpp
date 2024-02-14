@@ -1,17 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.cpp                                        :+:      :+:    :+:   */
+/*   request->cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 03:50:35 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/26 12:10:45 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 13:39:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Request.hpp"
 #include "../../Response/include/Response.hpp"
+
+// Constructor to initialize the object with the raw HTTP request
+Request::Request()
+{
+}
 
 Request::Request(int fd, t_config config_file)
 {
@@ -28,7 +33,6 @@ Request::Request(int fd, t_config config_file)
 	this->_has_body = false;
 	this->transfer_encoding = "";
 	this->content_type = "";
-	this->buffer = new char[MAX_REQUEST_SIZE + 1];
 	this->request_received = false;
 	this->query_string = "";
 	this->_status_code = "200 OK";
@@ -66,8 +70,6 @@ void	Request::resetRequest()
 
 Request::~Request()
 {
-	delete [] this->buffer;
-	this->server_config.request = NULL;
 }
 
 std::string Request::getMethod() const
@@ -390,32 +392,6 @@ bool	Request::storeRequestBody()//hasbody, requestbody
 	return (false);
 }
 
-// Function to extract and concatenate the chunks from a chunked request
-bool 	Request::extractChunks(std::string& request)
-{
-    std::string delimiter = "\r\n";
-    size_t pos = 0;
-    std::string chunk;
-
-    while ((pos = request.find(delimiter)) != std::string::npos)
-    {
-        //hex to decimal
-        chunk = request.substr(0, pos);
-        int decimal = 1;
-        std::stringstream ss(chunk);
-        ss >> std::hex >> decimal;
-        if (chunk == "0")
-        {
-            this->request_body = this->_chunked_body;
-            return true;
-        }
-        this->_chunked_body.append(request.substr(pos + 2, decimal));
-        // Remove the chunk from the request
-        request.erase(0, pos + 2 + decimal + 2);
-    }
-    return (false);
-}
-
 bool			Request::storeChunkedRequestBody()
 {
 	if (this->_chunk_size == -1)
@@ -469,7 +445,8 @@ bool   		Request::handleRequestBody()
 		else if (this->hasHeaders() && this->transfer_encoding == "chunked")
 			return (this->storeChunkedRequestBody());
 	}
-	if ((this->hasHeaders() && this->content_length == 0 && this->transfer_encoding == "") || ! this->request_body.length())
+	if ((this->hasHeaders() && this->content_length == 0
+		&& this->transfer_encoding == "") || ! this->request_body.length())
 		return (true);
 	return (false);
 }
@@ -477,12 +454,14 @@ bool   		Request::handleRequestBody()
 bool	Request::receiveRequest()//must read the request
 {
 	int readStatus;
-	memset(this->buffer, 0, MAX_REQUEST_SIZE + 1);
-	readStatus = read(this->fd, this->buffer, MAX_REQUEST_SIZE);
+    char *buffer = new char[MAX_REQUEST_SIZE + 1];
+	memset(buffer, 0, MAX_REQUEST_SIZE + 1);
+	readStatus = read(this->fd, buffer, MAX_REQUEST_SIZE);
 	if (readStatus <= 0)
-		return (this->read_bytes = 0, false);
+		return (delete [] buffer, this->read_bytes = 0, false);
 	this->read_bytes += readStatus;
-	this->request_body.append(this->buffer, readStatus);
+	this->request_body.append(buffer, readStatus);
+    delete [] buffer;
 	if ( ! this->hasHeaders())
 	{
 		size_t pos = this->request_body.find("\r\n\r\n");

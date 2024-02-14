@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 12:10:21 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:28:19 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool	endsWithConf( std::string str )
 {
 	size_t strLen = str.length();
     size_t confLen = std::strlen(".conf");
-	
+
     if (strLen >= confLen)
         return str.compare(strLen - confLen, confLen, ".conf") == 0;
     return false;
@@ -33,7 +33,7 @@ int main(int ac, char **av)
 			path = av[1];
 		else if (ac == 1)
 			path = "config.conf";
-		else 
+		else
 		{
 			std::cout << "Usage: ./webserv [*.conf]" << std::endl;
 			return (1);

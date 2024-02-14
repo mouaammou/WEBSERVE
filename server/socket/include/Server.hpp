@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 14:57:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:33:48 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:10:34 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,14 @@ class Server
 		int serverSocket;//server socket: socket() function fd
 		struct addrinfo *result;//getaddrinfo() function
 		std::string severPort;//server port
-		//map for clients
 		std::string requested_location;
 
 	public:
 		Server(t_config config);
-		Method* pointedMethod;//private, and set a setter
 		t_config serverConfigFile;
-		std::map<int, Request*> httpClients;
+		std::map<int, Request> httpClients;
 		~Server();
 
-
-		Method* getPointedMethod() const;
 		int		getServerSocket() const;
 		void    bindServerSocket();//set server socket: create socket, set socket options
 		void	setServerSocket();//get server socket: getaddrinfo() function
@@ -51,9 +47,8 @@ class Server
 
 		void	addClient(int fd);//add new client to the map
 		void	removeClient(int fd);//remove client from the map
-		
-		std::string getRequestedLocation(std::string path);//get the requested location
-		std::string getTranslatedPath(std::string location, std::string path);//get the translated path
+
+		void	getTranslatedPath(std::string &translated, std::string path);//get the translated path
 		bool	isClient(int fd);//check if the fd is a client
 
 		void	setConfiguration(t_config configfile);

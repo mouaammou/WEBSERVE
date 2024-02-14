@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/26 12:13:06 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 15:58:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,21 @@ typedef struct config
 	std::vector<Location>	server_locations;
 	std::string				server_name;
 	std::string				request_url;
-	std::string 		port;
-	Directives 			*Server;
-	Location 			location;
-	std::string 		translated_path;//physical ==> root + requested_path
-	std::string 		path_info;
-	std::string 		path_info_translated;// physical ==> root + path_info
-	std::string 		response_code;
-	std::string 		requested_path;//location
-	std::string autoindex;//on or off
-	Request		*request;
-	PollServers	*poll;
+	std::string 			port;
+	Directives 				*Server;
+	Location 				location;
+	std::string 			translated_path;//physical ==> root + requested_path
+	std::string 			path_info;
+	std::string 			path_info_translated;// physical ==> root + path_info
+	std::string 			response_code;
+	std::string 			requested_path;//location
+	std::string				autoindex;//on or off
+	Request					*request;
 
-	bool		cgi;
-	int			server_fd;
-	int			body_size;
-	int 		socket_fd;
+	bool					cgi;
+	int						server_fd;
+	int						body_size;
+	int 					socket_fd;
 }		t_config;
 
 void				stringTrim(std::string &str);

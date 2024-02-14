@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/26 11:58:13 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,8 @@ void Response::file(void)
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
-		oss << "Location: " << args.translated_path << "\r\n";
-		oss << "Content-Length: " << args.location.getUploadPath().length() + 139 << "\r\n";
+		oss << "Location: " << args.location.getUploadPath() << "\r\n";
+		oss << "Content-Length: " << args.location.getUploadPath().length() + 148 << "\r\n";
 		oss << "Content-Type: text/html\r\n";
 		oss << "\r\n";
 		oss << "";
@@ -116,30 +116,10 @@ void Response::file(void)
 		error();
 		return;
 	}
-	CacheControl cache(args, ffd); // cache
-	if ( ! cache.isModifiedSince())
-	{
-		args.response_code = "304";
-		statusLine(args.response_code);
-		oss << "Cache-Control: public, max-age=1, no-cache, must-revalidate\r\n";
-		oss << "Date: " << getDate() << "\r\n";
-		oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-		oss << "Accept-Ranges: none\r\n";
-		oss << "Server: "
-			<< "Webserv/1.0"
-			<< "\r\n";
-		oss << "\r\n";
-		close(ffd);
-		SendResponse(oss.str(), -1, args.request->getFd());
-		return;
-	} // cache
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: public, max-age=1, no-cache, must-revalidate\r\n";
 	oss << "Date: " << getDate() << "\r\n";
-	oss << "Last-Modified: " << CacheControl(args, ffd).getfileLastModificationDate(ffd) << "\r\n";
-	oss << "Accept-Ranges: none\r\n";
 	oss << "Server: "
 		<< "Webserv/1.0"
 		<< "\r\n";
@@ -190,7 +170,6 @@ void Response::error(void) // 5xx 4xx
 		oss << "Content-Type: "
 			<< "text/html"
 			<< "\r\n";
-		oss << "Cache-Control: no-store\r\n";
 		oss << "Server: "
 			<< "Webserv/1.0"
 			<< "\r\n";
@@ -204,7 +183,6 @@ void Response::error(void) // 5xx 4xx
 	statusLine(args.response_code);
 	oss << "Content-Length: " << file_size << "\r\n";
 	oss << "Content-Type: " << getMediaType(args.translated_path) << "\r\n";
-	oss << "Cache-Control: no-store\r\n";
 	oss << "Server: "
 		<< "Webserv/1.0"
 		<< "\r\n";

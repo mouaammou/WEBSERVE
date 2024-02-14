@@ -3,20 +3,20 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+         #
+#    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/01/26 12:17:59 by moouaamm         ###   ########.fr        #
+#    Updated: 2024/02/14 15:26:26 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FLAGS 		= -Wall -Wextra -Werror #-g -fsanitize=address
+FLAGS 		= #-Wall -Wextra -Werror #-g -fsanitize=address
 VERSION 	= -std=c++98
 NAME 		= webserv
 CCPP 		= c++
 RM 			= rm -fr
 
-RES_FILES 	= $(addprefix server/Response/src/, AutoIndex.cpp Codes.cpp MediaTypes.cpp CacheControl.cpp  \
+RES_FILES 	= $(addprefix server/Response/src/, AutoIndex.cpp Codes.cpp MediaTypes.cpp   \
 				Response.cpp  SendResponse.cpp UploadFiles.cpp )
 
 FILES 		=  $(RES_FILES) $(addprefix server/Request/sources/, Request.cpp Method.cpp) \
@@ -26,7 +26,7 @@ FILES 		+=  $(addprefix server/cgi/src/, NewCGI.cpp Execute.cpp ParseCGIOutput.c
 FILES 		+=  $(addprefix server/socket/src/, Server.cpp PollServers.cpp )
 
 
-RES_HEADERS = $(addprefix server/Response/include/, AutoIndex.hpp Codes.hpp  MediaTypes.hpp  CacheControl.hpp \
+RES_HEADERS = $(addprefix server/Response/include/, AutoIndex.hpp Codes.hpp  MediaTypes.hpp  \
 				Response.hpp  SendResponse.hpp UploadFiles.hpp )
 
 HEADER_FILES 	= $(RES_HEADERS) $(addprefix server/Request/includes/, Request.hpp Method.hpp) \

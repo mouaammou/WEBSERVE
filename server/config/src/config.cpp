@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/26 12:06:20 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/30 13:49:06 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,18 +87,7 @@ void Config::handle_brackets(void)
 	std::string brackets;
 	for (size_t i = 0; i < this->ftokens.size(); i++)
 	{
-		if (this->ftokens[i] == "{")
-		{
-			i++;
-			while (this->ftokens[i] == ";")
-				i++;
-			if ( i < this->ftokens.size() - 1 && this->ftokens[i] == "}")
-				error_call("brackets error, empty brackets are not accepted!");
-		}
-	}
-	for (size_t i = 0; i < this->ftokens.size(); i++)
-	{
-		if (this->ftokens[i] == "{" && i  + 1 < this->ftokens.size() - 1 && this->ftokens[i + 1] == "}")
+		if (this->ftokens[i] == "{" && i  + 1 < this->ftokens.size() && this->ftokens[i + 1] == "}")
 			error_call("brackets error, empty brackets are not accepted!");
 		if (this->ftokens[i] == "{")
 		{
@@ -125,6 +114,16 @@ void Config::handle_brackets(void)
 	}
 	if (brackets.size() != 0)
 		error_call("brackets error");
+	for (size_t i = 0; i < this->ftokens.size(); i++)
+	{
+		if (this->ftokens[i] == "{")
+		{
+			while (i + 1 < this->ftokens.size() && this->ftokens[i + 1] == ";")
+				i++;
+			if ( i + 1 < this->ftokens.size() && this->ftokens[i + 1] == "}")
+				error_call("brackets error, empty brackets are not accepted!");
+		}
+	}
 }
 
 
@@ -343,7 +342,7 @@ void Config::handle_inside_locations(Directives& server, int *indice)
 		error_call("directive must not be duplicated!");
 	if ( ! proxy_method )
 		error_call("proxy_method must be set for any location!");
-	if (!autoindex && !index)
+	if (!locat.getReturnInt() && !autoindex && !index  )
 		error_call("autoindex or index must be set in location : " + locat.getName());
 	server.server_locations.push_back(locat);
 }
@@ -522,7 +521,7 @@ int Config::stop_indice(int indice)
 	int tmp;
 	for (size_t i = indice; i < ftokens.size(); i++)
 	{
-		if (ftokens[i] == "}" && ftokens[i + 1] == "}")
+		if (ftokens[i] == "}" && i + 1 < ftokens.size() && ftokens[i + 1] == "}")
 		{
 			if (i + 2 < ftokens.size() && ftokens[i + 2].compare("server"))
 			{
@@ -628,26 +627,43 @@ void Config::check_dup_location(std::vector<Location> locat)
 std::vector<Location> Config::sort_location(std::vector<Location> locat)
 {
 	Location tmp;
+	int rootLocation = 0;
 	check_dup_location(locat);
 	if (locat.empty())
-		return locat;
-	for (size_t i = 0; i < locat.size() - 1; i++)
 	{
-		if (locat[i].getName() == "/")
+		error_call("root location must be set!");
+		return locat;
+	}
+	else if (locat.size() != 1)
+	{
+		for (size_t i = 0; i < locat.size() - 1; i++)
 		{
-			tmp = locat[locat.size() - 1];
-			locat[locat.size() - 1] = locat[i];
-			locat[i] = tmp;
-		}
-		for (size_t j = i + 1; j < locat.size(); j++)
-		{
-			if (locat[i].getSlash() < locat[j].getSlash())
+			if (locat[i].getName() == "/")
 			{
-				tmp = locat[i];
-				locat[i] = locat[j];
-				locat[j] = tmp;
+				tmp = locat[locat.size() - 1];
+				locat[locat.size() - 1] = locat[i];
+				locat[i] = tmp;
+				rootLocation = 1;
+			}
+			for (size_t j = i + 1; j < locat.size(); j++)
+			{
+				if (locat[j].getName() == "/")
+					rootLocation = 1;
+				if (locat[i].getSlash() < locat[j].getSlash())
+				{
+					tmp = locat[i];
+					locat[i] = locat[j];
+					locat[j] = tmp;
+				}
 			}
 		}
+		if(!rootLocation)
+			error_call("root location must be set!");
+	}
+	else
+	{
+		if (locat[0].getName() != "/")
+			error_call("root location must be set!");
 	}
 	return locat;
 }

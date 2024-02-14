@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PollServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/26 12:13:30 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:03:24 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 	this->servers_config[i].Server = &this->config_file.get_directives()[i];
-	this->servers_config[i].poll = this;
 }
 
 void	PollServers::bindServers()
@@ -126,7 +125,7 @@ void			  PollServers::track_ALL_Clients(void)
 
 		if (handle_Poll_Events(server, i, fileDescriptor, request) == false)
 			continue;
-		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+		if (this->poll_Fds[i].revents & (POLLHUP | POLLERR))
 		{
 			removeFromPoll(server, this->poll_Fds[i].fd);
 		}
@@ -141,7 +140,6 @@ void 				PollServers::initPoll()
 	while (true)
 	{
 		pollStatu = poll(this->poll_Fds.data(), this->poll_Fds.size(), timeout);
-		// std::cout << COLOR_CYAN "waiting ..." COLOR_RESET<< std::endl;
 		if (pollStatu == -1)
 		{
 			throw std::runtime_error("poll failed");
@@ -240,8 +238,8 @@ void		PollServers::acceptConnections(int serverfd)
 Request				*TheClient(Server *server, int fd)
 {
 	if (server && server->httpClients.find(fd) != server->httpClients.end())
-		return (server->httpClients[fd]);
-	return (NULL);
+		return (&server->httpClients[fd]);
+    return (NULL);
 }
 
 void				stringTrim(std::string &str)
@@ -313,9 +311,8 @@ void		PollServers::handleMultiPorts(Server *server, int fd)
 void	PollServers::handleTranslatedPath(Server *server, int fd)
 {
 	std::string path = TheClient(server, fd)->getPath();
-	std::string re_location = server->getRequestedLocation(path);
 
-	server->serverConfigFile.translated_path 	= server->getTranslatedPath(re_location, path);
+	server->getTranslatedPath(server->serverConfigFile.translated_path , path);
 	server->serverConfigFile.requested_path 	= path;
 	server->serverConfigFile.request 			= TheClient(server, fd);
 }
@@ -323,8 +320,7 @@ void	PollServers::handleTranslatedPath(Server *server, int fd)
 void	PollServers::handlePathInfo(Server *server, std::string path_info)
 {
 	Location tmp = server->serverConfigFile.location;
-	std::string re_location = server->getRequestedLocation(path_info);
-	server->serverConfigFile.path_info_translated = server->getTranslatedPath(re_location, path_info);
+	server->getTranslatedPath(server->serverConfigFile.path_info_translated, path_info);
 	server->serverConfigFile.location = tmp;
 }
 
@@ -349,42 +345,37 @@ void 		PollServers::handle_Method(Server *server, int fd)
 	{
 		if (TheClient(server, fd)->getMethod() == "GET")
 		{
-			server->pointedMethod = new Method(server->serverConfigFile);
-			server->pointedMethod->getMethod();
+			Method(server->serverConfigFile).getMethod();
 		}
 		else if (TheClient(server, fd)->getMethod() == "DELETE")
 		{
-			server->pointedMethod = new Method(server->serverConfigFile);
-			server->pointedMethod->deleteMethod();
+			Method(server->serverConfigFile).deleteMethod();
 		}
 		else if (TheClient(server, fd)->getMethod() == "POST")
 		{
-			server->pointedMethod = new Method(server->serverConfigFile);
-			server->pointedMethod->postMethod();
+			Method(server->serverConfigFile).postMethod();
 		}
-		delete server->pointedMethod;
-		server->pointedMethod = NULL;
 	}
 }
 
 bool				PollServers::clientPollIn(Server *server, int fd)
 {
-	if (TheClient(server, fd)->receiveRequest())//status code generated
+	Request *http_request = TheClient(server, fd);
+	if (http_request->receiveRequest())//status code generated
 	{
 		//check if the config file has multi ports
 		this->handleMultiPorts(server, fd);
 
-		TheClient(server, fd)->setRequestReceived(true);
-		server->setStatusCode(TheClient(server, fd)->getStatusCode());
+		http_request->setRequestReceived(true);
+		server->setStatusCode(http_request->getStatusCode());
 
-		// TheClient(server, fd)->displayRequest();
-		//get the requested translated path
+
 		this->handleTranslatedPath(server, fd);
 		if (server->serverConfigFile.path_info != "")
 			this->handlePathInfo(server, server->serverConfigFile.path_info);
 
 		//check if the method is allowed in the config file
-		this->checkProxyMethod(server, TheClient(server, fd)->getMethod());
+		this->checkProxyMethod(server, http_request->getMethod());
 
 		//call the method class
 		this->handle_Method(server, fd);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/25 23:26:25 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void FilesUpload::writeToFile( std::string &body )
 		return ;
 	}
 
-	file->write(body.c_str(), body.length());
+	file->write(body.c_str(), body.length() - 2);
 	if (file->fail())
 	{
 		conf.response_code = "500";
@@ -172,7 +172,7 @@ void FilesUpload::requestBody( std::string &body )
 	if (pos == std::string::npos)
 	{
 		conf.response_code = "400";
-		return ; 
+		return ;
 	}
 	body.erase(0, pos + _boundary.length());
 	while (pos != std::string::npos)

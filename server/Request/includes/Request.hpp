@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request.hpp                                        :+:      :+:    :+:   */
+/*   request->hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 20:02:27 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:27:20 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/14 13:38:42 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,13 @@ class Request
 		int _last_chunk_pos;
 
 	public:
+        Request();
 		std::string      	_connection;
 		int   				read_bytes;
 
 		t_config 		server_config;
-		char	*buffer;
 		// Constructor to initialize the object with the raw HTTP request
-		Request(int fd, t_config config_file);             //
+		Request(int fd, t_config config_file);             //        //
 		~Request();
 		// Getters to retrieve information from the parsed request
 		std::string 	getMethod() const;
@@ -95,6 +95,4 @@ class Request
 		bool		sendResponse();
 
 		void	resetRequest();
-
-		bool		extractChunks(std::string &request);
 };

@@ -6,7 +6,7 @@
 /*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 17:57:35 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/26 11:57:45 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:11:03 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,6 @@ void ParseCGIOutput::additionalHeaders(void)
 	size_t pos2 = headers.find("\r\nDate:");
 	if (pos2 == std::string::npos && pos1 != 0)
 		new_headers.append("Date: ").append(Response::getDate()).append("\r\n");
-
-	pos1 = headers.find("Cache-Control:");
-	pos2 = headers.find("\r\nCache-Control:");
-	if (pos2 == std::string::npos && pos1 != 0)
-		new_headers.append("Cache-Control: no-store\r\n");
-
 	pos1 = headers.find("Server:");
 	pos2 = headers.find("\r\nServer:");
 	if (pos2 == std::string::npos && pos1 != 0)

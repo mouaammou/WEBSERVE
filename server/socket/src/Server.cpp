@@ -3,31 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 18:08:43 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 16:07:20 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
+#include <sys/socket.h>
 
 Server::Server(t_config config)//constructor
 {
 	this->serverSocket = -1;
 	this->serverConfigFile = config;
 	this->severPort = config.port;
-	this->pointedMethod = NULL;
 	this->requested_location = "";
 }
 
 Server::~Server()//close server socket
 {
-	for (std::map<int, Request*>::iterator it = this->httpClients.begin(); it != this->httpClients.end(); it++)
-	{
-		delete it->second;
-		it->second = NULL;
-	}
     close(this->serverSocket);
 }
 
@@ -77,10 +72,9 @@ void    Server::bindServerSocket()
 
 int  Server::listenForConnections()
 {
-	//BIND
 	this->bindServerSocket();
-    //LISTEN
-    if (listen(this->serverSocket, 1024) == -1)
+
+    if (listen(this->serverSocket, SOMAXCONN) == -1)
     {
 		throw std::runtime_error("listen");
     }
@@ -94,13 +88,11 @@ bool		Server::isClient(int fd)
 
 void		Server::addClient(int fd)
 {
-	this->httpClients[fd] = new Request(fd, this->serverConfigFile);
+	this->httpClients[fd] = Request(fd, this->serverConfigFile);
 }
 
 void		Server::removeClient(int fd)
 {
-	delete this->httpClients[fd];
-	this->httpClients[fd] = NULL;
 	this->httpClients.erase(fd);
 }
 
@@ -109,7 +101,7 @@ int		Server::getServerSocket() const
 	return (this->serverSocket);
 }
 
-std::string			Server::getRequestedLocation(std::string path)
+void		Server::getTranslatedPath(std::string &translated_path, std::string path)//localhost:8080/adsfadsf
 {
 	for (size_t i = 0; i < this->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
 	{
@@ -118,24 +110,13 @@ std::string			Server::getRequestedLocation(std::string path)
 		if (tmp.find(this->serverConfigFile.server_locations[i].getName()) != std::string::npos)
 		{
 			this->serverConfigFile.location = this->serverConfigFile.server_locations[i];
-			return (this->serverConfigFile.server_locations[i].getName());
+			std::string tmp = this->serverConfigFile.server_locations[i].getRoot() + path;
+			if (tmp[tmp.length() - 1] == '/')
+				tmp += this->serverConfigFile.server_locations[i].getIndex();
+			translated_path = tmp;
+			break;
 		}
 	}
-	return ("/");
-}
-
-std::string		Server::getTranslatedPath(std::string location, std::string path)//localhost:8080/adsfadsf
-{
-	size_t i;
-	for (i = 0; i < this->serverConfigFile.server_locations.size(); i++)
-	{
-		if (this->serverConfigFile.server_locations[i].getName() == location)
-			break;
-	}
-	std::string tmp = this->serverConfigFile.server_locations[i].getRoot() + path;
-	if (tmp[tmp.length() - 1] == '/')
-		tmp += this->serverConfigFile.server_locations[i].getIndex();
-	return (tmp);
 }
 
 void			Server::printf_t_config(t_config config_file)
@@ -147,11 +128,6 @@ void			Server::printf_t_config(t_config config_file)
 	std::cout << "	location: [" << config_file.location.getName() << "]" << std::endl;
 	std::cout << "	CGI:      [" << (config_file.cgi ? "true" : "false") << "]" << std::endl;
 	std::cout << "	method:   [" << config_file.request->getMethod() << "]" << std::endl;
-}
-
-Method* 		Server::getPointedMethod() const
-{
-	return (this->pointedMethod);
 }
 
 void			Server::setStatusCode(std::string status_code)

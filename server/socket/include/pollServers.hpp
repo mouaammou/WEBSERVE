@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pollServers.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 20:57:32 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/26 12:12:52 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 15:49:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ class PollServers
 		bool				clientPollIn(Server *server, int fd);
 		void				handleMultiPorts(Server *server, int fd);
 
-		void	handleTranslatedPath(Server *server, int fd);
-		void	handlePathInfo(Server *server, std::string path_info);
+		void				handleTranslatedPath(Server *server, int fd);
+		void				handlePathInfo(Server *server, std::string path_info);
 
 		void			    track_ALL_Clients(void);
 
-		void					checkProxyMethod(Server *server, std::string re_method);
+		void				checkProxyMethod(Server *server, std::string re_method);
 
 		bool		handle_Poll_Events(Server *server, int i, int fileDescriptor, Request *request);
 		bool		handle_PollIn(Server *server, int i, int fileDescriptor, Request *HttpClient);
