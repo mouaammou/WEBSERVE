@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/01/30 13:49:06 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/14 18:23:32 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -464,7 +464,7 @@ bool valid_status(int status)
 {
 	if ((status >= 100 && status <= 101) || (status >= 200 && status <= 206))
 		return true;
-	if ((status >= 300 && status <= 307) || (status >= 400 && status <= 417))
+	if ((status >= 300 && status <= 307) || (status >= 400 && status <= 422))
 		return true;
 	if ((status >= 500 && status <= 505))
 		return true;
