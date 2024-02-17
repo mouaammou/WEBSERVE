@@ -263,11 +263,8 @@ bool	Request::parseRequestHeaders(const std::string& line)//hasheaders, requesth
 
 bool	Request::checkMethod()
 {
-	if (this->method.compare("GET") != 0
-		&& this->method.compare("POST") != 0
-		&& this->method.compare("DELETE") != 0
-		)
-		this->_status_code = "405 Method Not Allowed";
+	if (this->method.compare("GET") != 0 && this->method.compare("POST") != 0 && this->method.compare("DELETE") != 0)
+		this->_status_code = "501 Not Implemented";
 	return (true);
 }
 
@@ -459,6 +456,8 @@ bool   		Request::handleRequestBody()
 		else if (this->hasHeaders() && this->transfer_encoding == "chunked")
 			return (this->storeChunkedRequestBody());
 	}
+    if (this->content_length == 0 && this->transfer_encoding == "" && this->hasHeaders() && this->method == "POST")
+        return (this->_status_code = "411 Length Required", true);
 	if ((this->hasHeaders() && this->content_length == 0
 		&& this->transfer_encoding == "") || ! this->request_body.length())
 		return (true);

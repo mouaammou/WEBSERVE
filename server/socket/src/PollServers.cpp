@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/14 17:07:56 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/17 23:18:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -326,6 +326,8 @@ void	PollServers::handlePathInfo(Server *server, std::string path_info)
 
 void					PollServers::checkProxyMethod(Server *server, std::string re_method)
 {
+    if (server->getStatusCode().find("501") != std::string::npos)
+        return ;
 	std::vector<std::string> methods = server->serverConfigFile.location.getMethods();
 	for (size_t i = 0; i < methods.size(); i++)
 	{
