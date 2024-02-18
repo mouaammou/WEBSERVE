@@ -1,0 +1,180 @@
+: 1707943229:0;gcl git@vogsphere-v2.1337.ma:vogsphere/intra-uuid-e518c843-97b0-4d19-9149-29a8f906b5c1-5503424-moouaamm asofi
+: 1707943239:0;cd asofi
+: 1707943239:0;ls
+: 1707946271:0;git checkout
+: 1707946275:3;cclean
+: 1707946620:0;make
+: 1707946662:0;./webserv
+: 1707947000:0;cd
+: 1707947002:0;cd Desktop
+: 1707947006:0;cd wwww
+: 1707947009:0;cd www
+: 1707947015:0;mkdir saved-uploads/
+: 1707947019:0;./webserv
+: 1707947103:0;curl +X DELETE localhost
+: 1707947148:0;curl -X DELETE localhost
+: 1707947158:0;curl -X PUT localhost
+: 1707947337:0;..
+: 1707947342:0;chmod 000 www
+: 1707947346:0;./webserv
+: 1707947519:0;chmod 777 www
+: 1707947543:0;./webserv
+: 1707947573:0;ls
+: 1707947674:0;curl -X DELETE localhost/css/../../asofi/test
+: 1707947681:0;./webserv
+: 1707947685:0;curl -X DELETE localhost/css/../../asofi/test
+: 1707947711:0;./webserv
+: 1707948009:0;curl -H "Host: example10.com" localhost
+: 1707948023:0;curl -H "Host: example1.com" localhost
+: 1707948090:0;curl -H "Host: 42" localhost
+: 1707948110:0;curl -H "Host: 1337" localhost
+: 1707948124:0;./webserv
+: 1707948224:0;curl curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit"
+: 1707948280:0;./webserv
+: 1707948404:0;curl -X POST -H "Content-Type: plain/text" --data "B"
+: 1707948410:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948574:0;curl curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit"
+: 1707948584:0;./webserv
+: 1707948588:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948598:0;curl curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit"
+: 1707948599:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948601:0;./webserv
+: 1707948605:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948652:0;./webserv
+: 1707948705:0;make
+: 1707948708:0;./webserv
+: 1707948710:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948811:0;./webserv
+: 1707948853:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948902:0;curl -X POST -H "Content-Type: multipart/form-data" --data "B" localhost
+: 1707948921:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707948925:0;./webserv
+: 1707948926:0;curl -X POST -H "Content-Type: plain/text" --data "B" localhost
+: 1707949048:0;./webserv
+: 1707949427:0;curl -X DELETE localhost/saved-uploads/malika.pdf
+: 1707949542:0;chmod 000 ../www/upload
+: 1707949554:0;chmod 777 ../www/upload
+: 1707949560:0;chmod 000 ../www/saved-uploads
+: 1707949563:0;curl -X DELETE localhost/saved-uploads/malika.pdf
+: 1707949631:0;siege -b  -t 1M http://localhost:80
+: 1707949731:0;./webserv
+: 1707949733:0;siege -b  -t 1M http://localhost:80
+: 1707950156:0;./webserv
+: 1707950164:0;../www/static_site
+: 1707950165:0;la
+: 1707950173:0;chmod 000 js
+: 1707950267:0;ls js
+: 1707950273:0;chmod 777 js
+: 1707950276:0;ls js
+: 1707950281:0;chmod 000 js
+: 1707950307:0;curl localhost/js/custom.js
+: 1707950376:0;./webserv
+: 1707956926:0;Desktop
+: 1707956930:0;gcl git@vogsphere-v2.1337.ma:vogsphere/intra-uuid-d18d1b33-06f3-47e2-91dd-03bed1a93abe-5239746-moouaamm 03
+: 1708001104:0;make
+: 1708001114:0;./webserv config.conf
+: 1708001805:0;curl -X PUT localhost
+: 1708012550:0;cd ..
+: 1708012554:0;touch samir
+: 1708012558:0;mkdir samir
+: 1708012563:0;mkdir samirr
+: 1708012573:0;code samirr
+: 1708012722:0;gcc test.c
+: 1708012726:0;./a.out
+: 1708012739:0;./a.out -fsanitize=address -f
+: 1708012742:0;./a.out -fsanitize=address -g
+: 1708012758:0;gcc test.c -fsanitize=address -g
+: 1708012763:0;./a.out
+: 1708012797:0;gcc test.c -fsanitize=address -g
+: 1708012798:0;./a.out
+: 1708013286:0;gcc test.c -fsanitize=address -g
+: 1708013287:0;./a.out
+: 1708013744:0;gcc test.c -fsanitize=address -g
+: 1708013747:0;./a.out
+: 1708013877:0;gcc test.c -fsanitize=address -g
+: 1708013878:0;./a.out
+: 1708013937:0;gcc test.c -fsanitize=address -g
+: 1708013938:0;./a.out
+: 1708013948:0;gcc test.c -fsanitize=address -g
+: 1708013949:0;./a.out
+: 1708013959:0;gcc test.c -fsanitize=address -g
+: 1708013960:0;./a.out
+: 1708013990:0;gcc test.c -fsanitize=address -g
+: 1708013991:0;./a.out
+: 1708014005:0;gcc test.c -fsanitize=address -g
+: 1708014006:0;./a.out
+: 1708014041:0;gcc test.c -fsanitize=address -g
+: 1708014042:0;./a.out
+: 1708014048:0;gcc test.c -fsanitize=address -g
+: 1708014049:0;./a.out
+: 1708014078:0;gcc test.c -fsanitize=address -g
+: 1708014296:0;./a.out
+: 1708014509:0;gcc test.c -fsanitize=address -g
+: 1708014511:0;./a.out
+: 1708014575:0;gcc test.c -fsanitize=address -g
+: 1708014576:0;./a.out
+: 1708014683:0;gcc test.c -fsanitize=address -g
+: 1708014684:0;./a.out
+: 1708014878:0;touch text.txt
+: 1708014957:0;man open
+: 1708014977:0;man 2 open
+: 1708015018:0;pwd
+: 1708015075:0;man 2 open
+: 1708015142:0;man 2 read
+: 1708015279:0;gcc test.c -fsanitize=address -g
+: 1708015284:0;man 2 read
+: 1708015302:0;gcc test.c -fsanitize=address -g
+: 1708015309:0;./a.out
+: 1708015325:0;gcc test.c -fsanitize=address -g
+: 1708015326:0;./a.out
+: 1708099576:0;Desktop
+: 1708099613:0;gcl git@github.com:mouaammou/WEBSERVE.git webserv4.0
+: 1708100592:0;cd ..
+: 1708100596:0;cd .sh
+: 1708100598:0;cd .ssh
+: 1708100599:0;ls
+: 1708100603:0;cat id_rsa.pub
+: 1708100681:0;cd ..
+: 1708100684:0;cd Desktop
+: 1708100688:0;gcl git@github.com:mouaammou/WEBSERVE.git webserv4.0
+: 1708100786:0;make
+: 1708100794:0;cclean
+: 1708100810:0;clear
+: 1708100829:0;./webserv
+: 1708101255:0;make
+: 1708101268:0;./webserv
+: 1708109148:0;make
+: 1708109153:0;./webserv
+: 1708109216:0;make
+: 1708109218:0;./webserv
+: 1708125055:0;git add.
+: 1708125080:0;git add .
+: 1708125086:0;git commit -m"we done"
+: 1708125089:0;git push
+: 1708125104:0;git pull
+: 1708125109:0;make
+: 1708125116:0;cclean
+: 1708125121:0;make
+: 1708127781:0;touch test.cpp
+: 1708127844:0;c++ test.cpp
+: 1708127847:0;asdf
+: 1708127877:0;gcl git@vogsphere-v2.1337.ma:vogsphere/intra-uuid-9815d08b-79a3-4684-804f-b55e64c4292e-4519568-moouaamm gnl
+: 1708127883:0;cd gnl
+: 1708127941:0;gcc get_next_line.c get_next_line_utils.c
+: 1708127982:0;./a.out
+: 1708128059:0;gcc get_next_line.c get_next_line_utils.c
+: 1708128092:0;./a.out
+: 1708128115:0;gcc get_next_line.c get_next_line_utils.c
+: 1708128116:0;./a.out
+: 1708128141:0;gcc get_next_line.c get_next_line_utils.c
+: 1708128142:0;./a.out
+: 1708128183:0;gcc get_next_line.c get_next_line_utils.c
+: 1708128184:0;./a.out
+: 1708128484:0;gcc get_next_line.c get_next_line_utils.c
+: 1708128486:0;./a.out
+: 1708128508:0;./a.out | cat
+: 1708215847:0;~
+: 1708215850:0;ls
+: 1708215865:0;cat .zsh_history
+: 1708215918:0;cclean
+: 1708215942:0;cat .zsh_history > Desktop/file.tst

@@ -3,16 +3,19 @@
 #ifndef DIRECT_HPP
 #define DIRECT_HPP
 
+#include <unistd.h>
+
 class Directives
 {
 	private:
+		std::string upload_path;
 		std::string server_name;
 		std::string host_name;
 		std::vector<std::string> def_method;
 		std::map<int, std::string> error_page;
 		std::vector<int> port;
 		int server_id;
-		unsigned long long body_size; 
+		unsigned long long body_size;
 	public:
 		Directives();
 		~Directives();
@@ -32,5 +35,7 @@ class Directives
 		std::vector<int> getPorts()const;
 		void setPorts(std::vector<int>& ports);
 		void setBodySize(unsigned long long bodySize);
+		const std::string& getUploadPath() const ;
+		void setUploadPath(const std::string& upload);
 };
 #endif

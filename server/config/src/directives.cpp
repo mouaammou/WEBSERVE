@@ -6,7 +6,7 @@ Directives::Directives()
 }
 
 Directives::~Directives()	{}
-// hahowa li kaynin fihom les directives li kayna fihom les locations made by med
+
 std::vector<Location> Directives::getLocations()
 {
 	return server_locations;
@@ -33,6 +33,27 @@ int Directives::getServerId() const {
 
 void Directives::setServerId(int serverId) {
     server_id = serverId;
+}
+
+const std::string& Directives::getUploadPath() const {
+	return upload_path;
+}
+
+void Directives::setUploadPath(const std::string& upload)
+{
+	if (upload[0] != '/' || upload[upload.length() - 1] != '/')
+    {
+		std::cerr << "\033[0;31m" << "Error: Invalid upload path" << "\033[0m" << std::endl;
+		std::cerr << "\033[0;31m" << "upload path must begin and end with '/'" << "\033[0m" << std::endl;
+		exit(1);
+	}
+	else if (access(upload.c_str(), F_OK) == -1)
+	{
+		std::cerr << "\033[0;31m" << "Error: Invalid upload path" << "\033[0m" << std::endl;
+		std::cerr << "\033[0;31m" << "'"<< upload << "' does not exist" << "\033[0m" << std::endl;
+		exit(1);
+	}
+    this->upload_path = upload;
 }
 
 const std::string& Directives::getServerName() const {
