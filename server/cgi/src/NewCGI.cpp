@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   NewCGI.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 01:13:00 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/18 19:00:58 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/NewCGI.hpp"
+#include <sys/fcntl.h>
 
 
 std::map<int, NewCGI*>   NewCGI::active_procs;
