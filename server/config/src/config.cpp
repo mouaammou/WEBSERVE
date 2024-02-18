@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 14:38:58 by moouaamm          #+#    #+#             */
-/*   Updated: 2024/02/14 18:26:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/16 17:34:08 by moouaamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -544,6 +544,7 @@ void Config::handle_servers(int *indice)
 	int srv_name = 0;
 	int body_size = 0;
 	int host_name = 0;
+	int upload_path = 0;
 	size = this->ftokens.size();
 	if (size == *indice + 1)
 		error_call("server not set!");
@@ -577,6 +578,11 @@ void Config::handle_servers(int *indice)
 			server.setHostName(next_str_arg(indice));
 			host_name++;
 		}
+		else if (ftokens[*indice] == "upload_path")
+		{
+			server.setUploadPath(next_str_arg(indice));
+			upload_path++;
+		}
 		else if (ftokens[*indice] == "error_page")
 			handle_error_page(server, indice);
 		else if (ftokens[*indice] == "location")
@@ -605,6 +611,8 @@ void Config::handle_servers(int *indice)
 		error_call("client_max_body_size must not be duplicated!");
 	if (host_name > 1)//!host_name ||
 		error_call("hostname must be set and not duplicated!");
+	if (!upload_path || upload_path > 1)
+		error_call("upload path must be set and not duplicated!");
 	server.server_locations = sort_location(server.getLocations());
 	this->directs.push_back(server);
 }
