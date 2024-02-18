@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 17:46:17 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 19:48:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ FilesUpload::FilesUpload( t_config &conf ) : conf(conf)
 	this->_filename = "";
 	this->_body = &conf.request->getRequestBody();
 	this->_upload_path = conf.uploaded_file_path;
-    printf("upload path: %s\n", _upload_path.c_str());
 	std::string body = conf.request->getRequestBody();
 	// std::cerr << "ccbody: " << body << std::endl;
 	requestBody(*_body);
@@ -161,10 +160,10 @@ bool FilesUpload::boundaryBody( std::string &body )
 		return false;
 	if (access((_upload_path).c_str(), F_OK) == -1)
 	{
-		conf.response_code = "404";
+		conf.response_code = "409";
 		return false;
 	}
-    if (access((_upload_path).c_str(), R_OK) == -1)
+    if (access((_upload_path).c_str(), W_OK) == -1)
     {
         conf.response_code = "403";
         return false;

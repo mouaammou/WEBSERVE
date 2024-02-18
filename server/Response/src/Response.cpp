@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 17:29:23 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 19:24:08 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,13 @@ int64_t Response::get_file_size(void)
 Response::Response(config &args) : args(args)
 {
 	args.socket_fd = args.request->getFd();
-	if (args.cgi)
+	if (args.cgi && args.response_code.find("200") != std::string::npos)
 	{
-        if (args.response_code.find("2") == std::string::npos)
-            return;
 		runCGI();
 		return;
 	}
-	else if (args.autoindex == "on" && args.response_code.find("2") != std::string::npos) 
+	else if (args.autoindex == "on" && args.response_code.find("200") != std::string::npos) 
 	{
-        if (args.response_code.find("204") != std::string::npos)
-        {
-            file();
-            return;
-        }
 		autoIndex();
 		return;
 	}

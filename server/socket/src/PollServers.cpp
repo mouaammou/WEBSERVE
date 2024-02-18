@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 17:39:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 21:13:19 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 	this->servers_config[i].Server = &this->config_file.get_directives()[i];
-    this->servers_config[i].uploaded_file_path = this->config_file.get_directives()[i].getLocations()[i].getRoot() + this->config_file.get_directives()[i].getUploadPath();
+    // this->servers_config[i].uploaded_file_path = this->config_file.get_directives()[i].getLocations()[i].getRoot() + this->config_file.get_directives()[i].getUploadPath();
     this->servers_config[i].upload_location = this->config_file.get_directives()[i].getUploadPath();
 }
 
@@ -50,7 +50,11 @@ void	PollServers::bindServers()
 	{
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
+        std::string tmp = get_path_location(this->servers_config[i].upload_location, this->http_servers[i]);// /js/
+
+        this->servers_config[i].uploaded_file_path = tmp;
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
+        printf("upload path file location: %s\n", this->servers_config[i].uploaded_file_path.c_str());
 		this->http_servers[i]->setConfiguration(servers_config[i]);
 		addFileDescriptor(this->servers_config[i].server_fd);
 	}
@@ -308,12 +312,35 @@ void		PollServers::handleMultiPorts(Server *server, int fd)
 	}
 }
 
+std::string    PollServers::get_path_location(std::string &location, Server *server)// /js/
+
+{
+    std::string tmp;
+    for (size_t i = 0; i < server->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
+	{
+		if (location == server->serverConfigFile.server_locations[i].getName())
+		{
+            tmp = server->serverConfigFile.uploaded_file_path = server->serverConfigFile.server_locations[i].getRoot() + location;
+			return (tmp);
+		}
+	}
+    for (size_t i = 0; i < server->serverConfigFile.server_locations.size(); i++)//localhost:8080/ferret/
+	{
+		if ("/" == server->serverConfigFile.server_locations[i].getName())
+		{
+            tmp = server->serverConfigFile.uploaded_file_path = server->serverConfigFile.server_locations[i].getRoot() + location;
+			break;
+		}
+	}
+    return (tmp);
+}
+
 void	PollServers::handleTranslatedPath(Server *server, int fd)
 {
 	std::string path = TheClient(server, fd)->getPath();
 
 	server->getTranslatedPath(server->serverConfigFile.translated_path , path);
-	server->serverConfigFile.requested_path 	= path;
+    server->serverConfigFile.requested_path 	= path;
 	server->serverConfigFile.request 			= TheClient(server, fd);
 }
 

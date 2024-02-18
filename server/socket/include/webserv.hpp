@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 15:11:45 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 20:30:38 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,16 @@ typedef struct config
 	int						body_size;
 	int 					socket_fd;
 }		t_config;
+
+typedef struct aaa
+{
+    long startime;
+}t_T_time;
+
+#include <time.h>
+#include <sys/time.h>
+
+long getCurrentTimeInSeconds() ;
+
 
 void				stringTrim(std::string &str);

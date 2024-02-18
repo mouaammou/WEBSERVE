@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/18 18:07:10 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 18:50:34 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 20:30:58 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@ bool	endsWithConf( std::string str )
     if (strLen >= confLen)
         return str.compare(strLen - confLen, confLen, ".conf") == 0;
     return false;
+}
+
+long getCurrentTimeInSeconds() {
+    struct timeval currentTime;
+    gettimeofday(&currentTime, nullptr);
+    return currentTime.tv_sec;
 }
 
 int main(int ac, char **av)
