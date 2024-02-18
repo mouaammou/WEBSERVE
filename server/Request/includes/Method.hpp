@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Method.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:52:02 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/01/24 11:32:15 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/18 00:28:07 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class Method
 		std::string		file_type;
 		t_config		 &method_config;
 		std::string		p_path;
+        bool            is_status_ok;
 
 
 	public:

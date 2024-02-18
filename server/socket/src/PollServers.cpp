@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/17 23:18:09 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 01:45:18 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,7 +347,7 @@ void 		PollServers::handle_Method(Server *server, int fd)
 	{
 		if (TheClient(server, fd)->getMethod() == "GET")
 		{
-			Method(server->serverConfigFile).getMethod();
+			Method(server->serverConfigFile);
 		}
 		else if (TheClient(server, fd)->getMethod() == "DELETE")
 		{
