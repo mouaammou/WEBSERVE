@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 14:46:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 16:04:59 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,9 +174,9 @@ bool		Method::get_method_file_type()
 	if (stat(this->method_config.translated_path.c_str(), &info) == 0)
 	{
         //check if the file is readable and writable
-        if (access(this->method_config.translated_path.c_str(), R_OK) == -1 && this->method_config.request->getMethod() != "DELETE")
+        if (access(this->method_config.translated_path.c_str(), R_OK) == -1)
         {
-            this->method_config.response_code = "403  ssForbidden";
+            this->method_config.response_code = "403 Forbidden";
             return (false);
         }
 		if (S_ISDIR(info.st_mode))
