@@ -3,6 +3,8 @@
 #ifndef DIRECT_HPP
 #define DIRECT_HPP
 
+#include <unistd.h>
+
 class Directives
 {
 	private:

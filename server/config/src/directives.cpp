@@ -47,6 +47,12 @@ void Directives::setUploadPath(const std::string& upload)
 		std::cerr << "\033[0;31m" << "upload path must begin and end with '/'" << "\033[0m" << std::endl;
 		exit(1);
 	}
+	else if (access(upload.c_str(), F_OK) == -1)
+	{
+		std::cerr << "\033[0;31m" << "Error: Invalid upload path" << "\033[0m" << std::endl;
+		std::cerr << "\033[0;31m" << "'"<< upload << "' does not exist" << "\033[0m" << std::endl;
+		exit(1);
+	}
     this->upload_path = upload;
 }
 
