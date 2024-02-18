@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 13:54:46 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 17:46:17 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,11 +159,16 @@ bool FilesUpload::boundaryBody( std::string &body )
 	body.erase(0, pos + 4);
 	if ( ! bodyContainsUploadedFile(header))
 		return false;
-	if (access((_upload_path).c_str(), W_OK) != 0)
+	if (access((_upload_path).c_str(), F_OK) == -1)
 	{
-		conf.response_code = "403";
+		conf.response_code = "404";
 		return false;
 	}
+    if (access((_upload_path).c_str(), R_OK) == -1)
+    {
+        conf.response_code = "403";
+        return false;
+    }
 	writeToFile(body);
 	return true;
 }

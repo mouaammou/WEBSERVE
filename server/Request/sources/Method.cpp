@@ -6,11 +6,12 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 16:39:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 17:47:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
+#include <cstdio>
 
 bool Method::hasValidCGI(const std::string& filename)
 {
@@ -29,11 +30,19 @@ bool Method::hasValidCGI(const std::string& filename)
 bool Method::deleteFolderContents(const std::string& directoryPath)
 {
 	DIR* dir = opendir(directoryPath.c_str());
-	if (dir == NULL)
-	{
-		this->method_config.response_code = "500 Internal Server Error";
-		return false;
-	}
+    //check if the folder is readable and writable and executable
+    if (access(directoryPath.c_str(), R_OK) == -1 
+        || access(directoryPath.c_str(), W_OK) == -1 
+        || access(directoryPath.c_str(), X_OK) == -1)
+    {
+        this->method_config.response_code = "403 Forbidden";
+        return false;
+    }
+	// if (dir == NULL)
+	// {
+	// 	this->method_config.response_code = "500 Internal Server Error";
+	// 	return false;
+	// }
 	struct dirent* entry;
 	while ((entry = readdir(dir)) != NULL)
 	{
@@ -97,7 +106,7 @@ Method::Method(t_config &config_file): method_config(config_file)
     {
         this->method_config.autoindex = "on";
     }
-    if (this->file_type == "dir" && this->method_config.autoindex == "off")
+    if (is_status_ok && this->file_type == "dir" && this->method_config.autoindex == "off")
     {
         this->method_config.response_code = "403 Forbidden";
     }
@@ -140,8 +149,10 @@ void Method::deleteMethod()
                 this->method_config.response_code = "403 Forbidden";
                 return ;
             }
+            printf("delete folder: %s\n", this->method_config.translated_path.c_str());
             if (deleteFolderContents(this->method_config.translated_path))//
                 this->method_config.response_code = "204 No Content";
+            printf("status code: %s\n", this->method_config.response_code.c_str());
 		}
 	}
 }
