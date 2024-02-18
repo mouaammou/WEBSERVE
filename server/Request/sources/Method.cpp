@@ -6,13 +6,11 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 03:23:11 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 14:46:35 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Method.hpp"
-#include <cstdio>
-#include <sys/unistd.h>
 
 bool Method::hasValidCGI(const std::string& filename)
 {

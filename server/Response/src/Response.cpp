@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 17:59:52 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 15:17:04 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,12 @@ void Response::file(void)
 	if (args.response_code.compare(0, 3, "201") == 0)
 	{
 		statusLine(args.response_code);
-		oss << "Location: " << args.location.getUploadPath() << "\r\n";
-		oss << "Content-Length: " << args.location.getUploadPath().length() + 148 << "\r\n";
+		oss << "Location: " << args.upload_location << "\r\n";
+		oss << "Content-Length: " << args.upload_location.length() + 148 << "\r\n";
 		oss << "Content-Type: text/html\r\n";
 		oss << "\r\n";
 		oss << "";
-		oss << "<!DOCTYPE html>\n<html>\n<body>\n\t<h1>Resource(s) created successfully. you can access it at \r\n<br>\n\t\t<a href=\"" << args.location.getUploadPath() << "\">Go-Uploads </a>\t</h1>\n</body>\n</html>" << "\r\n";
+		oss << "<!DOCTYPE html>\n<html>\n<body>\n\t<h1>Resource(s) created successfully. you can access it at \r\n<br>\n\t\t<a href=\"" << args.upload_location << "\">Go-Uploads </a>\t</h1>\n</body>\n</html>" << "\r\n";
 		SendResponse(oss.str(), -1, args.request->getFd());
 		return;
 	}

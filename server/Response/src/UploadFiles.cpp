@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 03:57:35 by samjaabo         ###   ########.fr       */
+/*   Updated: 2024/02/18 13:54:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ FilesUpload::FilesUpload( t_config &conf ) : conf(conf)
 	is_upload = false;
 	this->_filename = "";
 	this->_body = &conf.request->getRequestBody();
-	this->_upload_path = "/Users/samjaabo/Desktop/webserv/temporary/";//conf.Server->getUploadPath();
+	this->_upload_path = conf.uploaded_file_path;
+    printf("upload path: %s\n", _upload_path.c_str());
 	std::string body = conf.request->getRequestBody();
 	// std::cerr << "ccbody: " << body << std::endl;
 	requestBody(*_body);

@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:53:05 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:58:35 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 15:11:45 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class PollServers;//may cause a problem if not included
 typedef struct config
 {
 	std::string				uploaded_file_path;
+    std::string				upload_location;
 	std::vector<Location>	server_locations;
 	std::string				server_name;
 	std::string				request_url;

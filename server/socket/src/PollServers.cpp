@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 01:45:18 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 15:14:01 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 	this->servers_config[i].Server = &this->config_file.get_directives()[i];
+    this->servers_config[i].uploaded_file_path = this->config_file.get_directives()[i].getLocations()[i].getRoot() + this->config_file.get_directives()[i].getUploadPath();
+    this->servers_config[i].upload_location = this->config_file.get_directives()[i].getUploadPath();
 }
 
 void	PollServers::bindServers()
