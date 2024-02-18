@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 15:14:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 16:46:25 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ void	PollServers::bindServers()
 		addFileDescriptor(this->servers_config[i].server_fd);
 
 		std::cout << COLOR_GREEN "SERVER listening on port :=> " COLOR_RESET<< this->servers_config[i].port << std::endl;
+        //printf http//ip:port
+        // std::cout 
 	}
 }
 

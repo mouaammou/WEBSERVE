@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 14:03:51 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 16:53:37 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	Server::setServerSocket()
 	{
 		throw std::runtime_error("getaddrinfo");
 	}
+    std::cout << "Server running: http://localhost:" << this->severPort << std::endl;
 	//SETSOCKOPT
 	this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (this->serverSocket == -1)

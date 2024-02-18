@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 16:04:59 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 16:39:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,10 @@ Method::Method(t_config &config_file): method_config(config_file)
     if (this->has_autoindex() && this->file_type == "dir")
     {
         this->method_config.autoindex = "on";
+    }
+    if (this->file_type == "dir" && this->method_config.autoindex == "off")
+    {
+        this->method_config.response_code = "403 Forbidden";
     }
 }
 
