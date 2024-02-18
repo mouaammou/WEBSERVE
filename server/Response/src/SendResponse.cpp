@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: moouaamm <moouaamm@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 11:53:25 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/01/28 11:57:43 by moouaamm         ###   ########.fr       */
+/*   Updated: 2024/02/17 20:19:47 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,10 @@ bool SendFile::send( int sfd )
 
 SendFile::~SendFile( void )
 {
-	std::ostringstream oss;
-	oss << "temporary/" << sfd << ".output";
-	std::remove(oss.str().c_str());
 	close(filefd);
 }
 
-// ---------------------------------------------
+// ---------------------[0.0.0.0]------------------------
 
 std::map<int, SendString*>	SendString::save;
 
@@ -129,9 +126,6 @@ void SendResponse::remove( int fd )
 {
 	SendString::remove(fd);
 	SendFile::remove(fd);
-	std::ostringstream oss;
-	oss << "temporary/" << fd << ".output";
-	std::remove(oss.str().c_str());
 }
 
 void SendString::remove( int fd )

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:28 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 17:33:27 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 03:57:35 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,19 @@
 
 FilesUpload::FilesUpload( t_config &conf ) : conf(conf)
 {
-	if ( ! isUploadRequest())
-		return ;
-	this->_filename = "";
-	this->_boundary = "";
-	this->_end_boundary = "";
-	this->_body = &conf.request->getRequestBody();
-	this->_upload_path = conf.location.getRoot() + conf.location.getUploadPath();
-	if ( ! this->isValidContentType())
+	is_upload = true;
+	// std::cerr << "upload request" << std::endl;
+	if ( ! isUploadRequest()) // and extract boundaries
 	{
-		conf.response_code = "400";
+		is_upload = false;
 		return ;
 	}
+	is_upload = false;
+	this->_filename = "";
+	this->_body = &conf.request->getRequestBody();
+	this->_upload_path = "/Users/samjaabo/Desktop/webserv/temporary/";//conf.Server->getUploadPath();
 	std::string body = conf.request->getRequestBody();
+	// std::cerr << "ccbody: " << body << std::endl;
 	requestBody(*_body);
 }
 
@@ -35,9 +35,12 @@ bool FilesUpload::isUploadRequest( void )
 	/*** use outside to check if request is for files upload ***/
 	if (conf.cgi)
 		return (false);
-	if (conf.location.getUploadPath().empty())
+	if ( ! this->isValidContentType())
+	{
+		conf.response_code = "422";
 		return (false);
-	return (true);
+	}
+	return (is_upload);
 }
 
 bool FilesUpload::isValidContentType( void )
@@ -71,6 +74,8 @@ bool FilesUpload::isValidContentType( void )
 		return (false);
 	this->_end_boundary = this->_boundary + std::string("--\r\n");
 	this->_boundary += "\r\n";
+	// std::cerr << "boundary: " << this->_boundary << std::endl;
+	// std::cerr << "end boundary: " << this->_end_boundary << std::endl;
 	return (true);
 }
 
@@ -92,7 +97,7 @@ void FilesUpload::writeToFile( std::string &body )
 	}
 
 	file->write(body.c_str(), body.length() - 2);
-	if (file->fail())
+	if (file->bad())
 	{
 		conf.response_code = "500";
 		delete file;
@@ -132,8 +137,12 @@ bool FilesUpload::bodyContainsUploadedFile( std::string& headers )
 	if (pos == std::string::npos)
 		return false;
 	_filename.erase(pos);
+	is_upload = true;
 	if (_filename.empty())
-        return false;
+	{
+		conf.response_code = "422";
+		return false;
+	}
 	return true;
 }
 
@@ -149,6 +158,11 @@ bool FilesUpload::boundaryBody( std::string &body )
 	body.erase(0, pos + 4);
 	if ( ! bodyContainsUploadedFile(header))
 		return false;
+	if (access((_upload_path).c_str(), W_OK) != 0)
+	{
+		conf.response_code = "403";
+		return false;
+	}
 	writeToFile(body);
 	return true;
 }

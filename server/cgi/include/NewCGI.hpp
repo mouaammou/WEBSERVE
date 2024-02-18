@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NewCGI.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 05:06:18 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:26:41 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/17 23:04:44 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,10 @@ class NewCGI : public Execute
     static std::vector<pid_t>       pids_to_remove;
     int                         socketfd;
     const int                   MAX_SEC_TO_TIMEOUT;
-    std::string                 filename;
-    std::string                 ifilename;
+    // std::string                 filename;
+    // std::string                 ifilename;
+    int                         fds[2];
+    int                         bfds[2];
     t_config                    &conf;
     pid_t                       pid;
     int64_t                     timeout_start;
@@ -54,5 +56,5 @@ class NewCGI : public Execute
 
     pid_t getPid( void );
     void setPid( pid_t pid );
-    void closeFiles( void );
+    ~NewCGI( void );
 };

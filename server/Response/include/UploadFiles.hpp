@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UploadFiles.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 12:31:46 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:27:03 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 01:16:04 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class FilesUpload
     std::string                 _end_boundary;
     std::string                 *_body;
     t_config                    &conf;
+    bool                        is_upload;
 
     public:
 

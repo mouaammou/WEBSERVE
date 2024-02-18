@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NewCGI.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 04:01:07 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/18 01:13:00 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void NewCGI::remove( int sfd )
         kill(cgi->pid, SIGKILL);
     pids_to_remove.push_back(cgi->getPid());
     active_procs[cgi->socketfd ] = NULL;
-    cgi->closeFiles();
     delete cgi;
     active_procs.erase(sfd);
     SendResponse::remove(sfd);
@@ -36,25 +35,25 @@ NewCGI::NewCGI( t_config &conf ) : Execute(conf), MAX_SEC_TO_TIMEOUT(4), conf(co
 {
     one_time_kill = false;
     socketfd = conf.request->getFd();
-    std::ostringstream ss;
-    ss << "temporary/" << socketfd << ".output";
-    filename = ss.str();
+    // std::ostringstream ss;
+    // ss << "temporary/" << socketfd << ".output";
+    // filename = ss.str();
     pid = -1;
     conf.response_code = "200";
     conf.cgi = false;
     conf.autoindex = "off";
-    std::remove(filename.c_str());
-    ss.str("");
-    ss << "temporary/" << socketfd << ".input";
-    ifilename = ss.str();
-    std::ofstream  inputf(ifilename, std::ios::out | std::ios::trunc | std::ios::binary);
-    if ( ! inputf.is_open())
-        conf.response_code = "500";
-    else
-        inputf.write(conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length());
-    if (inputf.fail())
-        conf.response_code = "500";
-    inputf.close();
+    // std::remove(filename.c_str());
+    // ss.str("");
+    // ss << "temporary/" << socketfd << ".input";
+    // ifilename = ss.str();
+    // std::ofstream  inputf(ifilename, std::ios::out | std::ios::trunc | std::ios::binary);
+    // if ( ! inputf.is_open())
+    //     conf.response_code = "500";
+    // else
+    //     inputf.write(conf.request->getRequestBody().c_str(), conf.request->getRequestBody().length());
+    // if (inputf.fail())
+    //     conf.response_code = "500";
+    // inputf.close();
     timeout_start = std::time(NULL);
 }
 
@@ -114,33 +113,31 @@ void NewCGI::build( config &conf )
 
 void NewCGI::onProcessExit( int status )
 {
-    std::remove(ifilename.c_str());
-    std::ifstream file(filename.c_str());
-    if ( ! file.is_open())
-    {
-        conf.response_code = "500";
-        Response tmp(conf);
-        return ;
-    }
-    std::string line;
     std::string data;
-
-    while (std::getline(file, line))
+    char buffer[4096];
+    while (true)
     {
-        data.append(line + "\n");
+        int d = read(fds[0], buffer, 4096);
+        if (d == -1)
+        {
+            conf.response_code = "500";
+            Response tmp(conf);
+            return ;
+        }
+        if (d == 0)
+            break ;
+        data.append(buffer, d);
     }
-    if (file.bad())
-    {
-        conf.response_code = "500";
-        Response tmp(conf);
-        return ;
-    }
-    file.close();
     ParseCGIOutput tmp(status, data, conf);
 }
 
 bool NewCGI::execute( void)
 {
+    if (pipe(fds) == -1)
+    {
+        conf.response_code = "500";
+        return false;
+    }
     pid_t pid = fork();
     if (pid == -1)
         return false;
@@ -154,56 +151,37 @@ bool NewCGI::execute( void)
         std::exit(EXIT_FAILURE);
         return false;
     }
+    close(fds[1]);
+    fds[1] = -1;
     this->pid = pid;
     return true;
 }
 
 void NewCGI::child( void )
 {
-    int fd = open(filename.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
-    if (fd == -1)
+    //stdout to parent
+    if (dup2(fds[1], STDOUT_FILENO) == -1)
         std::exit(EXIT_FAILURE);
-    if (dup2(fd, STDOUT_FILENO) == -1)
-    {
-        close(fd);
+    if (close(fds[0]) == -1)
         std::exit(EXIT_FAILURE);
-    }
-    close(fd);
-    /*** put pipe in STDIN, And write request body to it ***/
-    int fds[2];
+    if (close(fds[1]) == -1)
+        std::exit(EXIT_FAILURE);
+    
+    //body to stdin
+    
     if (pipe(fds) == -1)
         std::exit(EXIT_FAILURE);
     if (dup2(fds[0], STDIN_FILENO) == -1)
-    {
-        close(fds[0]);
-        close(fds[1]);
         std::exit(EXIT_FAILURE);
-    }
-    close(fds[0]);
-    fd = open(ifilename.c_str(), O_RDONLY);
-    if (fd == -1)
-    {
-        close(STDIN_FILENO);
-        close(fds[1]);
+    if (close(fds[0]) == -1)
         std::exit(EXIT_FAILURE);
-    }
-    if (dup2(fd, STDIN_FILENO) == -1)
-    {
-        close(fd);
-        close(STDIN_FILENO);
-        close(fds[1]);
+
+    const char *body = conf.request->getRequestBody().c_str();
+    size_t len = conf.request->getRequestBody().length();
+    if (write(fds[1], body, len) == -1)
         std::exit(EXIT_FAILURE);
-    }
     if (close(fds[1]) == -1)
         std::exit(EXIT_FAILURE);
-}
-
-int64_t NewCGI::getCurrentTime( void )
-{
-    struct timeval tv;
-    if (gettimeofday(&tv, NULL))
-        return (0);
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
 void NewCGI::timeout( void )
@@ -228,10 +206,8 @@ void NewCGI::setPid( pid_t pid )
     this->pid = pid;
 }
 
-void NewCGI::closeFiles( void )
+NewCGI::~NewCGI( void )
 {
-    if ( ! filename.empty())
-        std::remove(filename.c_str());
-    if ( ! ifilename.empty())
-        std::remove(ifilename.c_str());
+    close(fds[1]);
+    close(fds[0]);
 }
