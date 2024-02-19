@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/19 01:51:13 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 02:03:06 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,6 +390,9 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 	Request *http_request = TheClient(server, fd);
 	if (http_request->receiveRequest())//status code generated
 	{
+        //max body size
+        if (http_request->_body_size != -1 && (long long)http_request->request_body.length() > http_request->_body_size)
+			http_request->_status_code = "413 Request Entity Too Large";
 		//check if the config file has multi ports
         if(http_request->getContentType() == "application/x-www-form-urlencoded")
         {

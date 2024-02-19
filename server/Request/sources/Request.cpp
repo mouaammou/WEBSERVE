@@ -449,9 +449,7 @@ bool   		Request::handleRequestBody()
 {
 	if (this->content_length > 0 || this->transfer_encoding == "chunked")
 	{
-		if (this->_body_size != -1 && (long long)this->request_body.length() > this->_body_size)
-			return (this->_status_code = "413 Request Entity Too Large", true);
-		else if (this->hasHeaders() && this->content_length > 0)
+		if (this->hasHeaders() && this->content_length > 0)
 			return (this->storeRequestBody());
 		else if (this->hasHeaders() && this->transfer_encoding == "chunked")
 			return (this->storeChunkedRequestBody());

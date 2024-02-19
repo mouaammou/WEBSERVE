@@ -30,18 +30,18 @@ class Request
 		std::string 	transfer_encoding;
 		std::string 	content_type;
 		std::string     query_string;//?name=ferret&color=purple
-		std::string 						request_body;
 
 		bool	_has_headers;
 		bool	_has_body;
 		bool	request_received;
-		long long		_body_size;
-		std::string 	 _status_code;
 		std::string 	_chunked_body;
 		int _chunk_size;
 		int _last_chunk_pos;
 
 	public:
+		std::string 						request_body;
+		std::string 	 _status_code;
+		long long		_body_size;
         Request();
 		std::string      	_connection;
 		int   				read_bytes;
