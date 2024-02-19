@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 00:41:33 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 19:41:33 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 04:25:06 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	Server::setServerSocket()
 	{
 		throw std::runtime_error("getaddrinfo");
 	}
-    std::cout << COLOR_GREEN "Server running: http://localhost:" << this->severPort << COLOR_RESET << std::endl;
+    std::cout << COLOR_GREEN "      Server running: (http://localhost:" << this->severPort << ")" << COLOR_RESET << std::endl;
 	//SETSOCKOPT
 	this->serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (this->serverSocket == -1)
@@ -129,6 +129,8 @@ void			Server::printf_t_config(t_config config_file)
 	std::cout << "	location: [" << config_file.location.getName() << "]" << std::endl;
 	std::cout << "	CGI:      [" << (config_file.cgi ? "true" : "false") << "]" << std::endl;
 	std::cout << "	method:   [" << config_file.request->getMethod() << "]" << std::endl;
+    //AUTOINDEX
+    std::cout << "	autoindex:[" << (config_file.location.getAutoindex() ? "true" : "false") << "]" << std::endl;
 }
 
 void			Server::setStatusCode(std::string status_code)
