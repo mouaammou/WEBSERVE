@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 23:00:09 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 21:13:19 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 01:51:13 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void				PollServers::setServerConfigurations(int i)
 	this->servers_config[i].server_name = this->config_file.get_directives()[i].getServerName();
 	this->servers_config[i].body_size = this->config_file.get_directives()[i].getBodySize();
 	this->servers_config[i].Server = &this->config_file.get_directives()[i];
-    // this->servers_config[i].uploaded_file_path = this->config_file.get_directives()[i].getLocations()[i].getRoot() + this->config_file.get_directives()[i].getUploadPath();
     this->servers_config[i].upload_location = this->config_file.get_directives()[i].getUploadPath();
 }
 
@@ -50,11 +49,10 @@ void	PollServers::bindServers()
 	{
 		setServerConfigurations(i);
 		this->http_servers[i] = new Server(this->servers_config[i]);
-        std::string tmp = get_path_location(this->servers_config[i].upload_location, this->http_servers[i]);// /js/
+        std::string tmp = get_path_location(this->servers_config[i].upload_location, this->http_servers[i]);
 
         this->servers_config[i].uploaded_file_path = tmp;
 		this->servers_config[i].server_fd = this->http_servers[i]->listenForConnections();//listen, bind, socket
-        printf("upload path file location: %s\n", this->servers_config[i].uploaded_file_path.c_str());
 		this->http_servers[i]->setConfiguration(servers_config[i]);
 		addFileDescriptor(this->servers_config[i].server_fd);
 	}
@@ -412,7 +410,6 @@ bool				PollServers::clientPollIn(Server *server, int fd)
 
 		//call the method class
 		this->handle_Method(server, fd);
-        printf("status code: %s\n", server->getStatusCode().c_str());
 
 		server->printf_t_config(server->serverConfigFile);
 		//generate the response

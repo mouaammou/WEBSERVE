@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:22:50 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/18 19:24:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 01:50:29 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void Response::error(void) // 5xx 4xx
 	if (!args.translated_path.empty())
 		ffd = open(args.translated_path.c_str(), O_RDONLY);
 	int64_t file_size = get_file_size();
-	if (args.translated_path.empty() || file_size == -1)
+	if (args.translated_path.empty() || file_size == -1 || args.response_code.find("413") != std::string::npos)
 	{
 		std::string error = StatusCodes().getStatusLine(args.response_code);
 		error = std::string("<!DOCTYPE html>\n<html>\n<body>\n\t<h1>\n\t\t") + error.erase(0, 9) + std::string("\t</h1>\n</body>\n</html>\n");

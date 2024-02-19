@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/18 17:47:01 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 01:51:09 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,6 @@ void Method::deleteMethod()
             printf("delete folder: %s\n", this->method_config.translated_path.c_str());
             if (deleteFolderContents(this->method_config.translated_path))//
                 this->method_config.response_code = "204 No Content";
-            printf("status code: %s\n", this->method_config.response_code.c_str());
 		}
 	}
 }
