@@ -6,7 +6,7 @@
 /*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 17:07:51 by mouaammo          #+#    #+#             */
-/*   Updated: 2024/02/19 17:09:04 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:27:46 by mouaammo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,6 @@ bool Method::deleteFolderContents(const std::string& directoryPath)
         this->method_config.response_code = "403 Forbidden";
         return false;
     }
-	// if (dir == NULL)
-	// {
-	// 	this->method_config.response_code = "500 Internal Server Error";
-	// 	return false;
-	// }
 	struct dirent* entry;
 	while ((entry = readdir(dir)) != NULL)
 	{
@@ -79,7 +74,10 @@ bool Method::deleteFolderContents(const std::string& directoryPath)
 	}
 	closedir(dir);
 	if (remove(directoryPath.c_str()) != 0)
-		std::cerr << "not removed" << std::endl;
+    {
+        this->method_config.response_code = "500 Internal Server Error";
+        return (false);
+    }
 	return true;
 }
 
@@ -120,39 +118,36 @@ void Method::postMethod()
 
 void Method::deleteMethod()
 {
-    std::string parent_dir = this->method_config.translated_path.rfind("/") == 0 ? "/" : this->method_config.translated_path.substr(0, this->method_config.translated_path.rfind("/"));
-	if (is_status_ok)
-	{
-		if (this->file_type == "file")
-		{
-            if (access(parent_dir.c_str(), W_OK) == -1 
-                || access(parent_dir.c_str(), X_OK) == -1)
-            {
-                this->method_config.response_code = "403 Forbidden";
-                return ;
-            }
-			if ( ! this->method_config.cgi)
-			{
-				if (remove(this->method_config.translated_path.c_str()))
-                    this->method_config.response_code = "500 Internal Server Error";
-                else
-                    this->method_config.response_code = "204 No Content";
-			}
-		}
-		else if (this->file_type == "dir")
-		{
-            //check if the folder has all the permissions
-            if (access(this->method_config.translated_path.c_str(), W_OK) == -1 
-                || access(this->method_config.translated_path.c_str(), R_OK) == -1 
-                || access(this->method_config.translated_path.c_str(), X_OK) == -1)
-            {
-                this->method_config.response_code = "403 Forbidden";
-                return ;
-            }
-            if (deleteFolderContents(this->method_config.translated_path))//
+    std::string parent_dir = this->method_config.translated_path.rfind("/") == 0 ? "/" : this->method_config.translated_path.substr(0, this->method_config.translated_path.rfind("/"));// dfdfdf/file/
+    if (access(parent_dir.c_str(), W_OK) == -1 
+        || access(parent_dir.c_str(), X_OK) == -1)
+    {
+        this->method_config.response_code = "403 Forbidden";
+        return ;
+    }
+    if (this->file_type == "file")
+    {
+        if ( ! this->method_config.cgi)
+        {
+            if (remove(this->method_config.translated_path.c_str()))
+                this->method_config.response_code = "500 Internal Server Error";
+            else
                 this->method_config.response_code = "204 No Content";
-		}
-	}
+        }
+    }
+    else if (this->file_type == "dir")
+    {
+        //check if the folder has all the permissions
+        if (access(this->method_config.translated_path.c_str(), W_OK) == -1 
+            || access(this->method_config.translated_path.c_str(), R_OK) == -1 
+            || access(this->method_config.translated_path.c_str(), X_OK) == -1)
+        {
+            this->method_config.response_code = "403 Forbidden";
+            return ;
+        }
+        if (deleteFolderContents(this->method_config.translated_path))//
+            this->method_config.response_code = "204 No Content";
+    }
 }
 
 
@@ -199,7 +194,6 @@ bool		Method::get_method_file_type()
 	}
 	else
 	{
-        //check if the file is readable and writable
 		this->method_config.response_code = "404 Not Found";
 		return (false);
 	}

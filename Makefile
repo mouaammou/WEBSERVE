@@ -6,11 +6,11 @@
 #    By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/01 18:37:10 by mouaammo          #+#    #+#              #
-#    Updated: 2024/02/14 15:26:26 by mouaammo         ###   ########.fr        #
+#    Updated: 2024/02/19 17:14:23 by mouaammo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FLAGS 		= #-Wall -Wextra -Werror #-g -fsanitize=address
+FLAGS 		= -Wall -Wextra -Werror #-g -fsanitize=address
 VERSION 	= -std=c++98
 NAME 		= webserv
 CCPP 		= c++
