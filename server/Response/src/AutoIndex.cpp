@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AutoIndex.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mouaammo <mouaammo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samjaabo <samjaabo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 19:15:36 by samjaabo          #+#    #+#             */
-/*   Updated: 2024/02/14 15:26:08 by mouaammo         ###   ########.fr       */
+/*   Updated: 2024/02/19 04:32:51 by samjaabo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ void AutoIndex::files( std::ostringstream &oss )
 	DIR *dp = opendir(dir_path.c_str());
 	if ( ! dp)
 	{
-		std::cout << "ERROR: opendir" << dir_path<<std::endl;
 		error = true;
 		return ;
 	}
@@ -184,6 +183,12 @@ AutoIndex::AutoIndex( int sfd, config &conf)
 	this->uri = conf.request->getPath();
 	this->dir_path = conf.location.getRoot() + uri;
 	error = false;
+	if (access(dir_path.c_str(), X_OK|R_OK) == -1)
+	{
+		conf.response_code = "403 Forbidden";
+		error = true;
+		return ;
+	}
 	generate();
 	SendResponse(fin.str(), -1, sfd);
 }
